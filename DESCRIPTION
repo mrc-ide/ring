@@ -1,0 +1,13 @@
+Package: circle
+Title: Circular Buffers
+Version: 0.0.1
+Author: Rich FitzJohn
+Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
+Description: Circular buffers in R and C.
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/<gh-username>/circle
+BugReports: https://github.com/<gh-username>/circle/issues
+Suggests:
+    testthat
+RoxygenNote: 5.0.1

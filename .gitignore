@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+notes.md
+inst/doc
+inst/staticdocs
+inst/web
+vignettes/.build.timestamp
+c-ringbuf
