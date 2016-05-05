@@ -203,6 +203,39 @@ void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
 
   // assert(len + circle_buffer_bytes_used(buffer) == bytes_used);
   return buffer->tail;
+  // TODO: try
+  /* void * tail = circle_buffer_tail_read(buffer, dest, count); */
+  /* if (tail != 0) { */
+  /*   buffer->tail = tail; */
+  /* } */
+  /* return tail; */
+}
+
+// This is like the function above, but it is not destructive to the
+// buffer.  I need to write a similar one that reads relative to the
+// head too (i.e. that will pull the most recently added data).
+void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
+  // TODO: if length of count is not divisible nicely by stride, it is an error
+  size_t bytes_used = circle_buffer_bytes_used(buffer);
+  size_t len = count * buffer->stride;
+  if (len > bytes_used) {
+    return 0;
+  }
+  data_t *tail = buffer->tail;
+
+  data_t *dest_data = dest;
+  const data_t *bufend = circle_buffer_end(buffer);
+  size_t nwritten = 0;
+  while (nwritten != len) {
+    size_t n = imin(bufend - tail, len - nwritten);
+    memcpy(dest_data + nwritten, tail, n);
+    tail += n;
+    nwritten += n;
+    if (tail == bufend) {
+      tail = buffer->data;
+    }
+  }
+  return tail;
 }
 
 // TODO: Still need one that can copy an element from 'n' ago without moving

@@ -26,6 +26,9 @@ const void * circle_buffer_data(circle_buffer *buffer);
 int circle_buffer_head_pos(circle_buffer *buffer);
 int circle_buffer_tail_pos(circle_buffer *buffer);
 
+void * circle_buffer_tail_read(circle_buffer *buffer, void *dest,
+                               size_t count);
+
 void circle_buffer_reset(circle_buffer *buffer);
 size_t circle_buffer_bytes_free(const struct circle_buffer *buffer);
 size_t circle_buffer_bytes_used(const struct circle_buffer *buffer);

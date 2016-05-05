@@ -268,3 +268,31 @@ test_that("circle_buffer_memcpy_into a few bytes of data", {
 
   expect_equal(circle_buffer_data(rb1), pad(bytes, size, 1))
 })
+
+test_that("circle_buffer_memcpy_into full capacity", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_reset(rb1)
+
+  bytes <- fill_buffer("abcdefghijk", (size + 1) * 2)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes), 0L)
+  expect_equal(circle_buffer_head_pos(rb1), 0L)
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_bytes_free(rb1), 0L)
+  expect_equal(circle_buffer_bytes_used(rb1), circle_buffer_capacity(rb1))
+  expect_true(circle_buffer_full(rb1))
+  expect_false(circle_buffer_empty(rb1))
+
+  expect_equal(circle_buffer_tail_read(rb1, size), tail(bytes, size))
+
+  ## NOTE: I'm a bit confused about this, though, the data doesn't
+  ## seem quite what I'd expect for the buffer to hold.
+  res <- circle_buffer_data(rb1)
+  i <- circle_buffer_tail_pos(rb1)
+  expect_equal(i, 1L)
+  j <- seq_len(i)
+  ## expect_equal(c(res[-i], res[i]),
+  ##              circle_buffer_tail_read(rb1, size))
+})
