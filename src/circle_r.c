@@ -93,8 +93,8 @@ SEXP R_circle_buffer_memcpy_into(SEXP extPtr, SEXP src) {
   circle_buffer *buffer = circle_buffer_get(extPtr, 1);
   // TODO: warn about lack of stride fit.
   size_t count = LENGTH(src) / buffer->stride;
-  circle_buffer_memcpy_into(buffer, RAW(src), count);
-  return R_NilValue;
+  data_t * head = (data_t *) circle_buffer_memcpy_into(buffer, RAW(src), count);
+  return ScalarInteger(head - buffer->data);
 }
 
 SEXP R_circle_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
@@ -105,6 +105,8 @@ SEXP R_circle_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
     Rf_error("Buffer underflow");
   }
   UNPROTECT(1);
+  // NOTE: In C we return the tail position here but that is not done
+  // for the R version.
   return ret;
 }
 
