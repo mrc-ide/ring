@@ -25,3 +25,11 @@ fill_buffer <- function(x, len) {
 test_pattern <- function(size) {
   fill_buffer((size + 1) * 2, "abcdefghijk")
 }
+
+first <- function(x) {
+  head(x, 1L)
+}
+
+last <- function(x) {
+  tail(x, 1L)
+}

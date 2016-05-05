@@ -234,8 +234,6 @@ test_that("circle_buffer_memcpy_into with zero count", {
   circle_buffer_memset(rb1, as.raw(1), circle_buffer_size(rb1))
   circle_buffer_reset(rb1)
 
-  tmp <- fill_buffer("abcdefghijk", (size + 1) * 2)
-
   expect_equal(circle_buffer_memcpy_into(rb1, raw()),
                circle_buffer_head_pos(rb1))
   expect_equal(circle_buffer_capacity(rb1), size)
@@ -295,4 +293,52 @@ test_that("circle_buffer_memcpy_into full capacity", {
   j <- seq_len(i)
   ## expect_equal(c(res[-i], res[i]),
   ##              circle_buffer_tail_read(rb1, size))
+})
+
+test_that("circle_buffer_memcpy_into, twice", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_reset(rb1)
+
+  bytes <- charToRaw("abcdefghijk")
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes), length(bytes))
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes), length(bytes) * 2)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_bytes_free(rb1),
+               circle_buffer_capacity(rb1) - (2 * length(bytes)))
+
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_empty(rb1))
+
+  expect_equal(circle_buffer_tail_read(rb1, length(bytes) * 2),
+               rep(bytes, 2))
+  expect_equal(circle_buffer_data(rb1),
+               pad(rep(bytes, 2), size, 1))
+  expect_equal(circle_buffer_head(rb1), as.raw(1))
+})
+
+test_that("circle_buffer_memcpy_into, twice (to full capacity)", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_reset(rb1)
+
+  bytes <- fill_buffer("abcdefghijk", size)
+  i <- seq_len(size - 1L)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes[i]), size - 1L)
+  expect_equal(circle_buffer_head_pos(rb1), size - 1L)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes[size]), size)
+  expect_equal(circle_buffer_head_pos(rb1), size)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_bytes_free(rb1), 0)
+  expect_true(circle_buffer_full(rb1))
+  expect_false(circle_buffer_empty(rb1))
+
+  expect_equal(circle_buffer_data(rb1), bytes)
 })
