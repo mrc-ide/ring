@@ -805,3 +805,527 @@ test_that("circle_buffer_copy with zero count, empty buffers", {
   expect_equal(circle_buffer_head_pos(rb1), 0L)
   expect_equal(circle_buffer_head_pos(rb2), 0L)
 })
+
+test_that("circle_buffer_copy with zero count, empty src", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes <- random_bytes(2)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes), 2L)
+  expect_equal(circle_buffer_copy(rb2, rb1, 0L), 2L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1) - 2L)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2))
+  expect_equal(circle_buffer_bytes_used(rb1), 2L)
+  expect_equal(circle_buffer_bytes_used(rb2), 0L)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 0L)
+  expect_equal(circle_buffer_tail_pos(rb2), circle_buffer_head_pos(rb2))
+  expect_equal(circle_buffer_head_pos(rb1), 2L)
+  expect_equal(circle_buffer_head_pos(rb2), 0L)
+})
+
+test_that("circle_buffer_copy with zero count, empty dst", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes <- random_bytes(2)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes), 2L)
+  expect_equal(circle_buffer_copy(rb2, rb1, 0L), 0L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1))
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2) - 2L)
+  expect_equal(circle_buffer_bytes_used(rb1), 0L)
+  expect_equal(circle_buffer_bytes_used(rb2), 2L)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_true(circle_buffer_empty(rb1))
+  expect_false(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), circle_buffer_head_pos(rb1))
+  expect_equal(circle_buffer_tail_pos(rb2), 0L)
+  expect_equal(circle_buffer_head_pos(rb1), 0L)
+  expect_equal(circle_buffer_head_pos(rb2), 2L)
+})
+
+test_that("circle_buffer_copy with zero count", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes1 <- random_bytes(2)
+  bytes2 <- random_bytes(2)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes1), 2L)
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), 2L)
+  expect_equal(circle_buffer_copy(rb2, rb1, 0), 2L)
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1) - 2)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2) - 2)
+  expect_equal(circle_buffer_bytes_used(rb1), 2)
+  expect_equal(circle_buffer_bytes_used(rb2), 2)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_false(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 0L)
+  expect_equal(circle_buffer_tail_pos(rb2), 0L)
+  expect_equal(circle_buffer_head_pos(rb1), 2)
+  expect_equal(circle_buffer_head_pos(rb2), 2)
+})
+
+test_that("circle_buffer_copy full contents of rb2 into rb1 (from empty)", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes <- random_bytes(2)
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes), 2L)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, 2), 2L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1) - 2)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2))
+  expect_equal(circle_buffer_bytes_used(rb1), 2)
+  expect_equal(circle_buffer_bytes_used(rb2), 0)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 0L)
+  expect_equal(circle_buffer_tail_pos(rb2), 2)
+  expect_equal(circle_buffer_head_pos(rb1), 2)
+  expect_equal(circle_buffer_head_pos(rb2), 2)
+
+  expect_equal(circle_buffer_tail_read(rb1, 2), bytes)
+})
+
+test_that("circle_buffer_copy full contents of rb2 into rb1", {
+  ## (latter initially has 3 bytes)
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  n1 <- 3
+  n2 <- 2
+  nn <- n1 + n2
+  bytes1 <- random_bytes(n1)
+  bytes2 <- random_bytes(n2)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes1), n1)
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), n2)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, n2), nn)
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1) - nn)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2))
+  expect_equal(circle_buffer_bytes_used(rb1), nn)
+  expect_equal(circle_buffer_bytes_used(rb2), 0)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 0L)
+  expect_equal(circle_buffer_tail_pos(rb2), n2)
+  expect_equal(circle_buffer_head_pos(rb1), nn)
+  expect_equal(circle_buffer_head_pos(rb2), n2)
+
+  expect_equal(circle_buffer_tail_read(rb1, nn), c(bytes1, bytes2))
+})
+
+test_that("circle_buffer_copy, wrap head of dst", {
+  ## (latter initially has 3 bytes)
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes1 <- random_bytes(size)
+  bytes2 <- random_bytes(1)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes1), size)
+  expect_equal(circle_buffer_head_pos(rb1), size)
+
+  ## make sure rb1 doesn't overflow on later circle_buffer_copy
+  expect_equal(circle_buffer_memcpy_from(rb1, 1), bytes1[1])
+  expect_equal(circle_buffer_tail_pos(rb1), 1)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), 1L)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, 1L), 0L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), 0L)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2))
+  expect_equal(circle_buffer_bytes_used(rb1), size)
+  expect_equal(circle_buffer_bytes_used(rb2), 0L)
+  expect_true(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 1)
+  expect_equal(circle_buffer_tail_pos(rb2), 1)
+  expect_equal(circle_buffer_head_pos(rb1), 0L)
+  expect_equal(circle_buffer_head_pos(rb2), 1)
+
+  expect_equal(circle_buffer_tail_read(rb1, size), c(bytes1[-1], bytes2))
+})
+
+test_that("circle_buffer_copy, wrap head of dst and continue", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  n2 <- 2
+  bytes1 <- random_bytes(size)
+  bytes2 <- random_bytes(n2)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes1), size)
+  expect_equal(circle_buffer_head_pos(rb1), size)
+
+  ## make sure rb1 doesn't overflow on later circle_buffer_copy
+  expect_equal(circle_buffer_memcpy_from(rb1, n2),
+               bytes1[seq_len(n2)])
+  expect_equal(circle_buffer_tail_pos(rb1), n2)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), n2)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, n2), 1L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), 0L)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2))
+  expect_equal(circle_buffer_bytes_used(rb1), size)
+  expect_equal(circle_buffer_bytes_used(rb2), 0L)
+  expect_true(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 2)
+  expect_equal(circle_buffer_tail_pos(rb2), 2)
+  expect_equal(circle_buffer_head_pos(rb1), 1)
+  expect_equal(circle_buffer_head_pos(rb2), 2)
+
+  expect_equal(circle_buffer_tail_read(rb1, size),
+               c(bytes1[-seq_len(n2)], bytes2))
+})
+
+test_that("circle_buffer_copy, wrap tail of src", {
+  ## circle_buffer_copy, wrap head of dst and continue copying into
+  ## start of contiguous buffer
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes <- random_bytes(size)
+  n <- 2L
+  n1 <- size - n
+  bytes2 <- random_bytes(n)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes), size)
+  expect_equal(circle_buffer_head_pos(rb2), size)
+
+  expect_equal(circle_buffer_memcpy_from(rb2, n1), bytes[seq_len(n1)])
+  expect_equal(circle_buffer_tail_pos(rb2), n1)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), n - 1L)
+  expect_equal(circle_buffer_head_pos(rb2), n - 1L)
+
+  cmp <- circle_buffer_tail_read(rb2, 3)
+  expect_equal(cmp, c(bytes, bytes2)[-seq_len(n1)][seq_len(3)])
+
+  expect_equal(circle_buffer_copy(rb2, rb1, 3L), 3L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), size - 3)
+  expect_equal(circle_buffer_bytes_free(rb2), size - 1)
+  expect_equal(circle_buffer_bytes_used(rb1), 3)
+  expect_equal(circle_buffer_bytes_used(rb2), 1)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_false(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 0L)
+  expect_equal(circle_buffer_tail_pos(rb2), 0L)
+  expect_equal(circle_buffer_head_pos(rb1), 3)
+  expect_equal(circle_buffer_head_pos(rb2), 1)
+
+  expect_equal(circle_buffer_tail_read(rb1, 3), cmp)
+  expect_equal(circle_buffer_tail_read(rb2, 1), tail(bytes2, 1))
+})
+
+test_that("circle_buffer_copy, wrap tail of src and head of dst...", {
+  ##  simultaneously, then continue copying from start of contiguous buffer
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes1 <- random_bytes(size)
+  bytes2 <- random_bytes(2)
+  bytes3 <- random_bytes(size - 2)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes1), size)
+  expect_equal(circle_buffer_head_pos(rb2), size)
+
+  expect_equal(circle_buffer_memcpy_from(rb2, size - 2),
+               bytes1[seq_len(size - 2)])
+  expect_equal(circle_buffer_tail_pos(rb2), size - 2)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), 1L)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes3), length(bytes3))
+  expect_equal(circle_buffer_head_pos(rb1), length(bytes3))
+
+  expect_equal(circle_buffer_memcpy_from(rb1, length(bytes3)), bytes3)
+  expect_equal(circle_buffer_tail_pos(rb1), size - 2)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, 4), 1L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), size - 4)
+  expect_equal(circle_buffer_bytes_free(rb2), size)
+  expect_equal(circle_buffer_bytes_used(rb1), 4)
+  expect_equal(circle_buffer_bytes_used(rb2), 0)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), size - 2)
+  expect_equal(circle_buffer_tail_pos(rb2), 1)
+  expect_equal(circle_buffer_head_pos(rb1), 1)
+  expect_equal(circle_buffer_head_pos(rb2), 1)
+
+  expect_equal(circle_buffer_tail_read(rb1, 4),
+               c(tail(bytes1, 2), bytes2))
+})
+
+test_that("circle_buffer_copy, force 3 separate memcpy's...", {
+  ## up to end of src, then up to end of dst, then copy remaining bytes.
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes1 <- random_bytes(size)
+  bytes2 <- random_bytes(5)
+  bytes3 <- random_bytes(size - 2)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes1), size)
+  expect_equal(circle_buffer_head_pos(rb2), size)
+
+  expect_equal(circle_buffer_memcpy_from(rb2, size - 1), bytes1[-size])
+  expect_equal(circle_buffer_tail_pos(rb2), size - 1)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), length(bytes2) - 1L)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes3), length(bytes3))
+  expect_equal(circle_buffer_head_pos(rb1), length(bytes3))
+
+  expect_equal(circle_buffer_memcpy_from(rb1, size - 3),
+               bytes3[seq_len(size - 3)])
+  expect_equal(circle_buffer_tail_pos(rb1), size - 3)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, 5), 2L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), size - 6)
+  expect_equal(circle_buffer_bytes_free(rb2), size - 1)
+  expect_equal(circle_buffer_bytes_used(rb1), 6)
+  expect_equal(circle_buffer_bytes_used(rb2), 1)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_false(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), size - 3)
+  expect_equal(circle_buffer_tail_pos(rb2), 3)
+  expect_equal(circle_buffer_head_pos(rb1), 2)
+  expect_equal(circle_buffer_head_pos(rb2), 4)
+
+  ## one byte from buf, 5 bytes from buf2, 3 at end of contiguous
+  ## buffer and 2 after the wrap
+  dat <- circle_buffer_tail_read(rb1, 6)
+  expect_equal(dat, c(tail(bytes3, 1), tail(bytes1, 1), head(bytes2, 4)))
+})
+
+test_that("circle_buffer_copy overflow", {
+  ## up to end of src, then up to end of dst, then copy remaining bytes.
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes1 <- random_bytes(size)
+  bytes2 <- random_bytes(2)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes1), size)
+  expect_equal(circle_buffer_head_pos(rb1), size)
+  expect_equal(circle_buffer_tail_pos(rb1), 0L)
+
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), 2L)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, 2), 1L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), 0)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2))
+  expect_equal(circle_buffer_bytes_used(rb1), size)
+  expect_equal(circle_buffer_bytes_used(rb2), 0)
+  expect_true(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 2)
+  expect_equal(circle_buffer_tail_pos(rb2), 2)
+  expect_equal(circle_buffer_head_pos(rb1), 1)
+  expect_equal(circle_buffer_head_pos(rb2), 2)
+
+  i <- seq_along(bytes2)
+  expect_equal(circle_buffer_tail_read(rb1, size),
+               c(bytes1[-i], bytes2))
+})
+
+test_that("circle_buffer_copy attempted underflow", {
+  ## up to end of src, then up to end of dst, then copy remaining bytes.
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes1 <- random_bytes(2)
+  bytes2 <- random_bytes(2)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes1), 2)
+  expect_equal(circle_buffer_memcpy_into(rb2, bytes2), 2)
+
+  expect_error(circle_buffer_copy(rb2, rb1, 3),
+               "Buffer underflow")
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1) - 2)
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2) - 2)
+  expect_equal(circle_buffer_bytes_used(rb1), 2)
+  expect_equal(circle_buffer_bytes_used(rb2), 2)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_false(circle_buffer_empty(rb1))
+  expect_false(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), 0L)
+  expect_equal(circle_buffer_tail_pos(rb2), 0L)
+  expect_equal(circle_buffer_head_pos(rb1), 2)
+  expect_equal(circle_buffer_head_pos(rb2), 2)
+})
+
+test_that("circle_buffer_copy, different capacities, overflow 2nd", {
+  ## up to end of src, then up to end of dst, then copy remaining bytes.
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(8)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  bytes1 <- random_bytes(10)
+
+  expect_equal(circle_buffer_memcpy_into(rb1, bytes1), 10)
+
+  expect_equal(circle_buffer_copy(rb1, rb2, 10), 1)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), 8)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1))
+  expect_equal(circle_buffer_bytes_free(rb2), 0)
+  expect_equal(circle_buffer_bytes_used(rb1), 0)
+  expect_equal(circle_buffer_bytes_used(rb2), 8)
+  expect_false(circle_buffer_full(rb1))
+  expect_true(circle_buffer_full(rb2))
+  expect_true(circle_buffer_empty(rb1))
+  expect_false(circle_buffer_empty(rb2))
+
+  ## TODO: these could be wrong...
+  expect_equal(circle_buffer_tail_pos(rb1), 10)
+  expect_equal(circle_buffer_tail_pos(rb2), 2)
+  expect_equal(circle_buffer_head_pos(rb1), 10)
+  expect_equal(circle_buffer_head_pos(rb2), 1)
+
+  expect_equal(circle_buffer_tail_read(rb2, 8),
+               tail(bytes1, 8))
+})

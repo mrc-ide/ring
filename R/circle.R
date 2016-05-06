@@ -66,5 +66,6 @@ circle_buffer_tail_read <- function(obj, count) {
 }
 
 circle_buffer_copy <- function(src, dest, count) {
-  .Call(Ccircle_buffer_copy, src[[1L]], dest[[1L]], as.integer(count))
+  invisible(.Call(Ccircle_buffer_copy, src[[1L]], dest[[1L]],
+                  as.integer(count)))
 }
