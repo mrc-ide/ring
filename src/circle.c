@@ -238,6 +238,72 @@ void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
   return tail;
 }
 
+/*
+ * Copy count bytes from ring buffer src, starting from its tail
+ * pointer, into ring buffer dst. Returns dst's new head pointer after
+ * the copy is finished.
+ *
+ * Note that this copy is destructive with respect to the ring buffer
+ * src: any bytes copied from src into dst are no longer available in
+ * src after the copy is complete, and src will have 'count' more free
+ * bytes than it did before the function was called.
+ *
+ * It is possible to copy more data from src than is available in dst;
+ * i.e., it's possible to overflow dst using this function. When an
+ * overflow occurs, the state of dst is guaranteed to be consistent,
+ * including the head and tail pointers; old data will simply be
+ * overwritten in FIFO fashion, as needed. However, note that, if
+ * calling the function results in an overflow, the value dst's tail
+ * pointer may be different than it was before the function was
+ * called.
+ *
+ * It is *not* possible to underflow src; if count is greater than the
+ * number of bytes used in src, no bytes are copied, and the function
+ * returns 0.
+ */
+void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src,
+                          size_t count) {
+  // TODO: Not clear what should be done (if anything other than an
+  // error) if the two buffers differ in their stride.
+  size_t src_bytes_used = circle_buffer_bytes_used(src);
+  size_t n_bytes = count * src->stride;
+  if (n_bytes > src_bytes_used) {
+    return 0;
+  }
+  int overflow = n_bytes > circle_buffer_bytes_free(dst);
+
+  const data_t *src_bufend = circle_buffer_end(src);
+  const data_t *dst_bufend = circle_buffer_end(dst);
+  size_t ncopied = 0;
+  while (ncopied != n_bytes) {
+    // assert(src_bufend > src->tail);
+    size_t nsrc = imin(src_bufend - src->tail, n_bytes - ncopied);
+    // assert(dst_bufend > dst->head);
+    size_t n = imin(dst_bufend - dst->head, nsrc);
+    memcpy(dst->head, src->tail, n);
+    src->tail += n;
+    dst->head += n;
+    ncopied += n;
+
+    /* wrap ? */
+    if (src->tail == src_bufend) {
+      src->tail = src->data;
+    }
+    if (dst->head == dst_bufend) {
+      dst->head = dst->data;
+    }
+  }
+
+  // assert(n_bytes + circle_buffer_bytes_used(src) == src_bytes_used);
+
+  if (overflow) {
+    dst->tail = circle_buffer_nextp(dst, dst->head);
+    // assert(circle_buffer_full(dst));
+  }
+
+  return dst->head;
+}
+
 // TODO: Still need one that can copy an element from 'n' ago without moving
 // the head/tail pointers.
 //

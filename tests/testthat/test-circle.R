@@ -22,6 +22,15 @@
 ## don't believe that R makes it possible to pass fds back into C from
 ## R.  This might be implemented later though.
 
+## TODO: Still need an R visible "cursor" to the ring buffer that is
+## allowed to move around between head and tail.  Validation here is
+## hard without going overboard.
+
+## TODO: Need a "clone" method that duplicates a buffer.  This is
+## really not that hard as all we have to do is duplicate the data
+## pointer and set the head and tail pointers to have the same
+## relative offset, plus set size and stride.
+
 context("circle")
 
 test_that("initial conditions", {
@@ -767,4 +776,32 @@ test_that("circle_buffer_memcpy_into, overflow with tail at end", {
   expect_false(circle_buffer_empty(rb1))
   expect_equal(circle_buffer_head_pos(rb1), size)
   expect_equal(circle_buffer_tail_pos(rb1), 0L)
+})
+
+test_that("circle_buffer_copy with zero count, empty buffers", {
+  size <- 4096L
+  rb1 <- circle_buffer_create(size)
+  rb2 <- circle_buffer_create(size)
+
+  circle_buffer_memset(rb1, 1, circle_buffer_size(rb1))
+  circle_buffer_memset(rb1, 2, circle_buffer_size(rb2))
+  circle_buffer_reset(rb1)
+  circle_buffer_reset(rb2)
+
+  expect_equal(circle_buffer_copy(rb2, rb1, 0L), 0L)
+
+  expect_equal(circle_buffer_capacity(rb1), size)
+  expect_equal(circle_buffer_capacity(rb2), size)
+  expect_equal(circle_buffer_bytes_free(rb1), circle_buffer_capacity(rb1))
+  expect_equal(circle_buffer_bytes_free(rb2), circle_buffer_capacity(rb2))
+  expect_equal(circle_buffer_bytes_used(rb1), 0L)
+  expect_equal(circle_buffer_bytes_used(rb2), 0L)
+  expect_false(circle_buffer_full(rb1))
+  expect_false(circle_buffer_full(rb2))
+  expect_true(circle_buffer_empty(rb1))
+  expect_true(circle_buffer_empty(rb2))
+  expect_equal(circle_buffer_tail_pos(rb1), circle_buffer_head_pos(rb1))
+  expect_equal(circle_buffer_tail_pos(rb2), circle_buffer_head_pos(rb2))
+  expect_equal(circle_buffer_head_pos(rb1), 0L)
+  expect_equal(circle_buffer_head_pos(rb2), 0L)
 })

@@ -127,6 +127,19 @@ SEXP R_circle_buffer_tail_read(SEXP extPtr, SEXP r_count) {
   return ret;
 }
 
+SEXP R_circle_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_count) {
+  size_t count = INTEGER(r_count)[0];
+  circle_buffer *src = circle_buffer_get(srcPtr, 1),
+    *dest = circle_buffer_get(destPtr, 1);
+  data_t * head = (data_t *) circle_buffer_copy(dest, src, count);
+  if (head == NULL) {
+    // TODO: better reporting here; make this a general thing I think.
+    // See memcpy_from and tail_read for other places this is needed.
+    Rf_error("Buffer underflow");
+  }
+  return ScalarInteger(head - dest->data);
+}
+
 void circle_buffer_finalize(SEXP extPtr) {
   circle_buffer *buffer = circle_buffer_get(extPtr, 0);
   if (buffer) {
@@ -167,6 +180,7 @@ static const R_CallMethodDef callMethods[] = {
   {"Ccircle_buffer_memcpy_into", (DL_FUNC) &R_circle_buffer_memcpy_into, 2},
   {"Ccircle_buffer_memcpy_from", (DL_FUNC) &R_circle_buffer_memcpy_from, 2},
   {"Ccircle_buffer_tail_read",   (DL_FUNC) &R_circle_buffer_tail_read,   2},
+  {"Ccircle_buffer_copy",        (DL_FUNC) &R_circle_buffer_copy,        3},
   {NULL,                         NULL,                                   0}
 };
 

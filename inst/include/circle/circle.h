@@ -38,6 +38,8 @@ void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
 void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
                                 size_t count);
 
+void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src, size_t count);
+
 #ifdef CIRCLE_INTERNAL_PROTOTYPES
 data_t * circle_buffer_end(circle_buffer *buffer);
 data_t * circle_buffer_nextp(circle_buffer *buffer, const data_t *p);

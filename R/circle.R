@@ -64,3 +64,7 @@ circle_buffer_memcpy_from <- function(obj, count) {
 circle_buffer_tail_read <- function(obj, count) {
   .Call(Ccircle_buffer_tail_read, obj[[1L]], as.integer(count))
 }
+
+circle_buffer_copy <- function(src, dest, count) {
+  .Call(Ccircle_buffer_copy, src[[1L]], dest[[1L]], as.integer(count))
+}
