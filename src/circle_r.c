@@ -102,7 +102,11 @@ SEXP R_circle_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
   circle_buffer * buffer = circle_buffer_get(extPtr, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, count * buffer->stride));
   if (circle_buffer_memcpy_from(RAW(ret), buffer, count) == NULL) {
-    Rf_error("Buffer underflow");
+    // TODO: this would be better reporting than just saying "Buffer
+    // underflow".  But we need to switch here on stride being 1 or
+    // compute the byte size of `count` entries.
+    Rf_error("Buffer underflow (requested %d bytes but %d available)",
+             count, circle_buffer_bytes_used(buffer) / buffer->stride);
   }
   UNPROTECT(1);
   // NOTE: In C we return the tail position here but that is not done
