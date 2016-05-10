@@ -13,11 +13,8 @@ circle_buffer_clone <- function(buffer) {
 circle_buffer_bytes_data <- function(obj) {
   .Call(Ccircle_buffer_bytes_data, obj[[1L]])
 }
-circle_buffer_bytes_size <- function(obj) {
-  .Call(Ccircle_buffer_bytes_size, obj[[1L]])
-}
-circle_buffer_size <- function(obj) {
-  .Call(Ccircle_buffer_size, obj[[1L]])
+circle_buffer_size <- function(obj, bytes=FALSE) {
+  .Call(Ccircle_buffer_size, obj[[1L]], as.logical(bytes))
 }
 
 circle_buffer_full <- function(obj) {

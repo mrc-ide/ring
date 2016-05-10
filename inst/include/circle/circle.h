@@ -28,8 +28,8 @@ circle_buffer * circle_buffer_create(size_t size, size_t stride);
 circle_buffer * circle_buffer_clone(const circle_buffer *buffer);
 void circle_buffer_destroy(circle_buffer *buffer);
 size_t circle_buffer_bytes_data(const circle_buffer *buffer);
-size_t circle_buffer_bytes_size(const circle_buffer *buffer);
-size_t circle_buffer_size(const circle_buffer *buffer);
+
+size_t circle_buffer_size(const circle_buffer *buffer, int bytes);
 
 int circle_buffer_full(circle_buffer *buffer);
 int circle_buffer_empty(circle_buffer *buffer);

@@ -4,6 +4,7 @@
 
 static void circle_buffer_finalize(SEXP extPtr);
 circle_buffer* circle_buffer_get(SEXP extPtr, int closed_error);
+int logical_scalar(SEXP x);
 
 SEXP R_circle_buffer_build(circle_buffer *buffer) {
   SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));
@@ -12,7 +13,7 @@ SEXP R_circle_buffer_build(circle_buffer *buffer) {
   SEXP nms = PROTECT(allocVector(STRSXP, 3));
   SET_VECTOR_ELT(ret, 0, extPtr);
   SET_STRING_ELT(nms, 0, mkChar("ptr"));
-  SET_VECTOR_ELT(ret, 1, ScalarInteger(circle_buffer_size(buffer)));
+  SET_VECTOR_ELT(ret, 1, ScalarInteger(circle_buffer_size(buffer, 0)));
   SET_STRING_ELT(nms, 1, mkChar("size"));
   SET_VECTOR_ELT(ret, 2, ScalarInteger(buffer->stride));
   SET_STRING_ELT(nms, 2, mkChar("stride"));
@@ -32,16 +33,13 @@ SEXP R_circle_buffer_clone(SEXP extPtr) {
   return R_circle_buffer_build(circle_buffer_clone(prev));
 }
 
-SEXP R_circle_buffer_size(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_size(circle_buffer_get(extPtr, 1)));
+SEXP R_circle_buffer_size(SEXP extPtr, SEXP bytes) {
+  return ScalarInteger(circle_buffer_size(circle_buffer_get(extPtr, 1),
+                                          logical_scalar(bytes)));
 }
 
 SEXP R_circle_buffer_bytes_data(SEXP extPtr) {
   return ScalarInteger(circle_buffer_bytes_data(circle_buffer_get(extPtr, 1)));
-}
-
-SEXP R_circle_buffer_bytes_size(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_bytes_size(circle_buffer_get(extPtr, 1)));
 }
 
 SEXP R_circle_buffer_full(SEXP extPtr) {
@@ -76,7 +74,7 @@ SEXP R_circle_buffer_tail(SEXP extPtr) {
 
 SEXP R_circle_buffer_data(SEXP extPtr) {
   circle_buffer * buffer = circle_buffer_get(extPtr, 1);
-  size_t len = circle_buffer_bytes_size(buffer);
+  size_t len = circle_buffer_size(buffer, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, len));
   memcpy(RAW(ret), circle_buffer_data(buffer), len);
   UNPROTECT(1);
@@ -191,6 +189,7 @@ void circle_buffer_finalize(SEXP extPtr) {
   }
 }
 
+// Some utilities
 circle_buffer* circle_buffer_get(SEXP extPtr, int closed_error) {
   circle_buffer *buffer = NULL;
   if (TYPEOF(extPtr) != EXTPTRSXP) {
@@ -203,14 +202,24 @@ circle_buffer* circle_buffer_get(SEXP extPtr, int closed_error) {
   return buffer;
 }
 
+int logical_scalar(SEXP x) {
+  if (TYPEOF(x) == LGLSXP && LENGTH(x) == 1) {
+    return INTEGER(x)[0];
+  } else {
+    Rf_error("Expected a logical scalar");
+    return 0;
+  }
+}
+
+// Registration
+
 #include <R_ext/Rdynload.h>
 static const R_CallMethodDef callMethods[] = {
   // circle_r
   {"Ccircle_buffer_create",      (DL_FUNC) &R_circle_buffer_create,      2},
   {"Ccircle_buffer_clone",       (DL_FUNC) &R_circle_buffer_clone,       1},
   {"Ccircle_buffer_bytes_data",  (DL_FUNC) &R_circle_buffer_bytes_data,  1},
-  {"Ccircle_buffer_size",        (DL_FUNC) &R_circle_buffer_size,        1},
-  {"Ccircle_buffer_bytes_size",  (DL_FUNC) &R_circle_buffer_bytes_size,  1},
+  {"Ccircle_buffer_size",        (DL_FUNC) &R_circle_buffer_size,        2},
   {"Ccircle_buffer_full",        (DL_FUNC) &R_circle_buffer_full,        1},
   {"Ccircle_buffer_empty",       (DL_FUNC) &R_circle_buffer_empty,       1},
   {"Ccircle_buffer_head",        (DL_FUNC) &R_circle_buffer_head,        1},

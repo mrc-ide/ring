@@ -36,12 +36,8 @@ size_t circle_buffer_bytes_data(const circle_buffer *buffer) {
   return buffer->bytes_data;
 }
 
-size_t circle_buffer_bytes_size(const circle_buffer *buffer) {
-  return buffer->bytes_data - 1;
-}
-
-size_t circle_buffer_size(const circle_buffer *buffer) {
-  return buffer->size;
+size_t circle_buffer_size(const circle_buffer *buffer, int bytes) {
+  return bytes ? buffer->bytes_data - 1 : buffer->size;
 }
 
 int circle_buffer_full(circle_buffer *buffer) {
@@ -49,8 +45,7 @@ int circle_buffer_full(circle_buffer *buffer) {
 }
 
 int circle_buffer_empty(circle_buffer *buffer) {
-  return circle_buffer_bytes_free(buffer) ==
-    circle_buffer_bytes_size(buffer);
+  return circle_buffer_bytes_free(buffer) == circle_buffer_size(buffer, 1);
 }
 
 const void * circle_buffer_head(circle_buffer *buffer) {
@@ -76,14 +71,14 @@ void circle_buffer_reset(circle_buffer *buffer) {
 
 size_t circle_buffer_bytes_free(const circle_buffer *buffer) {
   if (buffer->head >= buffer->tail) {
-    return circle_buffer_bytes_size(buffer) - (buffer->head - buffer->tail);
+    return circle_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
   } else {
     return buffer->tail - buffer->head - 1;
   }
 }
 
 size_t circle_buffer_bytes_used(const circle_buffer *buffer) {
-  return circle_buffer_bytes_size(buffer) - circle_buffer_bytes_free(buffer);
+  return circle_buffer_size(buffer, 1) - circle_buffer_bytes_free(buffer);
 }
 
 size_t circle_buffer_free(const circle_buffer *buffer) {
