@@ -34,11 +34,11 @@ circle_buffer_data <- function(obj) {
   .Call(Ccircle_buffer_data, obj[[1L]])
 }
 
-circle_buffer_head_pos <- function(obj) {
-  .Call(Ccircle_buffer_head_pos, obj[[1L]])
+circle_buffer_head_pos <- function(obj, bytes=FALSE) {
+  .Call(Ccircle_buffer_head_pos, obj[[1L]], bytes)
 }
-circle_buffer_tail_pos <- function(obj) {
-  .Call(Ccircle_buffer_tail_pos, obj[[1L]])
+circle_buffer_tail_pos <- function(obj, bytes=FALSE) {
+  .Call(Ccircle_buffer_tail_pos, obj[[1L]], bytes)
 }
 
 circle_buffer_free <- function(obj, bytes=FALSE) {

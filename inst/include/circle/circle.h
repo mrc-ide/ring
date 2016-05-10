@@ -38,8 +38,8 @@ const void * circle_buffer_head(circle_buffer *buffer);
 const void * circle_buffer_tail(circle_buffer *buffer);
 const void * circle_buffer_data(circle_buffer *buffer);
 
-int circle_buffer_head_pos(const circle_buffer *buffer);
-int circle_buffer_tail_pos(const circle_buffer *buffer);
+int circle_buffer_head_pos(const circle_buffer *buffer, int bytes);
+int circle_buffer_tail_pos(const circle_buffer *buffer, int bytes);
 
 void * circle_buffer_tail_read(circle_buffer *buffer, void *dest,
                                size_t count);

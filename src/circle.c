@@ -22,8 +22,8 @@ circle_buffer * circle_buffer_create(size_t size, size_t stride) {
 circle_buffer * circle_buffer_clone(const circle_buffer *buffer) {
   circle_buffer *ret = circle_buffer_create(buffer->size, buffer->stride);
   memcpy(ret->data, buffer->data, ret->bytes_data);
-  ret->head += circle_buffer_head_pos(buffer);
-  ret->tail += circle_buffer_tail_pos(buffer);
+  ret->head += circle_buffer_head_pos(buffer, 1);
+  ret->tail += circle_buffer_tail_pos(buffer, 1);
   return ret;
 }
 
@@ -58,11 +58,13 @@ const void * circle_buffer_data(circle_buffer *buffer) {
   return buffer->data;
 }
 
-int circle_buffer_head_pos(const circle_buffer *buffer) {
-  return buffer->head - buffer->data;
+int circle_buffer_head_pos(const circle_buffer *buffer, int bytes) {
+  size_t diff = buffer->head - buffer->data;
+  return bytes ? diff : diff / buffer->stride;
 }
-int circle_buffer_tail_pos(const circle_buffer *buffer) {
-  return buffer->tail - buffer->data;
+int circle_buffer_tail_pos(const circle_buffer *buffer, int bytes) {
+  size_t diff = buffer->tail - buffer->data;
+  return bytes ? diff : diff / buffer->stride;
 }
 
 void circle_buffer_reset(circle_buffer *buffer) {

@@ -81,12 +81,14 @@ SEXP R_circle_buffer_data(SEXP extPtr) {
   return ret;
 }
 
-SEXP R_circle_buffer_head_pos(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_head_pos(circle_buffer_get(extPtr, 1)));
+SEXP R_circle_buffer_head_pos(SEXP extPtr, SEXP bytes) {
+  return ScalarInteger(circle_buffer_head_pos(circle_buffer_get(extPtr, 1),
+                                              logical_scalar(bytes)));
 }
 
-SEXP R_circle_buffer_tail_pos(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_tail_pos(circle_buffer_get(extPtr, 1)));
+SEXP R_circle_buffer_tail_pos(SEXP extPtr, SEXP bytes) {
+  return ScalarInteger(circle_buffer_tail_pos(circle_buffer_get(extPtr, 1),
+                                              logical_scalar(bytes)));
 }
 
 SEXP R_circle_buffer_free(SEXP extPtr, SEXP bytes) {
@@ -219,8 +221,8 @@ static const R_CallMethodDef callMethods[] = {
   {"Ccircle_buffer_head",        (DL_FUNC) &R_circle_buffer_head,        1},
   {"Ccircle_buffer_tail",        (DL_FUNC) &R_circle_buffer_tail,        1},
   {"Ccircle_buffer_data",        (DL_FUNC) &R_circle_buffer_data,        1},
-  {"Ccircle_buffer_head_pos",    (DL_FUNC) &R_circle_buffer_head_pos,    1},
-  {"Ccircle_buffer_tail_pos",    (DL_FUNC) &R_circle_buffer_tail_pos,    1},
+  {"Ccircle_buffer_head_pos",    (DL_FUNC) &R_circle_buffer_head_pos,    2},
+  {"Ccircle_buffer_tail_pos",    (DL_FUNC) &R_circle_buffer_tail_pos,    2},
   {"Ccircle_buffer_free",        (DL_FUNC) &R_circle_buffer_free,        2},
   {"Ccircle_buffer_used",        (DL_FUNC) &R_circle_buffer_used,        2},
   {"Ccircle_buffer_reset",       (DL_FUNC) &R_circle_buffer_reset,       1},
