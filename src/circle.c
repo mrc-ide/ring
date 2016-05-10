@@ -17,6 +17,19 @@ circle_buffer * circle_buffer_create(size_t size, size_t stride) {
   return buffer;
 }
 
+circle_buffer * circle_buffer_clone(const circle_buffer *buffer) {
+  circle_buffer * ret = Calloc(1, circle_buffer);
+  ret->size = buffer->size;
+  ret->stride = buffer->stride;
+  size_t len = ret->size * ret->stride;
+  ret->data = Calloc(len, data_t);
+  memcpy(ret->data, buffer->data, len);
+  circle_buffer_reset(ret);
+  ret->head += circle_buffer_head_pos(buffer);
+  ret->tail += circle_buffer_tail_pos(buffer);
+  return ret;
+}
+
 void circle_buffer_free(circle_buffer *buffer) {
   Free(buffer->data);
   Free(buffer);
@@ -48,10 +61,10 @@ const void * circle_buffer_data(circle_buffer *buffer) {
   return buffer->data;
 }
 
-int circle_buffer_head_pos(circle_buffer *buffer) {
+int circle_buffer_head_pos(const circle_buffer *buffer) {
   return buffer->head - buffer->data;
 }
-int circle_buffer_tail_pos(circle_buffer *buffer) {
+int circle_buffer_tail_pos(const circle_buffer *buffer) {
   return buffer->tail - buffer->data;
 }
 

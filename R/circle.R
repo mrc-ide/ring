@@ -1,8 +1,13 @@
+## TODO: All the as.integer functions are really 'assert and convert
+## scalar integer'.  We *do* need to validate this somewhere because
+## we just blindly dereference that pointer in the C code which may
+## crash R.
 circle_buffer_create <- function(size, stride=1L) {
-  ptr <- .Call(Ccircle_buffer_create, as.integer(size), as.integer(stride))
-  ret <- list(ptr=ptr, size=size, stride=stride)
-  class(ret) <- "circle_buffer"
-  ret
+  .Call(Ccircle_buffer_create, as.integer(size), as.integer(stride))
+}
+
+circle_buffer_clone <- function(buffer) {
+  .Call(Ccircle_buffer_clone, buffer[[1L]])
 }
 
 ## TODO: These should change name because size does not reflect the

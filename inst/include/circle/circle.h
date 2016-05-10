@@ -13,6 +13,7 @@ typedef struct circle_buffer {
 } circle_buffer;
 
 circle_buffer * circle_buffer_create(size_t size, size_t stride);
+circle_buffer * circle_buffer_clone(const circle_buffer *buffer);
 void circle_buffer_free(circle_buffer *buffer);
 size_t circle_buffer_size(const circle_buffer *buffer);
 size_t circle_buffer_capacity(const circle_buffer *buffer);
@@ -23,8 +24,8 @@ const void * circle_buffer_head(circle_buffer *buffer);
 const void * circle_buffer_tail(circle_buffer *buffer);
 const void * circle_buffer_data(circle_buffer *buffer);
 
-int circle_buffer_head_pos(circle_buffer *buffer);
-int circle_buffer_tail_pos(circle_buffer *buffer);
+int circle_buffer_head_pos(const circle_buffer *buffer);
+int circle_buffer_tail_pos(const circle_buffer *buffer);
 
 void * circle_buffer_tail_read(circle_buffer *buffer, void *dest,
                                size_t count);

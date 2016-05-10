@@ -5,15 +5,32 @@
 static void circle_buffer_finalize(SEXP extPtr);
 circle_buffer* circle_buffer_get(SEXP extPtr, int closed_error);
 
-SEXP R_circle_buffer_create(SEXP r_size, SEXP r_stride) {
-  size_t size = (size_t)INTEGER(r_size)[0], stride = INTEGER(r_stride)[0];
-
-  circle_buffer *buffer = circle_buffer_create(size, stride);
-
+SEXP R_circle_buffer_build(circle_buffer *buffer) {
   SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));
   R_RegisterCFinalizer(extPtr, circle_buffer_finalize);
-  UNPROTECT(1);
-  return extPtr;
+  SEXP ret = PROTECT(allocVector(VECSXP, 3));
+  SEXP nms = PROTECT(allocVector(STRSXP, 3));
+  SET_VECTOR_ELT(ret, 0, extPtr);
+  SET_STRING_ELT(nms, 0, mkChar("ptr"));
+  SET_VECTOR_ELT(ret, 1, ScalarInteger(circle_buffer_capacity(buffer)));
+  SET_STRING_ELT(nms, 1, mkChar("size"));
+  SET_VECTOR_ELT(ret, 2, ScalarInteger(buffer->stride));
+  SET_STRING_ELT(nms, 2, mkChar("stride"));
+  setAttrib(ret, R_NamesSymbol, nms);
+  setAttrib(ret, R_ClassSymbol, mkString("circle_buffer"));
+  UNPROTECT(3);
+  return ret;
+}
+
+SEXP R_circle_buffer_create(SEXP r_size, SEXP r_stride) {
+  size_t size = (size_t)INTEGER(r_size)[0], stride = INTEGER(r_stride)[0];
+  return R_circle_buffer_build(circle_buffer_create(size, stride));
+}
+
+SEXP R_circle_buffer_clone(SEXP extPtr) {
+  circle_buffer *prev = circle_buffer_get(extPtr, 1);
+  size_t size = circle_buffer_capacity(prev);
+  return R_circle_buffer_build(circle_buffer_create(size, prev->stride));
 }
 
 SEXP R_circle_buffer_size(SEXP extPtr) {
@@ -164,6 +181,7 @@ circle_buffer* circle_buffer_get(SEXP extPtr, int closed_error) {
 static const R_CallMethodDef callMethods[] = {
   // circle_r
   {"Ccircle_buffer_create",      (DL_FUNC) &R_circle_buffer_create,      2},
+  {"Ccircle_buffer_clone",       (DL_FUNC) &R_circle_buffer_clone,       1},
   {"Ccircle_buffer_size",        (DL_FUNC) &R_circle_buffer_size,        1},
   {"Ccircle_buffer_capacity",    (DL_FUNC) &R_circle_buffer_capacity,    1},
   {"Ccircle_buffer_full",        (DL_FUNC) &R_circle_buffer_full,        1},

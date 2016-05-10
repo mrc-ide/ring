@@ -1,4 +1,4 @@
-## TODO: a 'flush' argument that gets all and resets would be useful.
+## TODO: a 'flush' function that gets all and resets would be useful.
 
 ## TODO: a "read" modifier to head and tail that reads information.
 ## This is used by the C interface and needs only R level support.
@@ -14,13 +14,16 @@
 
 ## NOTE: More tests will come when this holds something other than raw
 ## bytes.  So if we want a ring buffer of doubles or serialised R
-## objects or whatever, then that will need some addiional testing and
+## objects or whatever, then that will need some additional testing and
 ## support.
 
 ## NOTE: None of the tests involving circle_buffer_read and
 ## circle_buffer_write, which deal with file descriptors, are done.  I
 ## don't believe that R makes it possible to pass fds back into C from
 ## R.  This might be implemented later though.
+
+## NOTE: None of the tests involving findchr are done because I'm not
+## sure how I will implement this.
 
 ## TODO: Still need an R visible "cursor" to the ring buffer that is
 ## allowed to move around between head and tail.  Validation here is
@@ -36,7 +39,7 @@ context("circle")
 test_that("initial conditions", {
   size <- 100L
 
-  buf <- circle_buffer_create(size, 1L)
+  buf <- circle_buffer_create(size)
   expect_is(buf, "circle_buffer")
 
   expect_equal(circle_buffer_size(buf), size + 1L)
@@ -65,7 +68,7 @@ test_that("initial conditions", {
 test_that("null pointer safe", {
   size <- 100L
 
-  buf <- circle_buffer_create(size, 1L)
+  buf <- circle_buffer_create(size)
   path <- tempfile()
   saveRDS(buf, path)
   buf2 <- readRDS(path)
@@ -77,7 +80,7 @@ test_that("null pointer safe", {
 test_that("reset", {
   size <- 24L
   for (write in c(8L, size + 1L)) {
-    buf <- circle_buffer_create(size, 1L)
+    buf <- circle_buffer_create(size)
     expect_equal(circle_buffer_memset(buf, as.raw(1), write), write)
     expect_null(circle_buffer_reset(buf))
     expect_equal(circle_buffer_size(buf), size + 1L)
