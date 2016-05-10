@@ -4,6 +4,10 @@
 
 typedef unsigned char data_t;
 
+// TODO: consider having an integer that keeps track of the number f
+// times that the buffer has wrapped.  We could use this to test
+// cursor invalidation (though that would require some care I think).
+
 typedef struct circle_buffer {
   data_t *data;
   data_t *head;
@@ -40,6 +44,8 @@ void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
                                 size_t count);
 
 void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src, size_t count);
+
+void * circle_buffer_tail_offset(circle_buffer *buffer, size_t offset);
 
 #ifdef CIRCLE_INTERNAL_PROTOTYPES
 data_t * circle_buffer_end(circle_buffer *buffer);

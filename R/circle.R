@@ -74,3 +74,7 @@ circle_buffer_copy <- function(src, dest, count) {
   invisible(.Call(Ccircle_buffer_copy, src[[1L]], dest[[1L]],
                   as.integer(count)))
 }
+
+circle_buffer_tail_offset <- function(buffer, offset) {
+  .Call(Ccircle_buffer_tail_offset, buffer[[1L]], as.integer(offset))
+}

@@ -251,6 +251,40 @@ void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
   return tail;
 }
 
+// OK, so it would be great to have a check here that can be used to
+// move an offset around without doing the inbounds check
+// everyiteration.  But to do that I think that we'll still have to
+// separate into a safe and unsafe interface.  The memoset returned
+// here could be invalidated by any write function (any many of the
+// read functions too) so this is inherently unsafe, but on entry it
+// does seem worth checking.
+void *circle_buffer_tail_offset(circle_buffer *buffer, size_t offset) {
+  size_t bytes_used = circle_buffer_bytes_used(buffer);
+  size_t len = offset * buffer->stride;
+  if (len >= bytes_used) {
+    // TODO: elsewhere this is > bytes used but I think that here,
+    // because the offset is the number of places to *move* the
+    // pointer, then copy one, we can't do that.
+    return 0;
+  }
+  data_t *tail = buffer->tail;
+  const data_t *bufend = circle_buffer_end(buffer);
+  size_t nmoved = 0;
+
+  // TODO: this is really a much simpler construct than this as we can
+  // only go around once.
+  while (nmoved < len) {
+    size_t n = imin(bufend - tail, len - nmoved);
+    tail += n;
+    nmoved += n;
+    if (tail == bufend) {
+      tail = buffer->data;
+    }
+  }
+
+  return tail;
+}
+
 /*
  * Copy count bytes from ring buffer src, starting from its tail
  * pointer, into ring buffer dst. Returns dst's new head pointer after

@@ -144,6 +144,21 @@ SEXP R_circle_buffer_tail_read(SEXP extPtr, SEXP r_count) {
   return ret;
 }
 
+SEXP R_circle_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
+  size_t offset = INTEGER(r_offset)[0];
+  circle_buffer * buffer = circle_buffer_get(extPtr, 1);
+  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  data_t *data = (data_t*) circle_buffer_tail_offset(buffer, offset);
+  if (data == NULL) {
+    Rf_error("Buffer underflow");
+  }
+  memcpy(RAW(ret), data, buffer->stride);
+  UNPROTECT(1);
+  // NOTE: In C we return the tail position here but that is not done
+  // for the R version.
+  return ret;
+}
+
 SEXP R_circle_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_count) {
   size_t count = INTEGER(r_count)[0];
   circle_buffer *src = circle_buffer_get(srcPtr, 1),
@@ -199,6 +214,7 @@ static const R_CallMethodDef callMethods[] = {
   {"Ccircle_buffer_memcpy_from", (DL_FUNC) &R_circle_buffer_memcpy_from, 2},
   {"Ccircle_buffer_tail_read",   (DL_FUNC) &R_circle_buffer_tail_read,   2},
   {"Ccircle_buffer_copy",        (DL_FUNC) &R_circle_buffer_copy,        3},
+  {"Ccircle_buffer_tail_offset", (DL_FUNC) &R_circle_buffer_tail_offset, 2},
   {NULL,                         NULL,                                   0}
 };
 
