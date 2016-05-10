@@ -41,11 +41,11 @@ size_t circle_buffer_size(const circle_buffer *buffer, int bytes) {
 }
 
 int circle_buffer_full(circle_buffer *buffer) {
-  return circle_buffer_bytes_free(buffer) == 0;
+  return circle_buffer_free(buffer, 1) == 0;
 }
 
 int circle_buffer_empty(circle_buffer *buffer) {
-  return circle_buffer_bytes_free(buffer) == circle_buffer_size(buffer, 1);
+  return circle_buffer_free(buffer, 1) == circle_buffer_size(buffer, 1);
 }
 
 const void * circle_buffer_head(circle_buffer *buffer) {
@@ -69,24 +69,18 @@ void circle_buffer_reset(circle_buffer *buffer) {
   buffer->head = buffer->tail = buffer->data;
 }
 
-size_t circle_buffer_bytes_free(const circle_buffer *buffer) {
+size_t circle_buffer_free(const circle_buffer *buffer, int bytes) {
+  size_t ret;
   if (buffer->head >= buffer->tail) {
-    return circle_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
+    ret = circle_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
   } else {
-    return buffer->tail - buffer->head - 1;
+    ret = buffer->tail - buffer->head - 1;
   }
+  return bytes ? ret : ret / buffer->stride;
 }
 
-size_t circle_buffer_bytes_used(const circle_buffer *buffer) {
-  return circle_buffer_size(buffer, 1) - circle_buffer_bytes_free(buffer);
-}
-
-size_t circle_buffer_free(const circle_buffer *buffer) {
-  return circle_buffer_bytes_free(buffer) / buffer->stride;
-}
-
-size_t circle_buffer_used(const circle_buffer *buffer) {
-  return circle_buffer_bytes_used(buffer) / buffer->stride;
+size_t circle_buffer_used(const circle_buffer *buffer, int bytes) {
+  return circle_buffer_size(buffer, bytes) - circle_buffer_free(buffer, bytes);
 }
 
 /*
@@ -113,10 +107,15 @@ size_t circle_buffer_used(const circle_buffer *buffer) {
 // len does not divide neatly through by stride we should error.  For
 // now, leave it be though.
 size_t circle_buffer_memset(circle_buffer *buffer, int c, size_t len) {
+  if (c % buffer->stride != 0) {
+    // TODO: Decide if this is the best place to put an error, or if
+    // we should return a code (e.g. the max size?)
+    Rf_error("Invalid size c");
+  }
   const data_t *bufend = circle_buffer_end(buffer);
   size_t nwritten = 0;
   size_t count = imin(len, circle_buffer_bytes_data(buffer));
-  int overflow = count > circle_buffer_bytes_free(buffer);
+  int overflow = count > circle_buffer_free(buffer, 1);
 
   while (nwritten != count) {
     /* don't copy beyond the end of the buffer */
@@ -160,7 +159,7 @@ void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
   const size_t len = count * buffer->stride;
   const data_t *source = src;
   const data_t *bufend = circle_buffer_end(buffer);
-  size_t overflow = count > circle_buffer_bytes_free(buffer);
+  size_t overflow = count > circle_buffer_free(buffer, 1);
   size_t nread = 0;
   while (nread != len) {
     size_t n = imin(bufend - buffer->head, len - nread);
@@ -197,7 +196,7 @@ void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
 void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
                                 size_t count) {
   // TODO: if length of count is not divisible nicely by stride, it is an error
-  size_t bytes_used = circle_buffer_bytes_used(buffer);
+  size_t bytes_used = circle_buffer_used(buffer, 1);
   size_t len = count * buffer->stride;
   if (len > bytes_used) {
     return 0;
@@ -219,7 +218,7 @@ void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
     }
   }
 
-  // assert(len + circle_buffer_bytes_used(buffer) == bytes_used);
+  // assert(len + circle_buffer_used(buffer, 1) == bytes_used);
   return buffer->tail;
   // TODO: try
   /* void * tail = circle_buffer_tail_read(buffer, dest, count); */
@@ -234,7 +233,7 @@ void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
 // head too (i.e. that will pull the most recently added data).
 void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
   // TODO: if length of count is not divisible nicely by stride, it is an error
-  size_t bytes_used = circle_buffer_bytes_used(buffer);
+  size_t bytes_used = circle_buffer_used(buffer, 1);
   size_t len = count * buffer->stride;
   if (len > bytes_used) {
     return 0;
@@ -264,7 +263,7 @@ void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
 // read functions too) so this is inherently unsafe, but on entry it
 // does seem worth checking.
 void *circle_buffer_tail_offset(circle_buffer *buffer, size_t offset) {
-  size_t bytes_used = circle_buffer_bytes_used(buffer);
+  size_t bytes_used = circle_buffer_used(buffer, 1);
   size_t len = offset * buffer->stride;
   if (len >= bytes_used) {
     // TODO: elsewhere this is > bytes used but I think that here,
@@ -317,12 +316,12 @@ void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src,
                           size_t count) {
   // TODO: Not clear what should be done (if anything other than an
   // error) if the two buffers differ in their stride.
-  size_t src_bytes_used = circle_buffer_bytes_used(src);
+  size_t src_bytes_used = circle_buffer_used(src, 1);
   size_t n_bytes = count * src->stride;
   if (n_bytes > src_bytes_used) {
     return 0;
   }
-  int overflow = n_bytes > circle_buffer_bytes_free(dst);
+  int overflow = n_bytes > circle_buffer_free(dst, 1);
 
   const data_t *src_bufend = circle_buffer_end(src);
   const data_t *dst_bufend = circle_buffer_end(dst);
@@ -346,7 +345,7 @@ void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src,
     }
   }
 
-  // assert(n_bytes + circle_buffer_bytes_used(src) == src_bytes_used);
+  // assert(n_bytes + circle_buffer_used(src, 1) == src_bytes_used);
 
   if (overflow) {
     dst->tail = circle_buffer_nextp(dst, dst->head);

@@ -46,11 +46,8 @@ void * circle_buffer_tail_read(circle_buffer *buffer, void *dest,
 
 void circle_buffer_reset(circle_buffer *buffer);
 
-size_t circle_buffer_bytes_free(const struct circle_buffer *buffer);
-size_t circle_buffer_bytes_used(const struct circle_buffer *buffer);
-
-size_t circle_buffer_free(const struct circle_buffer *buffer);
-size_t circle_buffer_used(const struct circle_buffer *buffer);
+size_t circle_buffer_free(const circle_buffer *buffer, int bytes);
+size_t circle_buffer_used(const circle_buffer *buffer, int bytes);
 
 size_t circle_buffer_memset(circle_buffer *dst, int c, size_t len);
 void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,

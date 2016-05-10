@@ -89,20 +89,14 @@ SEXP R_circle_buffer_tail_pos(SEXP extPtr) {
   return ScalarInteger(circle_buffer_tail_pos(circle_buffer_get(extPtr, 1)));
 }
 
-SEXP R_circle_buffer_bytes_free(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_bytes_free(circle_buffer_get(extPtr, 1)));
+SEXP R_circle_buffer_free(SEXP extPtr, SEXP bytes) {
+  return ScalarInteger(circle_buffer_free(circle_buffer_get(extPtr, 1),
+                                          logical_scalar(bytes)));
 }
 
-SEXP R_circle_buffer_bytes_used(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_bytes_used(circle_buffer_get(extPtr, 1)));
-}
-
-SEXP R_circle_buffer_free(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_free(circle_buffer_get(extPtr, 1)));
-}
-
-SEXP R_circle_buffer_used(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_used(circle_buffer_get(extPtr, 1)));
+SEXP R_circle_buffer_used(SEXP extPtr, SEXP bytes) {
+  return ScalarInteger(circle_buffer_used(circle_buffer_get(extPtr, 1),
+                                          logical_scalar(bytes)));
 }
 
 SEXP R_circle_buffer_reset(SEXP extPtr) {
@@ -132,7 +126,7 @@ SEXP R_circle_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
     // underflow".  But we need to switch here on stride being 1 or
     // compute the byte size of `count` entries.
     Rf_error("Buffer underflow (requested %d bytes but %d available)",
-             count, circle_buffer_bytes_used(buffer) / buffer->stride);
+             count, circle_buffer_used(buffer, 1) / buffer->stride);
   }
   UNPROTECT(1);
   // NOTE: In C we return the tail position here but that is not done
@@ -227,10 +221,8 @@ static const R_CallMethodDef callMethods[] = {
   {"Ccircle_buffer_data",        (DL_FUNC) &R_circle_buffer_data,        1},
   {"Ccircle_buffer_head_pos",    (DL_FUNC) &R_circle_buffer_head_pos,    1},
   {"Ccircle_buffer_tail_pos",    (DL_FUNC) &R_circle_buffer_tail_pos,    1},
-  {"Ccircle_buffer_bytes_free",  (DL_FUNC) &R_circle_buffer_bytes_free,  1},
-  {"Ccircle_buffer_bytes_used",  (DL_FUNC) &R_circle_buffer_bytes_used,  1},
-  {"Ccircle_buffer_free",        (DL_FUNC) &R_circle_buffer_free,        1},
-  {"Ccircle_buffer_used",        (DL_FUNC) &R_circle_buffer_used,        1},
+  {"Ccircle_buffer_free",        (DL_FUNC) &R_circle_buffer_free,        2},
+  {"Ccircle_buffer_used",        (DL_FUNC) &R_circle_buffer_used,        2},
   {"Ccircle_buffer_reset",       (DL_FUNC) &R_circle_buffer_reset,       1},
   {"Ccircle_buffer_memset",      (DL_FUNC) &R_circle_buffer_memset,      3},
   {"Ccircle_buffer_memcpy_into", (DL_FUNC) &R_circle_buffer_memcpy_into, 2},
