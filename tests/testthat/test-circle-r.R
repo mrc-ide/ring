@@ -35,4 +35,10 @@ test_that("tail offset", {
   expect_equal(circle_buffer_tail_offset(buf, 255 - n), as.raw(255))
   expect_error(circle_buffer_tail_offset(buf, 255 - n + 1),
                "Buffer underflow")
+
+  ## Add a bunch more bytes in so that we wrap the tail:
+  cmp <- as.raw(rev(seq_len(n) - 1L))
+  circle_buffer_memcpy_into(buf, cmp)
+  expect_true(circle_buffer_full(buf))
+
 })

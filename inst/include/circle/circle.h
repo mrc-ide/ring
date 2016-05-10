@@ -8,19 +8,29 @@ typedef unsigned char data_t;
 // times that the buffer has wrapped.  We could use this to test
 // cursor invalidation (though that would require some care I think).
 
+// As we move from storing bytes to storing all sorts of things, we
+// need to tweak the storage model a bit:
+//
+//   size: the number of logical units that may be stored in the buffer
+//   bytes_data: the number of bytes (including padding) that data holds
+
 typedef struct circle_buffer {
+  size_t size;
+  size_t stride;
+  size_t bytes_data;
+
   data_t *data;
   data_t *head;
   data_t *tail;
-  size_t size;
-  size_t stride;
 } circle_buffer;
 
 circle_buffer * circle_buffer_create(size_t size, size_t stride);
 circle_buffer * circle_buffer_clone(const circle_buffer *buffer);
-void circle_buffer_free(circle_buffer *buffer);
+void circle_buffer_destroy(circle_buffer *buffer);
+size_t circle_buffer_bytes_data(const circle_buffer *buffer);
+size_t circle_buffer_bytes_size(const circle_buffer *buffer);
 size_t circle_buffer_size(const circle_buffer *buffer);
-size_t circle_buffer_capacity(const circle_buffer *buffer);
+
 int circle_buffer_full(circle_buffer *buffer);
 int circle_buffer_empty(circle_buffer *buffer);
 
@@ -35,8 +45,13 @@ void * circle_buffer_tail_read(circle_buffer *buffer, void *dest,
                                size_t count);
 
 void circle_buffer_reset(circle_buffer *buffer);
+
 size_t circle_buffer_bytes_free(const struct circle_buffer *buffer);
 size_t circle_buffer_bytes_used(const struct circle_buffer *buffer);
+
+size_t circle_buffer_free(const struct circle_buffer *buffer);
+size_t circle_buffer_used(const struct circle_buffer *buffer);
+
 size_t circle_buffer_memset(circle_buffer *dst, int c, size_t len);
 void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
                                 size_t count);

@@ -10,37 +10,38 @@
 
 circle_buffer * circle_buffer_create(size_t size, size_t stride) {
   circle_buffer * buffer = Calloc(1, circle_buffer);
-  buffer->size = size + 1;
+  buffer->size = size;
   buffer->stride = stride;
-  buffer->data = Calloc(buffer->size * stride, data_t);
+  buffer->bytes_data = size * stride + 1;
+
+  buffer->data = Calloc(buffer->bytes_data, data_t);
   circle_buffer_reset(buffer);
   return buffer;
 }
 
 circle_buffer * circle_buffer_clone(const circle_buffer *buffer) {
-  circle_buffer * ret = Calloc(1, circle_buffer);
-  ret->size = buffer->size;
-  ret->stride = buffer->stride;
-  size_t len = ret->size * ret->stride;
-  ret->data = Calloc(len, data_t);
-  memcpy(ret->data, buffer->data, len);
-  circle_buffer_reset(ret);
+  circle_buffer *ret = circle_buffer_create(buffer->size, buffer->stride);
+  memcpy(ret->data, buffer->data, ret->bytes_data);
   ret->head += circle_buffer_head_pos(buffer);
   ret->tail += circle_buffer_tail_pos(buffer);
   return ret;
 }
 
-void circle_buffer_free(circle_buffer *buffer) {
+void circle_buffer_destroy(circle_buffer *buffer) {
   Free(buffer->data);
   Free(buffer);
 }
 
-size_t circle_buffer_size(const circle_buffer *buffer) {
-  return buffer->size;
+size_t circle_buffer_bytes_data(const circle_buffer *buffer) {
+  return buffer->bytes_data;
 }
 
-size_t circle_buffer_capacity(const circle_buffer *buffer) {
-  return circle_buffer_size(buffer) - 1;
+size_t circle_buffer_bytes_size(const circle_buffer *buffer) {
+  return buffer->bytes_data - 1;
+}
+
+size_t circle_buffer_size(const circle_buffer *buffer) {
+  return buffer->size;
 }
 
 int circle_buffer_full(circle_buffer *buffer) {
@@ -48,7 +49,8 @@ int circle_buffer_full(circle_buffer *buffer) {
 }
 
 int circle_buffer_empty(circle_buffer *buffer) {
-  return circle_buffer_bytes_free(buffer) == circle_buffer_capacity(buffer);
+  return circle_buffer_bytes_free(buffer) ==
+    circle_buffer_bytes_size(buffer);
 }
 
 const void * circle_buffer_head(circle_buffer *buffer) {
@@ -74,14 +76,22 @@ void circle_buffer_reset(circle_buffer *buffer) {
 
 size_t circle_buffer_bytes_free(const circle_buffer *buffer) {
   if (buffer->head >= buffer->tail) {
-    return circle_buffer_capacity(buffer) - (buffer->head - buffer->tail);
+    return circle_buffer_bytes_size(buffer) - (buffer->head - buffer->tail);
   } else {
     return buffer->tail - buffer->head - 1;
   }
 }
 
 size_t circle_buffer_bytes_used(const circle_buffer *buffer) {
-  return circle_buffer_capacity(buffer) - circle_buffer_bytes_free(buffer);
+  return circle_buffer_bytes_size(buffer) - circle_buffer_bytes_free(buffer);
+}
+
+size_t circle_buffer_free(const circle_buffer *buffer) {
+  return circle_buffer_bytes_free(buffer) / buffer->stride;
+}
+
+size_t circle_buffer_used(const circle_buffer *buffer) {
+  return circle_buffer_bytes_used(buffer) / buffer->stride;
 }
 
 /*
@@ -101,8 +111,8 @@ size_t circle_buffer_bytes_used(const circle_buffer *buffer) {
  * may be different than it was before the function was called.
  *
  * Returns the actual number of bytes written to buffer: len, if len <
- * circle_buffer_size(buffer), else
- * circle_buffer_size(buffer).
+ * circle_buffer_bytes_data(buffer), else
+ * circle_buffer_bytes_data(buffer).
  */
 // It's not really clear what this should do with stride?  Probably if
 // len does not divide neatly through by stride we should error.  For
@@ -110,7 +120,7 @@ size_t circle_buffer_bytes_used(const circle_buffer *buffer) {
 size_t circle_buffer_memset(circle_buffer *buffer, int c, size_t len) {
   const data_t *bufend = circle_buffer_end(buffer);
   size_t nwritten = 0;
-  size_t count = imin(len, circle_buffer_size(buffer));
+  size_t count = imin(len, circle_buffer_bytes_data(buffer));
   int overflow = count > circle_buffer_bytes_free(buffer);
 
   while (nwritten != count) {
@@ -365,7 +375,7 @@ void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src,
 
 // Internal functions below here...
 data_t * circle_buffer_end(circle_buffer *buffer) {
-  return buffer->data + circle_buffer_size(buffer);
+  return buffer->data + circle_buffer_bytes_data(buffer);
 }
 
 /*
@@ -382,6 +392,6 @@ data_t * circle_buffer_nextp(circle_buffer *buffer, const data_t *p) {
   // assert((p >= buffer->data) && (p < circle_buffer_end(buffer)));
   // TODO: fix this up for working with the stride information...
   //   p += buffer->stride;
-  //   buffer->data + (p - buffer->data) % circle_buffer_size(buffer);
-  return buffer->data + ((++p - buffer->data) % circle_buffer_size(buffer));
+  //   buffer->data + (p - buffer->data) % circle_buffer_bytes_data(buffer);
+  return buffer->data + ((++p - buffer->data) % circle_buffer_bytes_data(buffer));
 }

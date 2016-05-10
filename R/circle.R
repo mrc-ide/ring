@@ -10,13 +10,14 @@ circle_buffer_clone <- function(buffer) {
   .Call(Ccircle_buffer_clone, buffer[[1L]])
 }
 
-## TODO: These should change name because size does not reflect the
-## name above...
+circle_buffer_bytes_data <- function(obj) {
+  .Call(Ccircle_buffer_bytes_data, obj[[1L]])
+}
+circle_buffer_bytes_size <- function(obj) {
+  .Call(Ccircle_buffer_bytes_size, obj[[1L]])
+}
 circle_buffer_size <- function(obj) {
   .Call(Ccircle_buffer_size, obj[[1L]])
-}
-circle_buffer_capacity <- function(obj) {
-  .Call(Ccircle_buffer_capacity, obj[[1L]])
 }
 
 circle_buffer_full <- function(obj) {
@@ -48,6 +49,13 @@ circle_buffer_bytes_free <- function(obj) {
 }
 circle_buffer_bytes_used <- function(obj) {
   .Call(Ccircle_buffer_bytes_used, obj[[1L]])
+}
+
+circle_buffer_free <- function(obj) {
+  .Call(Ccircle_buffer_free, obj[[1L]])
+}
+circle_buffer_used <- function(obj) {
+  .Call(Ccircle_buffer_used, obj[[1L]])
 }
 
 circle_buffer_reset <- function(obj) {

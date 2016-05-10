@@ -12,7 +12,7 @@ SEXP R_circle_buffer_build(circle_buffer *buffer) {
   SEXP nms = PROTECT(allocVector(STRSXP, 3));
   SET_VECTOR_ELT(ret, 0, extPtr);
   SET_STRING_ELT(nms, 0, mkChar("ptr"));
-  SET_VECTOR_ELT(ret, 1, ScalarInteger(circle_buffer_capacity(buffer)));
+  SET_VECTOR_ELT(ret, 1, ScalarInteger(circle_buffer_size(buffer)));
   SET_STRING_ELT(nms, 1, mkChar("size"));
   SET_VECTOR_ELT(ret, 2, ScalarInteger(buffer->stride));
   SET_STRING_ELT(nms, 2, mkChar("stride"));
@@ -29,16 +29,19 @@ SEXP R_circle_buffer_create(SEXP r_size, SEXP r_stride) {
 
 SEXP R_circle_buffer_clone(SEXP extPtr) {
   circle_buffer *prev = circle_buffer_get(extPtr, 1);
-  size_t size = circle_buffer_capacity(prev);
-  return R_circle_buffer_build(circle_buffer_create(size, prev->stride));
+  return R_circle_buffer_build(circle_buffer_clone(prev));
 }
 
 SEXP R_circle_buffer_size(SEXP extPtr) {
   return ScalarInteger(circle_buffer_size(circle_buffer_get(extPtr, 1)));
 }
 
-SEXP R_circle_buffer_capacity(SEXP extPtr) {
-  return ScalarInteger(circle_buffer_capacity(circle_buffer_get(extPtr, 1)));
+SEXP R_circle_buffer_bytes_data(SEXP extPtr) {
+  return ScalarInteger(circle_buffer_bytes_data(circle_buffer_get(extPtr, 1)));
+}
+
+SEXP R_circle_buffer_bytes_size(SEXP extPtr) {
+  return ScalarInteger(circle_buffer_bytes_size(circle_buffer_get(extPtr, 1)));
 }
 
 SEXP R_circle_buffer_full(SEXP extPtr) {
@@ -73,7 +76,7 @@ SEXP R_circle_buffer_tail(SEXP extPtr) {
 
 SEXP R_circle_buffer_data(SEXP extPtr) {
   circle_buffer * buffer = circle_buffer_get(extPtr, 1);
-  size_t len = buffer->stride * circle_buffer_capacity(buffer);
+  size_t len = circle_buffer_bytes_size(buffer);
   SEXP ret = PROTECT(allocVector(RAWSXP, len));
   memcpy(RAW(ret), circle_buffer_data(buffer), len);
   UNPROTECT(1);
@@ -94,6 +97,14 @@ SEXP R_circle_buffer_bytes_free(SEXP extPtr) {
 
 SEXP R_circle_buffer_bytes_used(SEXP extPtr) {
   return ScalarInteger(circle_buffer_bytes_used(circle_buffer_get(extPtr, 1)));
+}
+
+SEXP R_circle_buffer_free(SEXP extPtr) {
+  return ScalarInteger(circle_buffer_free(circle_buffer_get(extPtr, 1)));
+}
+
+SEXP R_circle_buffer_used(SEXP extPtr) {
+  return ScalarInteger(circle_buffer_used(circle_buffer_get(extPtr, 1)));
 }
 
 SEXP R_circle_buffer_reset(SEXP extPtr) {
@@ -175,7 +186,7 @@ SEXP R_circle_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_count) {
 void circle_buffer_finalize(SEXP extPtr) {
   circle_buffer *buffer = circle_buffer_get(extPtr, 0);
   if (buffer) {
-    circle_buffer_free(buffer);
+    circle_buffer_destroy(buffer);
     R_ClearExternalPtr(extPtr);
   }
 }
@@ -197,8 +208,9 @@ static const R_CallMethodDef callMethods[] = {
   // circle_r
   {"Ccircle_buffer_create",      (DL_FUNC) &R_circle_buffer_create,      2},
   {"Ccircle_buffer_clone",       (DL_FUNC) &R_circle_buffer_clone,       1},
+  {"Ccircle_buffer_bytes_data",  (DL_FUNC) &R_circle_buffer_bytes_data,  1},
   {"Ccircle_buffer_size",        (DL_FUNC) &R_circle_buffer_size,        1},
-  {"Ccircle_buffer_capacity",    (DL_FUNC) &R_circle_buffer_capacity,    1},
+  {"Ccircle_buffer_bytes_size",  (DL_FUNC) &R_circle_buffer_bytes_size,  1},
   {"Ccircle_buffer_full",        (DL_FUNC) &R_circle_buffer_full,        1},
   {"Ccircle_buffer_empty",       (DL_FUNC) &R_circle_buffer_empty,       1},
   {"Ccircle_buffer_head",        (DL_FUNC) &R_circle_buffer_head,        1},
@@ -208,6 +220,8 @@ static const R_CallMethodDef callMethods[] = {
   {"Ccircle_buffer_tail_pos",    (DL_FUNC) &R_circle_buffer_tail_pos,    1},
   {"Ccircle_buffer_bytes_free",  (DL_FUNC) &R_circle_buffer_bytes_free,  1},
   {"Ccircle_buffer_bytes_used",  (DL_FUNC) &R_circle_buffer_bytes_used,  1},
+  {"Ccircle_buffer_free",        (DL_FUNC) &R_circle_buffer_free,        1},
+  {"Ccircle_buffer_used",        (DL_FUNC) &R_circle_buffer_used,        1},
   {"Ccircle_buffer_reset",       (DL_FUNC) &R_circle_buffer_reset,       1},
   {"Ccircle_buffer_memset",      (DL_FUNC) &R_circle_buffer_memset,      3},
   {"Ccircle_buffer_memcpy_into", (DL_FUNC) &R_circle_buffer_memcpy_into, 2},
