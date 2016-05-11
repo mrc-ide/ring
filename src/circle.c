@@ -197,37 +197,11 @@ void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
  */
 void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
                                 size_t count) {
-  // TODO: if length of count is not divisible nicely by stride, it is an error
-  size_t bytes_used = circle_buffer_used(buffer, 1);
-  size_t len = count * buffer->stride;
-  if (len > bytes_used) {
-    return 0;
+  void * tail = circle_buffer_tail_read(buffer, dest, count);
+  if (tail != 0) {
+    buffer->tail = tail;
   }
-
-  data_t *dest_data = dest;
-  const data_t *bufend = circle_buffer_end(buffer);
-  size_t nwritten = 0;
-  while (nwritten != len) {
-    // assert(bufend > buffer->tail);
-    size_t n = imin(bufend - buffer->tail, len - nwritten);
-    memcpy(dest_data + nwritten, buffer->tail, n);
-    buffer->tail += n;
-    nwritten += n;
-
-    // wrap?
-    if (buffer->tail == bufend) {
-      buffer->tail = buffer->data;
-    }
-  }
-
-  // assert(len + circle_buffer_used(buffer, 1) == bytes_used);
-  return buffer->tail;
-  // TODO: try
-  /* void * tail = circle_buffer_tail_read(buffer, dest, count); */
-  /* if (tail != 0) { */
-  /*   buffer->tail = tail; */
-  /* } */
-  /* return tail; */
+  return tail;
 }
 
 // This is like the function above, but it is not destructive to the
