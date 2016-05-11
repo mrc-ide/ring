@@ -72,13 +72,13 @@ void circle_buffer_reset(circle_buffer *buffer) {
 }
 
 size_t circle_buffer_free(const circle_buffer *buffer, int bytes) {
-  size_t ret;
+  size_t diff;
   if (buffer->head >= buffer->tail) {
-    ret = circle_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
+    diff = circle_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
   } else {
-    ret = buffer->tail - buffer->head - 1;
+    diff = buffer->tail - buffer->head - 1;
   }
-  return bytes ? ret : ret / buffer->stride;
+  return bytes ? diff : diff / buffer->stride;
 }
 
 size_t circle_buffer_used(const circle_buffer *buffer, int bytes) {
@@ -109,14 +109,9 @@ size_t circle_buffer_used(const circle_buffer *buffer, int bytes) {
 // len does not divide neatly through by stride we should error.  For
 // now, leave it be though.
 size_t circle_buffer_memset(circle_buffer *buffer, int c, size_t len) {
-  if (c % buffer->stride != 0) {
-    // TODO: Decide if this is the best place to put an error, or if
-    // we should return a code (e.g. the max size?)
-    Rf_error("Invalid size c");
-  }
   const data_t *bufend = circle_buffer_end(buffer);
   size_t nwritten = 0;
-  size_t count = imin(len, circle_buffer_bytes_data(buffer));
+  size_t count = imin(len * buffer->stride, circle_buffer_bytes_data(buffer));
   int overflow = count > circle_buffer_free(buffer, 1);
 
   while (nwritten != count) {
@@ -208,7 +203,6 @@ void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
 // buffer.  I need to write a similar one that reads relative to the
 // head too (i.e. that will pull the most recently added data).
 void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
-  // TODO: if length of count is not divisible nicely by stride, it is an error
   size_t bytes_used = circle_buffer_used(buffer, 1);
   size_t len = count * buffer->stride;
   if (len > bytes_used) {
@@ -219,6 +213,10 @@ void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
   data_t *dest_data = dest;
   const data_t *bufend = circle_buffer_end(buffer);
   size_t nwritten = 0;
+  // TODO: This can be rewritten to allow at once one switch point
+  // which is probably the same assembly but might be nicer to read?
+  // I believe that this is going to be sufficiently tested that I can
+  // just try replacing the logic here and seeing if they all pass.
   while (nwritten != len) {
     size_t n = imin(bufend - tail, len - nwritten);
     memcpy(dest_data + nwritten, tail, n);
