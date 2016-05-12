@@ -1,0 +1,116 @@
+context("circle_buffer_env")
+
+test_that("empty", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  expect_equal(buf$size(), n)
+  expect_identical(buf$size(), as.integer(n))
+
+  expect_equal(buf$used(), 0L)
+  expect_equal(buf$free(), 10L)
+  expect_true(buf$empty())
+  expect_false(buf$full())
+  expect_equal(buf$head_pos(), 0L)
+  expect_equal(buf$tail_pos(), 0L)
+})
+
+test_that("copy_into", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  m <- 4
+  buf$copy_into(1:m)
+  expect_equal(buf$used(), m)
+  expect_equal(buf$free(), n - m)
+
+  expect_false(buf$empty())
+  expect_false(buf$full())
+  expect_equal(buf$head_pos(), m)
+  expect_equal(buf$tail_pos(), 0L)
+
+  expect_equal(buf$tail_data(), 1)
+  expect_equal(buf$head_data(), m)
+})
+
+test_that("tail_read", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  m <- 4
+  buf$copy_into(1:m)
+
+  expect_equal(buf$tail_read(0), list())
+  expect_equal(buf$tail_read(m), as.list(1:m))
+  expect_error(buf$tail_read(m + 1), "Buffer underflow")
+})
+
+test_that("tail_offset_data", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  m <- 4
+  buf$copy_into(1:m)
+
+  expect_equal(buf$tail_offset_data(0), 1L)
+  expect_equal(buf$tail_offset_data(1), 2L)
+  expect_equal(buf$tail_offset_data(m - 1), m)
+  expect_error(buf$tail_offset_data(m), "Buffer underflow")
+})
+
+test_that("head_offset_data", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  m <- 4
+  buf$copy_into(1:m)
+
+  expect_equal(buf$head_offset_data(0), m)
+  expect_equal(buf$head_offset_data(1), m - 1)
+  expect_equal(buf$head_offset_data(m - 1), 1)
+  expect_error(buf$head_offset_data(m), "Buffer underflow")
+})
+
+test_that("take_from", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  m <- 4
+  buf$copy_into(1:m)
+
+  expect_equal(buf$take_from(0), list())
+  expect_equal(buf$used(), m)
+
+  expect_equal(buf$take_from(1), list(1))
+  expect_equal(buf$used(), m - 1)
+
+  expect_equal(buf$head_pos(), m)
+  expect_equal(buf$tail_pos(), 1L)
+  expect_equal(buf$tail_data(), 2)
+
+  expect_equal(buf$take_from(m - 1), as.list(2:m))
+  expect_equal(buf$head_pos(), m)
+  expect_equal(buf$tail_pos(), m)
+  expect_true(buf$empty())
+  expect_false(buf$full())
+})
+
+test_that("fill buffer, then overflow", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  buf$copy_into(1:n)
+  expect_true(buf$full())
+  expect_equal(buf$used(), n)
+  expect_identical(buf$head, buf$tail)
+
+  expect_equal(buf$head_pos(), 0L) # wrapped...
+  expect_equal(buf$tail_pos(), 0L) # hasn't moved yet
+
+  ## All the data is here:
+  expect_equal(buf$tail_read(n), as.list(seq_len(n)))
+
+  ## Add one more, causing an overflow:
+  buf$copy_into(n + 1)
+  expect_true(buf$full())
+  expect_equal(buf$used(), n)
+  expect_identical(buf$head, buf$tail)
+
+  expect_equal(buf$head_pos(), 1L)
+  expect_equal(buf$tail_pos(), 1L)
+
+  expect_equal(buf$tail_read(n), as.list(seq_len(n) + 1L))
+})

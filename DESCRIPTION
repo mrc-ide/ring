@@ -3,11 +3,15 @@ Title: Circular Buffers
 Version: 0.0.1
 Author: Rich FitzJohn
 Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
-Description: Circular buffers in R and C.
+Description: Circular buffers in R and C.  There are a couple of different
+  buffers here with different implementations that represent different
+  tradeoffs.
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/<gh-username>/circle
 BugReports: https://github.com/<gh-username>/circle/issues
+Imports:
+    R6
 Suggests:
     testthat
 RoxygenNote: 5.0.1

@@ -7,3 +7,4 @@ inst/staticdocs
 inst/web
 vignettes/.build.timestamp
 c-ringbuf
+ignore
