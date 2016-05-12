@@ -6,8 +6,8 @@ circle_buffer_create <- function(size, stride=1L) {
   .Call(Ccircle_buffer_create, as.integer(size), as.integer(stride))
 }
 
-circle_buffer_clone <- function(buffer) {
-  .Call(Ccircle_buffer_clone, buffer[[1L]])
+circle_buffer_clone <- function(obj) {
+  .Call(Ccircle_buffer_clone, obj[[1L]])
 }
 
 circle_buffer_bytes_data <- function(obj) {
@@ -73,6 +73,6 @@ circle_buffer_copy <- function(src, dest, count) {
                   as.integer(count)))
 }
 
-circle_buffer_tail_offset <- function(buffer, offset) {
-  .Call(Ccircle_buffer_tail_offset, buffer[[1L]], as.integer(offset))
+circle_buffer_tail_offset <- function(obj, offset) {
+  .Call(Ccircle_buffer_tail_offset, obj[[1L]], as.integer(offset))
 }
