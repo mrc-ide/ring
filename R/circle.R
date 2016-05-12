@@ -6,73 +6,75 @@ circle_buffer_create <- function(size, stride=1L) {
   .Call(Ccircle_buffer_create, as.integer(size), as.integer(stride))
 }
 
-circle_buffer_clone <- function(obj) {
-  .Call(Ccircle_buffer_clone, obj[[1L]])
+circle_buffer_clone <- function(ptr) {
+  .Call(Ccircle_buffer_clone, ptr)
 }
 
-circle_buffer_bytes_data <- function(obj) {
-  .Call(Ccircle_buffer_bytes_data, obj[[1L]])
+circle_buffer_bytes_data <- function(ptr) {
+  .Call(Ccircle_buffer_bytes_data, ptr)
 }
-circle_buffer_size <- function(obj, bytes=FALSE) {
-  .Call(Ccircle_buffer_size, obj[[1L]], as.logical(bytes))
+circle_buffer_size <- function(ptr, bytes=FALSE) {
+  .Call(Ccircle_buffer_size, ptr, as.logical(bytes))
 }
-
-circle_buffer_full <- function(obj) {
-  .Call(Ccircle_buffer_full, obj[[1L]])
-}
-circle_buffer_empty <- function(obj) {
-  .Call(Ccircle_buffer_empty, obj[[1L]])
+circle_buffer_stride <- function(ptr) {
+  .Call(Ccircle_buffer_stride, ptr)
 }
 
-circle_buffer_head <- function(obj) {
-  .Call(Ccircle_buffer_head, obj[[1L]])
+circle_buffer_full <- function(ptr) {
+  .Call(Ccircle_buffer_full, ptr)
 }
-circle_buffer_tail <- function(obj) {
-  .Call(Ccircle_buffer_tail, obj[[1L]])
-}
-circle_buffer_data <- function(obj) {
-  .Call(Ccircle_buffer_data, obj[[1L]])
+circle_buffer_empty <- function(ptr) {
+  .Call(Ccircle_buffer_empty, ptr)
 }
 
-circle_buffer_head_pos <- function(obj, bytes=FALSE) {
-  .Call(Ccircle_buffer_head_pos, obj[[1L]], bytes)
+circle_buffer_head <- function(ptr) {
+  .Call(Ccircle_buffer_head, ptr)
 }
-circle_buffer_tail_pos <- function(obj, bytes=FALSE) {
-  .Call(Ccircle_buffer_tail_pos, obj[[1L]], bytes)
+circle_buffer_tail <- function(ptr) {
+  .Call(Ccircle_buffer_tail, ptr)
 }
-
-circle_buffer_free <- function(obj, bytes=FALSE) {
-  .Call(Ccircle_buffer_free, obj[[1L]], bytes)
-}
-circle_buffer_used <- function(obj, bytes=FALSE) {
-  .Call(Ccircle_buffer_used, obj[[1L]], bytes)
+circle_buffer_data <- function(ptr) {
+  .Call(Ccircle_buffer_data, ptr)
 }
 
-circle_buffer_reset <- function(obj) {
-  .Call(Ccircle_buffer_reset, obj[[1L]])
+circle_buffer_head_pos <- function(ptr, bytes=FALSE) {
+  .Call(Ccircle_buffer_head_pos, ptr, bytes)
+}
+circle_buffer_tail_pos <- function(ptr, bytes=FALSE) {
+  .Call(Ccircle_buffer_tail_pos, ptr, bytes)
 }
 
-circle_buffer_memset <- function(obj, c, len=obj$size) {
-  .Call(Ccircle_buffer_memset, obj[[1L]], as.raw(c), as.integer(len))
+circle_buffer_free <- function(ptr, bytes=FALSE) {
+  .Call(Ccircle_buffer_free, ptr, bytes)
+}
+circle_buffer_used <- function(ptr, bytes=FALSE) {
+  .Call(Ccircle_buffer_used, ptr, bytes)
 }
 
-circle_buffer_memcpy_into <- function(obj, src) {
-  invisible(.Call(Ccircle_buffer_memcpy_into, obj[[1L]], as.raw(src)))
+circle_buffer_reset <- function(ptr) {
+  .Call(Ccircle_buffer_reset, ptr)
 }
 
-circle_buffer_memcpy_from <- function(obj, count) {
-  .Call(Ccircle_buffer_memcpy_from, obj[[1L]], as.integer(count))
+circle_buffer_memset <- function(ptr, c, len=ptr$size) {
+  .Call(Ccircle_buffer_memset, ptr, as.raw(c), as.integer(len))
 }
 
-circle_buffer_tail_read <- function(obj, count) {
-  .Call(Ccircle_buffer_tail_read, obj[[1L]], as.integer(count))
+circle_buffer_memcpy_into <- function(ptr, src) {
+  invisible(.Call(Ccircle_buffer_memcpy_into, ptr, as.raw(src)))
+}
+
+circle_buffer_memcpy_from <- function(ptr, count) {
+  .Call(Ccircle_buffer_memcpy_from, ptr, as.integer(count))
+}
+
+circle_buffer_tail_read <- function(ptr, count) {
+  .Call(Ccircle_buffer_tail_read, ptr, as.integer(count))
 }
 
 circle_buffer_copy <- function(src, dest, count) {
-  invisible(.Call(Ccircle_buffer_copy, src[[1L]], dest[[1L]],
-                  as.integer(count)))
+  invisible(.Call(Ccircle_buffer_copy, src, dest, as.integer(count)))
 }
 
-circle_buffer_tail_offset <- function(obj, offset) {
-  .Call(Ccircle_buffer_tail_offset, obj[[1L]], as.integer(offset))
+circle_buffer_tail_offset <- function(ptr, offset) {
+  .Call(Ccircle_buffer_tail_offset, ptr, as.integer(offset))
 }

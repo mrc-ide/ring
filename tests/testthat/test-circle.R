@@ -40,7 +40,10 @@ test_that("initial conditions", {
   size <- 100L
 
   buf <- circle_buffer_create(size)
-  expect_is(buf, "circle_buffer")
+  expect_is(buf, "externalptr")
+
+  expect_equal(circle_buffer_size(buf), size)
+  expect_equal(circle_buffer_stride(buf), 1L)
 
   expect_equal(circle_buffer_bytes_data(buf), size + 1L)
   expect_equal(circle_buffer_size(buf), size)

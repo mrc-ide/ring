@@ -3,6 +3,8 @@ context("stride")
 test_that("empty", {
   buf <- circle_buffer_create(100, 5)
 
+  expect_equal(circle_buffer_stride(buf), 5)
+
   expect_equal(circle_buffer_size(buf, TRUE), 500L)
   expect_equal(circle_buffer_size(buf, FALSE), 100L)
   expect_equal(circle_buffer_size(buf), 100L)

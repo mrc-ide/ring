@@ -9,18 +9,8 @@ int logical_scalar(SEXP x);
 SEXP R_circle_buffer_build(circle_buffer *buffer) {
   SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));
   R_RegisterCFinalizer(extPtr, circle_buffer_finalize);
-  SEXP ret = PROTECT(allocVector(VECSXP, 3));
-  SEXP nms = PROTECT(allocVector(STRSXP, 3));
-  SET_VECTOR_ELT(ret, 0, extPtr);
-  SET_STRING_ELT(nms, 0, mkChar("ptr"));
-  SET_VECTOR_ELT(ret, 1, ScalarInteger(circle_buffer_size(buffer, 0)));
-  SET_STRING_ELT(nms, 1, mkChar("size"));
-  SET_VECTOR_ELT(ret, 2, ScalarInteger(buffer->stride));
-  SET_STRING_ELT(nms, 2, mkChar("stride"));
-  setAttrib(ret, R_NamesSymbol, nms);
-  setAttrib(ret, R_ClassSymbol, mkString("circle_buffer"));
-  UNPROTECT(3);
-  return ret;
+  UNPROTECT(1);
+  return extPtr;
 }
 
 SEXP R_circle_buffer_create(SEXP r_size, SEXP r_stride) {
@@ -36,6 +26,10 @@ SEXP R_circle_buffer_clone(SEXP extPtr) {
 SEXP R_circle_buffer_size(SEXP extPtr, SEXP bytes) {
   return ScalarInteger(circle_buffer_size(circle_buffer_get(extPtr, 1),
                                           logical_scalar(bytes)));
+}
+
+SEXP R_circle_buffer_stride(SEXP extPtr) {
+  return ScalarInteger(circle_buffer_get(extPtr, 1)->stride);
 }
 
 SEXP R_circle_buffer_bytes_data(SEXP extPtr) {
@@ -211,11 +205,11 @@ int logical_scalar(SEXP x) {
 
 #include <R_ext/Rdynload.h>
 static const R_CallMethodDef callMethods[] = {
-  // circle_r
   {"Ccircle_buffer_create",      (DL_FUNC) &R_circle_buffer_create,      2},
   {"Ccircle_buffer_clone",       (DL_FUNC) &R_circle_buffer_clone,       1},
   {"Ccircle_buffer_bytes_data",  (DL_FUNC) &R_circle_buffer_bytes_data,  1},
   {"Ccircle_buffer_size",        (DL_FUNC) &R_circle_buffer_size,        2},
+  {"Ccircle_buffer_stride",      (DL_FUNC) &R_circle_buffer_stride,      1},
   {"Ccircle_buffer_full",        (DL_FUNC) &R_circle_buffer_full,        1},
   {"Ccircle_buffer_empty",       (DL_FUNC) &R_circle_buffer_empty,       1},
   {"Ccircle_buffer_head",        (DL_FUNC) &R_circle_buffer_head,        1},
