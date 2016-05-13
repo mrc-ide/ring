@@ -72,6 +72,10 @@ circle_buffer_env <- function(size) {
 ##' @importFrom R6 R6Class
 .R6_circle_buffer_env <- R6::R6Class(
   "circle_buffer_env",
+  ## need to implement our own clone method as the default R6 one is
+  ## not going to cut it, given everything inside the class is a
+  ## reference.
+  cloneable=FALSE,
 
   public=list(
     buffer=NULL,
@@ -89,7 +93,11 @@ circle_buffer_env <- function(size) {
       self$buffer$.used <- 0L
     },
 
+    duplicate=function() stop("clone is not yet implemented"), # TODO
+
     size=function() self$buffer$.size,
+    ## bytes_data
+    ## stride
     used=function() self$buffer$.used,
     free=function() self$size() - self$used(),
 
@@ -100,41 +108,18 @@ circle_buffer_env <- function(size) {
     head_pos=function() distance_forward(self$buffer, self$head),
     tail_pos=function() distance_forward(self$buffer, self$tail),
 
-    write_to_head=function(data) {
-      self$head$data <- data
-      self$head <- self$head$.next
-      if (self$buffer$.used < self$size()) {
-        self$buffer$.used <- self$buffer$.used + 1L
-      } else {
-        self$tail <- self$tail$.next
-      }
+    head_data=function() {
+      check_buffer_underflow(self, 1L)
+      self$head$.prev$data
     },
-
     tail_data=function() {
       check_buffer_underflow(self, 1L)
       self$tail$data
     },
 
-    tail_offset=function(count) {
-      check_buffer_underflow(self, count + 1L)
-      move_forward(self$tail, count)
-    },
-
-    head_offset=function(count) {
-      check_buffer_underflow(self, count + 1L)
-      move_backward(self$head$.prev, count)
-    },
-
-    tail_offset_data=function(count) self$tail_offset(count)$data,
-    head_offset_data=function(count) self$head_offset(count)$data,
-
-    head_data=function() {
-      check_buffer_underflow(self, 1L)
-      self$head$.prev$data
-    },
-
-    set=function(data, count) {
-      for (i in seq_len(min(count, self$size))) {
+    ## Start getting strong divergence here:
+    set=function(data, n) {
+      for (i in seq_len(min(n, self$size))) {
         self$write_to_head(data)
       }
     },
@@ -148,13 +133,17 @@ circle_buffer_env <- function(size) {
     ## here row-by-row and things like that.  So we might have to make
     ## this one generic -- or find something that makes things
     ## iterable.
-    copy_into=function(data) {
-      for (el in data) {
-        self$write_to_head(el)
+    push=function(data, iterate=TRUE) {
+      if (iterate) {
+        for (el in data) {
+          self$write_to_head(el)
+        }
+      } else {
+        self$write_to_head(data)
       }
     },
 
-    take_from=function(n) {
+    take=function(n) {
       check_buffer_underflow(self, n)
       dat <- read_from_tail(self$tail, n)
       self$tail <- dat[[2L]]
@@ -162,8 +151,28 @@ circle_buffer_env <- function(size) {
       dat[[1L]]
     },
 
+    read=function(n) {
+      check_buffer_underflow(self, n)
+      read_from_tail(self$tail, n)[[1L]]
+    },
+
+    copy=function(dest, n) {
+      stop("copy is not yet implemented")
+    },
+
+    head_offset=function(n) {
+      check_buffer_underflow(self, n + 1L)
+      move_backward(self$head$.prev, n)
+    },
+    tail_offset=function(n) {
+      check_buffer_underflow(self, n + 1L)
+      move_forward(self$tail, n)
+    },
+    head_offset_data=function(n) self$head_offset(n)$data,
+    tail_offset_data=function(n) self$tail_offset(n)$data,
+
     ## This is the unusual direction...
-    take_from_head=function(n) {
+    take_head=function(n) {
       check_buffer_underflow(self, n)
       dat <- read_from_head(self$head, n)
       self$head <- dat[[2L]]
@@ -171,14 +180,20 @@ circle_buffer_env <- function(size) {
       dat[[1L]]
     },
 
-    tail_read=function(n) {
-      check_buffer_underflow(self, n)
-      read_from_tail(self$tail, n)[[1L]]
-    },
-
-    head_read=function(n) {
+    read_head=function(n) {
       check_buffer_underflow(self, n)
       read_from_head(self$head, n)[[1L]]
+    },
+
+    ## Internal:
+    write_to_head=function(data) {
+      self$head$data <- data
+      self$head <- self$head$.next
+      if (self$buffer$.used < self$size()) {
+        self$buffer$.used <- self$buffer$.used + 1L
+      } else {
+        self$tail <- self$tail$.next
+      }
     },
 
     ## This might come out as simply a free S3 method/function

@@ -17,7 +17,7 @@ test_that("empty", {
   expect_equal(circle_buffer_free(buf, FALSE), 100L)
   expect_equal(circle_buffer_free(buf), 100L)
 
-  expect_equal(circle_buffer_data(buf), raw(500))
+  expect_equal(circle_buffer_buffer_data(buf), raw(500))
   expect_equal(circle_buffer_bytes_data(buf), 501L)
 
   expect_equal(circle_buffer_head_pos(buf, TRUE), 0L)
@@ -57,7 +57,7 @@ test_that("memset", {
   expect_equal(circle_buffer_free(buf, FALSE), size - n)
   expect_equal(circle_buffer_free(buf), size - n)
 
-  expect_equal(circle_buffer_data(buf),
+  expect_equal(circle_buffer_buffer_data(buf),
                pad(as.raw(rep(1, n * stride)), size * stride))
   expect_equal(circle_buffer_bytes_data(buf), size * stride + 1)
 

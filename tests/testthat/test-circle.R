@@ -55,9 +55,9 @@ test_that("initial conditions", {
   expect_equal(circle_buffer_head_pos(buf), 0L)
   expect_equal(circle_buffer_tail_pos(buf), 0L)
 
-  expect_error(circle_buffer_head(buf),
+  expect_error(circle_buffer_head_data(buf),
                "Buffer is empty")
-  expect_error(circle_buffer_tail(buf),
+  expect_error(circle_buffer_tail_data(buf),
                "Buffer is empty")
   expect_null(circle_buffer_reset(buf))
 
@@ -123,7 +123,7 @@ test_that("memset a few bytes", {
   expect_false(circle_buffer_full(buf))
   expect_false(circle_buffer_empty(buf))
 
-  expect_equal(circle_buffer_data(buf),
+  expect_equal(circle_buffer_buffer_data(buf),
                pad(rep(as.raw(57), 7), size))
 })
 
@@ -137,7 +137,7 @@ test_that("memset full capacity", {
   expect_equal(circle_buffer_used(buf), circle_buffer_size(buf))
   expect_true(circle_buffer_full(buf))
   expect_false(circle_buffer_empty(buf))
-  expect_equal(circle_buffer_data(buf), as.raw(rep(57, size)))
+  expect_equal(circle_buffer_buffer_data(buf), as.raw(rep(57, size)))
 })
 
 test_that("memset, twice", {
@@ -154,7 +154,7 @@ test_that("memset, twice", {
   expect_false(circle_buffer_full(rb1))
   expect_false(circle_buffer_empty(rb1))
 
-  expect_equal(circle_buffer_data(rb1),
+  expect_equal(circle_buffer_buffer_data(rb1),
                pad(rep(as.raw(57), 7 + 15), size))
 })
 
@@ -170,7 +170,7 @@ test_that("memset, twice, to full capacity", {
   expect_equal(circle_buffer_used(rb1), size)
   expect_true(circle_buffer_full(rb1))
   expect_false(circle_buffer_empty(rb1))
-  expect_equal(circle_buffer_data(rb1), rep(as.raw(57), size))
+  expect_equal(circle_buffer_buffer_data(rb1), rep(as.raw(57), size))
 })
 
 test_that("circle_buffer_memset, overflow by 1 byte", {
@@ -189,7 +189,7 @@ test_that("circle_buffer_memset, overflow by 1 byte", {
   expect_equal(circle_buffer_head_pos(rb1), 0)
   ## tail should have bumped forward by 1 byte
   expect_equal(circle_buffer_tail_pos(rb1), 1L)
-  expect_equal(circle_buffer_data(rb1), rep(as.raw(57), size))
+  expect_equal(circle_buffer_buffer_data(rb1), rep(as.raw(57), size))
 })
 
 test_that("circle_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
@@ -209,7 +209,7 @@ test_that("circle_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
   ## tail should have bumped forward by 1 byte
   expect_equal(circle_buffer_tail_pos(rb1), 1L)
 
-  expect_equal(circle_buffer_data(rb1), repr(57, size))
+  expect_equal(circle_buffer_buffer_data(rb1), repr(57, size))
 })
 
 test_that("circle_buffer_memset, twice with oveflow", {
@@ -228,7 +228,7 @@ test_that("circle_buffer_memset, twice with oveflow", {
   expect_false(circle_buffer_empty(rb1))
   expect_equal(circle_buffer_head_pos(rb1), 0L)
   expect_equal(circle_buffer_tail_pos(rb1), 1L)
-  expect_equal(circle_buffer_data(rb1), repr(57, size))
+  expect_equal(circle_buffer_buffer_data(rb1), repr(57, size))
 })
 
 test_that("circle_buffer_memset, twice, overflowing both times", {
@@ -245,7 +245,7 @@ test_that("circle_buffer_memset, twice, overflowing both times", {
   expect_false(circle_buffer_empty(rb1))
   expect_equal(circle_buffer_head_pos(rb1), 0L)
   expect_equal(circle_buffer_tail_pos(rb1), 1L)
-  expect_equal(circle_buffer_data(rb1), repr(58, size))
+  expect_equal(circle_buffer_buffer_data(rb1), repr(58, size))
 })
 
 test_that("circle_buffer_memcpy_into with zero count", {
@@ -263,7 +263,7 @@ test_that("circle_buffer_memcpy_into with zero count", {
   expect_true(circle_buffer_empty(rb1))
   expect_equal(circle_buffer_tail_pos(rb1), circle_buffer_head_pos(rb1))
 
-  expect_equal(circle_buffer_data(rb1), repr(1, size))
+  expect_equal(circle_buffer_buffer_data(rb1), repr(1, size))
 })
 
 test_that("circle_buffer_memcpy_into a few bytes of data", {
@@ -284,7 +284,7 @@ test_that("circle_buffer_memcpy_into a few bytes of data", {
   expect_false(circle_buffer_full(rb1))
   expect_false(circle_buffer_empty(rb1))
 
-  expect_equal(circle_buffer_data(rb1), pad(bytes, size, 1))
+  expect_equal(circle_buffer_buffer_data(rb1), pad(bytes, size, 1))
 })
 
 test_that("circle_buffer_memcpy_into full capacity", {
@@ -307,7 +307,7 @@ test_that("circle_buffer_memcpy_into full capacity", {
 
   ## NOTE: I'm a bit confused about this, though, the data doesn't
   ## seem quite what I'd expect for the buffer to hold.
-  res <- circle_buffer_data(rb1)
+  res <- circle_buffer_buffer_data(rb1)
   i <- circle_buffer_tail_pos(rb1)
   expect_equal(i, 1L)
   j <- seq_len(i)
@@ -335,9 +335,9 @@ test_that("circle_buffer_memcpy_into, twice", {
 
   expect_equal(circle_buffer_tail_read(rb1, length(bytes) * 2),
                rep(bytes, 2))
-  expect_equal(circle_buffer_data(rb1),
+  expect_equal(circle_buffer_buffer_data(rb1),
                pad(rep(bytes, 2), size, 1))
-  expect_equal(circle_buffer_head(rb1), as.raw(1))
+  expect_equal(circle_buffer_head_data(rb1), as.raw(1))
 })
 
 test_that("circle_buffer_memcpy_into, twice (to full capacity)", {
@@ -360,7 +360,7 @@ test_that("circle_buffer_memcpy_into, twice (to full capacity)", {
   expect_true(circle_buffer_full(rb1))
   expect_false(circle_buffer_empty(rb1))
 
-  expect_equal(circle_buffer_data(rb1), bytes)
+  expect_equal(circle_buffer_buffer_data(rb1), bytes)
 })
 
 test_that("circle_buffer_memcpy_into, overflow by 1 byte", {
@@ -503,7 +503,7 @@ test_that("circle_buffer_memcpy_from a few bytes of data", {
   expect_equal(circle_buffer_head_pos(rb1),
                circle_buffer_tail_pos(rb1) + (length(bytes) - 3L))
   expect_equal(circle_buffer_tail_read(rb1, length(bytes) - 3L), bytes[-(1:3)])
-  expect_equal(circle_buffer_data(rb1), pad(bytes, size, 1))
+  expect_equal(circle_buffer_buffer_data(rb1), pad(bytes, size, 1))
 })
 
 test_that("circle_buffer_memcpy_from full capacity", {
@@ -632,7 +632,7 @@ test_that("circle_buffer_memcpy_into followed by circle_buffer_memcpy_from", {
   expect_false(circle_buffer_full(rb1))
   expect_true(circle_buffer_empty(rb1))
 
-  expect_equal(circle_buffer_data(rb1), pad(bytes, size, 1))
+  expect_equal(circle_buffer_buffer_data(rb1), pad(bytes, size, 1))
   expect_equal(circle_buffer_tail_pos(rb1), length(bytes))
   expect_equal(circle_buffer_tail_pos(rb1), circle_buffer_head_pos(rb1))
 })
