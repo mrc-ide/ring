@@ -18,7 +18,7 @@ circle_buffer_bytes <- function(size, stride=1L) {
       }
     },
 
-    reset=function() circle_buffer_reset(circle_buffer_reset(self$ptr)),
+    reset=function() circle_buffer_reset(self$ptr),
 
     duplicate=function() {
       ## NOTE: this is not implemented like the typical R6 clone
