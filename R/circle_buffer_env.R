@@ -179,7 +179,7 @@ circle_buffer_env <- function(size) {
     },
 
     copy=function(dest, n) {
-      stop("copy is not yet implemented")
+      circle_buffer_env_copy(self, dest, n)
     },
 
     head_offset_data=function(n) {
@@ -284,4 +284,17 @@ move_backward <- function(x, n) {
     x <- x$.prev
   }
   x
+}
+
+circle_buffer_env_copy <- function(buf, dest, n) {
+  check_buffer_underflow(buf, n)
+
+  tail <- buf$tail
+  for (i in seq_len(n)) {
+    dest$push(tail$data)
+    tail <- tail$.next
+  }
+
+  buf$tail <- tail
+  buf$buffer$.used <- buf$buffer$.used - as.integer(n)
 }

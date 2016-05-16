@@ -154,3 +154,37 @@ test_that("duplicate", {
   expect_equal(cpy$size(), n)
   expect_equal(cpy$read(cpy$used()), as.list(8:13))
 })
+
+test_that("copy zero", {
+  n1 <- 20
+  n2 <- 10
+  buf1 <- circle_buffer_env(n1)
+  buf2 <- circle_buffer_env(n2)
+
+  buf1$push(1:n1)
+  buf1$copy(buf2, 0L)
+
+  expect_equal(buf1$head_pos(), 0)
+  expect_equal(buf2$head_pos(), 0)
+  expect_equal(buf1$tail_pos(), 0)
+  expect_equal(buf2$tail_pos(), 0)
+  expect_equal(buf1$used(), n1)
+  expect_equal(buf2$used(), 0)
+})
+
+test_that("copy some", {
+  n1 <- 20
+  n2 <- 10
+  buf1 <- circle_buffer_env(n1)
+  buf2 <- circle_buffer_env(n2)
+
+  buf1$push(1:n1)
+  buf1$copy(buf2, 5L)
+
+  expect_equal(buf1$head_pos(), 0)
+  expect_equal(buf2$head_pos(), 5)
+  expect_equal(buf1$tail_pos(), 5)
+  expect_equal(buf2$tail_pos(), 0)
+  expect_equal(buf1$used(), n1 - 5)
+  expect_equal(buf2$used(), 5)
+})
