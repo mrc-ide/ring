@@ -114,3 +114,43 @@ test_that("fill buffer, then overflow", {
 
   expect_equal(buf$read(n), as.list(seq_len(n) + 1L))
 })
+
+test_that("duplicate", {
+  n <- 10
+  buf <- circle_buffer_env(10)
+  buf$push(1:12)
+  buf$take(3)
+
+  expect_equal(buf$head_pos(), 2)
+  expect_equal(buf$tail_pos(), 5)
+  expect_equal(buf$used(), 7)
+  expect_equal(buf$size(), n)
+  expect_equal(buf$read(buf$used()), as.list(6:12))
+
+  cpy <- buf$duplicate()
+
+  ## Source unchanged:
+  for (x in list(buf, cpy)) {
+    expect_equal(x$head_pos(), 2)
+    expect_equal(x$tail_pos(), 5)
+    expect_equal(x$used(), 7)
+    expect_equal(x$size(), n)
+    expect_equal(x$read(x$used()), as.list(6:12))
+  }
+
+  ## But we can move the two buffers independently.
+  expect_equal(cpy$take(2), as.list(6:7))
+  cpy$push(13)
+
+  expect_equal(buf$head_pos(), 2)
+  expect_equal(buf$tail_pos(), 5)
+  expect_equal(buf$used(), 7)
+  expect_equal(buf$size(), n)
+  expect_equal(buf$read(buf$used()), as.list(6:12))
+
+  expect_equal(cpy$head_pos(), 3)
+  expect_equal(cpy$tail_pos(), 7)
+  expect_equal(cpy$used(), 6)
+  expect_equal(cpy$size(), n)
+  expect_equal(cpy$read(cpy$used()), as.list(8:13))
+})

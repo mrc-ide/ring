@@ -65,6 +65,26 @@ circle_buffer_env_create <- function(size) {
   head
 }
 
+circle_buffer_env_duplicate <- function(buffer) {
+  ret <- circle_buffer_env(buffer$size())
+
+  ## To *truely* duplicate the buffer, we need to advance the pointers
+  ## a little.
+  tail <- ret$tail
+  for (i in seq_len(buffer$tail_pos())) {
+    tail <- tail$.prev
+  }
+  ret$head <- ret$tail <- tail
+
+  tail <- buffer$tail
+  for (i in seq_len(buffer$used())) {
+    ret$push(tail$data, FALSE)
+    tail <- tail$.next
+  }
+
+  ret
+}
+
 circle_buffer_env <- function(size) {
   .R6_circle_buffer_env$new(size)
 }
@@ -93,7 +113,9 @@ circle_buffer_env <- function(size) {
       self$buffer$.used <- 0L
     },
 
-    duplicate=function() stop("clone is not yet implemented"), # TODO
+    duplicate=function() {
+      circle_buffer_env_duplicate(self)
+    },
 
     size=function() self$buffer$.size,
     ## bytes_data
@@ -160,16 +182,14 @@ circle_buffer_env <- function(size) {
       stop("copy is not yet implemented")
     },
 
-    head_offset=function(n) {
+    head_offset_data=function(n) {
       check_buffer_underflow(self, n + 1L)
-      move_backward(self$head$.prev, n)
+      move_backward(self$head$.prev, n)$data
     },
-    tail_offset=function(n) {
+    tail_offset_data=function(n) {
       check_buffer_underflow(self, n + 1L)
-      move_forward(self$tail, n)
+      move_forward(self$tail, n)$data
     },
-    head_offset_data=function(n) self$head_offset(n)$data,
-    tail_offset_data=function(n) self$tail_offset(n)$data,
 
     ## This is the unusual direction...
     take_head=function(n) {

@@ -58,8 +58,6 @@ circle_buffer_bytes <- function(size, stride=1L) {
     },
 
     ## Nondestructive:
-    head_offset=function(n) stop("head_offset not yet implemented"),
-    tail_offset=function(n) stop("tail_offset not yet implemented"),
     head_offset_data=function(n) stop("head_offset_data not yet implemented"),
     tail_offset_data=function(n) circle_buffer_tail_offset(self$ptr, n),
 
