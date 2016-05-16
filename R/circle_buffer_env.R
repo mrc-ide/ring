@@ -142,7 +142,7 @@ circle_buffer_env <- function(size) {
     ## Start getting strong divergence here:
     set=function(data, n) {
       for (i in seq_len(min(n, self$size))) {
-        self$write_to_head(data)
+        write_to_head(self, data)
       }
     },
 
@@ -158,29 +158,22 @@ circle_buffer_env <- function(size) {
     push=function(data, iterate=TRUE) {
       if (iterate) {
         for (el in data) {
-          self$write_to_head(el)
+          write_to_head(self, el)
         }
       } else {
-        self$write_to_head(data)
+        write_to_head(self, data)
       }
     },
 
     take=function(n) {
-      check_buffer_underflow(self, n)
-      dat <- read_from_tail(self$tail, n)
+      dat <- read_from_tail(self, n)
       self$tail <- dat[[2L]]
       self$buffer$.used <- self$buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
-    read=function(n) {
-      check_buffer_underflow(self, n)
-      read_from_tail(self$tail, n)[[1L]]
-    },
-
-    copy=function(dest, n) {
-      circle_buffer_env_copy(self, dest, n)
-    },
+    read=function(n) read_from_tail(self, n)[[1L]],
+    copy=function(dest, n) circle_buffer_env_copy(self, dest, n),
 
     head_offset_data=function(n) {
       check_buffer_underflow(self, n + 1L)
@@ -193,36 +186,25 @@ circle_buffer_env <- function(size) {
 
     ## This is the unusual direction...
     take_head=function(n) {
-      check_buffer_underflow(self, n)
-      dat <- read_from_head(self$head, n)
+      dat <- read_from_head(self, n)
       self$head <- dat[[2L]]
       self$buffer$.used <- self$buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
     read_head=function(n) {
-      check_buffer_underflow(self, n)
-      read_from_head(self$head, n)[[1L]]
-    },
-
-    ## Internal:
-    write_to_head=function(data) {
-      self$head$data <- data
-      self$head <- self$head$.next
-      if (self$buffer$.used < self$size()) {
-        self$buffer$.used <- self$buffer$.used + 1L
-      } else {
-        self$tail <- self$tail$.next
-      }
+      read_from_head(self, n)[[1L]]
     },
 
     ## This might come out as simply a free S3 method/function
     to_list=function() {
-      read_from_tail(self$tail, self$used())[[1L]]
+      read_from_tail(self, self$used())[[1L]]
     }
   ))
 
-read_from_tail <- function(tail, n) {
+read_from_tail <- function(buf, n) {
+  check_buffer_underflow(buf, n)
+  tail <- buf$tail
   ret <- vector("list", n)
   for (i in seq_len(n)) {
     ret[[i]] <- tail$data
@@ -231,13 +213,26 @@ read_from_tail <- function(tail, n) {
   list(ret, tail)
 }
 
-read_from_head <- function(head, n) {
+read_from_head <- function(buf, n) {
+  check_buffer_underflow(buf, n)
+  head <- buf$head
+
   ret <- vector("list", n)
   for (i in seq_len(n)) {
     head <- head$.prev
     ret[[i]] <- head$data
   }
   list(ret, head)
+}
+
+write_to_head <- function(buf, data) {
+  buf$head$data <- data
+  buf$head <- buf$head$.next
+  if (buf$buffer$.used < buf$size()) {
+    buf$buffer$.used <- buf$buffer$.used + 1L
+  } else {
+    buf$tail <- buf$tail$.next
+  }
 }
 
 check_buffer_underflow <- function(obj, requested) {
