@@ -40,5 +40,11 @@ test_that("tail offset", {
   cmp <- as.raw(rev(seq_len(n) - 1L))
   circle_buffer_memcpy_into(buf, cmp)
   expect_true(circle_buffer_full(buf))
+})
 
+test_that("impossible sizes", {
+  expect_error(circle_buffer_bytes(0),
+               "Can't create circle buffer with size 0")
+  expect_error(circle_buffer_bytes(10, 0),
+               "Can't create circle buffer with stride 0")
 })

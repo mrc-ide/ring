@@ -16,6 +16,12 @@ SEXP R_circle_buffer_build(circle_buffer *buffer) {
 
 SEXP R_circle_buffer_create(SEXP r_size, SEXP r_stride) {
   size_t size = (size_t)INTEGER(r_size)[0], stride = INTEGER(r_stride)[0];
+  if (size == 0) {
+    Rf_error("Can't create circle buffer with size 0");
+  }
+  if (stride == 0) {
+    Rf_error("Can't create circle buffer with stride 0");
+  }
   return R_circle_buffer_build(circle_buffer_create(size, stride));
 }
 
