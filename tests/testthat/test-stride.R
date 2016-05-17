@@ -124,3 +124,9 @@ test_that("memset", {
   expect_equal(buf$free(TRUE), size * stride)
   expect_equal(buf$free(FALSE), size)
 })
+
+test_that("incorrect push", {
+  buf <- circle_buffer_bytes(100, 5)
+  expect_error(buf$push(as.raw(rep(1, 3))), "Incorrect size data")
+  expect_true(all(buf$buffer_data() == as.raw(0L)))
+})
