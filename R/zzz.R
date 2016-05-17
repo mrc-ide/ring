@@ -2,5 +2,5 @@
 sizes <- NULL
 .onLoad <- function(...) {
   sizes <<- setNames(.Call("sizeof_types", PACKAGE="circle"),
-                     c("logical", "integer", "numeric", "complex"))
+                     c("logical", "integer", "double", "complex"))
 }
