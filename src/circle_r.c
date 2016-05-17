@@ -1,6 +1,7 @@
 #include <circle/circle.h>
 #include <R.h>
 #include <Rinternals.h>
+#include "convert.h"
 
 static void circle_buffer_finalize(SEXP extPtr);
 circle_buffer* circle_buffer_get(SEXP extPtr, int closed_error);
@@ -230,6 +231,13 @@ static const R_CallMethodDef callMethods[] = {
   {"Ccircle_buffer_tail_read",   (DL_FUNC) &R_circle_buffer_tail_read,   2},
   {"Ccircle_buffer_copy",        (DL_FUNC) &R_circle_buffer_copy,        3},
   {"Ccircle_buffer_tail_offset", (DL_FUNC) &R_circle_buffer_tail_offset, 2},
+  // conversion code
+  {"Cint_to_bytes",              (DL_FUNC) &int_to_bytes,                1},
+  {"Cbytes_to_int",              (DL_FUNC) &bytes_to_int,                1},
+  {"Cdouble_to_bytes",           (DL_FUNC) &double_to_bytes,             1},
+  {"Cbytes_to_double",           (DL_FUNC) &bytes_to_double,             1},
+  {"Ccomplex_to_bytes",          (DL_FUNC) &complex_to_bytes,            1},
+  {"Cbytes_to_complex",          (DL_FUNC) &bytes_to_complex,            1},
   {NULL,                         NULL,                                   0}
 };
 
