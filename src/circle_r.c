@@ -114,12 +114,12 @@ SEXP R_circle_buffer_memset(SEXP extPtr, SEXP c, SEXP len) {
 
 SEXP R_circle_buffer_memcpy_into(SEXP extPtr, SEXP src) {
   circle_buffer *buffer = circle_buffer_get(extPtr, 1);
-  size_t len = LENGTH(src);
-  if (len % buffer->stride != 0) {
+  size_t len = LENGTH(src), stride = buffer->stride;
+  if (len % stride != 0) {
     Rf_error("Incorrect size data (%d bytes); expected multiple of %d bytes",
-             len, buffer->stride);
+             len, stride);
   }
-  size_t count = len / buffer->stride;
+  size_t count = len / stride;
   data_t * head = (data_t *) circle_buffer_memcpy_into(buffer, RAW(src), count);
   return ScalarInteger(head - buffer->data);
 }
