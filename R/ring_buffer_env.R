@@ -1,8 +1,9 @@
-## an environment-backed circle buffer.  This one is genuinely
-## circular via a pair of doubly linked lists.
+ring_buffer_env <- function(size) {
+  .R6_ring_buffer_env$new(size)
+}
 
-## This might be more efficient to implement with C lookups, but I'm
-## not sure and doubt it will make a big difference.
+## TODO: implement growth, which is fairly easy to do here; we break
+## the ring and splice in another doubly linked list.
 
 ## There is an interface issue here that I need to deal with once I
 ## have the basic logic working; is the point of the buffer to
@@ -12,42 +13,18 @@
 ## thing I wonder about is whether it's OK to expose the head/tail
 ## thing or if we should abstract that away...
 
-## Is it also worth keeping an "index" (a second set of pointers in a
-## list) so that we can efficiently move from one environment to
-## another via random access?  This would speed up things like a
-## linear search for an index element perhaps.
+## TODO: Throughout, it is possible that any error in the assignment
+## (probably via an R issue, object not being found etc) leaves the
+## size element corrupt.  I'd like to drop this entirely I think, in
+## favour of an odometer based counter.  Once I get some decent tests
+## implemented I can try and swap that out.  When done, the lookups
+## for capacity will be all O(n) which is a bit bad but probably a
+## reasonable price to pay for simpler and more robust code.
 
-##   reset
-##   size
-##   used
-##   free
-##   empty
-##   full
-
-## In the C version I then have:
-##
-##   memcpy_into
-##   memcpy_from
-##   memset
-##
-## which all act as FIFO
-##
-## I expect that *writing* and *destructive reading* will generally
-## happen in a FIFO way (writes to head, reads from tail)
-##
-## But then for simple reading we have:
-##
-## tail_read
-## tail_data (as tail)
-## head_data
-##
-## Here I'll implement a similar set of commands and see what happens.
-
-circle_buffer_env_create <- function(size) {
+ring_buffer_env_create <- function(size) {
   head <- prev <- NULL
   for (i in seq_len(size)) {
     x <- new.env(parent=emptyenv())
-    x$.idx <- i # debug only
     if (is.null(prev)) {
       head <- x
     } else {
@@ -65,8 +42,8 @@ circle_buffer_env_create <- function(size) {
   head
 }
 
-circle_buffer_env_duplicate <- function(buffer) {
-  ret <- circle_buffer_env(buffer$size())
+ring_buffer_env_duplicate <- function(buffer) {
+  ret <- ring_buffer_env(buffer$size())
 
   ## To *truely* duplicate the buffer, we need to advance the pointers
   ## a little.
@@ -85,13 +62,9 @@ circle_buffer_env_duplicate <- function(buffer) {
   ret
 }
 
-circle_buffer_env <- function(size) {
-  .R6_circle_buffer_env$new(size)
-}
-
 ##' @importFrom R6 R6Class
-.R6_circle_buffer_env <- R6::R6Class(
-  "circle_buffer_env",
+.R6_ring_buffer_env <- R6::R6Class(
+  "ring_buffer_env",
   ## need to implement our own clone method as the default R6 one is
   ## not going to cut it, given everything inside the class is a
   ## reference.
@@ -103,7 +76,7 @@ circle_buffer_env <- function(size) {
     tail=NULL,
 
     initialize=function(size) {
-      self$buffer <- circle_buffer_env_create(size)
+      self$buffer <- ring_buffer_env_create(size)
       self$reset()
     },
 
@@ -114,7 +87,7 @@ circle_buffer_env <- function(size) {
     },
 
     duplicate=function() {
-      circle_buffer_env_duplicate(self)
+      ring_buffer_env_duplicate(self)
     },
 
     size=function() self$buffer$.size,
@@ -128,25 +101,25 @@ circle_buffer_env <- function(size) {
 
     ## Mostly debugging:
     head_pos=function() {
-      circle_buffer_env_distance_forward(self$buffer, self$head)
+      ring_buffer_env_distance_forward(self$buffer, self$head)
     },
     tail_pos=function() {
-      circle_buffer_env_distance_forward(self$buffer, self$tail)
+      ring_buffer_env_distance_forward(self$buffer, self$tail)
     },
 
     head_data=function() {
-      circle_buffer_env_check_underflow(self, 1L)
+      ring_buffer_env_check_underflow(self, 1L)
       self$head$.prev$data
     },
     tail_data=function() {
-      circle_buffer_env_check_underflow(self, 1L)
+      ring_buffer_env_check_underflow(self, 1L)
       self$tail$data
     },
 
     ## Start getting strong divergence here:
     set=function(data, n) {
       for (i in seq_len(min(n, self$size))) {
-        circle_buffer_env_write_to_head(self, data)
+        ring_buffer_env_write_to_head(self, data)
       }
     },
 
@@ -162,24 +135,24 @@ circle_buffer_env <- function(size) {
     push=function(data, iterate=TRUE) {
       if (iterate) {
         for (el in data) {
-          circle_buffer_env_write_to_head(self, el)
+          ring_buffer_env_write_to_head(self, el)
         }
       } else {
-        circle_buffer_env_write_to_head(self, data)
+        ring_buffer_env_write_to_head(self, data)
       }
     },
 
     take=function(n) {
-      dat <- circle_buffer_env_read_from_tail(self, n)
+      dat <- ring_buffer_env_read_from_tail(self, n)
       self$tail <- dat[[2L]]
       self$buffer$.used <- self$buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
-    read=function(n) circle_buffer_env_read_from_tail(self, n)[[1L]],
+    read=function(n) ring_buffer_env_read_from_tail(self, n)[[1L]],
 
     copy=function(dest, n) {
-      circle_buffer_env_check_underflow(self, n)
+      ring_buffer_env_check_underflow(self, n)
 
       tail <- self$tail
       for (i in seq_len(n)) {
@@ -192,34 +165,34 @@ circle_buffer_env <- function(size) {
     },
 
     head_offset_data=function(n) {
-      circle_buffer_env_check_underflow(self, n + 1L)
-      circle_buffer_env_move_backward(self$head$.prev, n)$data
+      ring_buffer_env_check_underflow(self, n + 1L)
+      ring_buffer_env_move_backward(self$head$.prev, n)$data
     },
     tail_offset_data=function(n) {
-      circle_buffer_env_check_underflow(self, n + 1L)
-      circle_buffer_env_move_forward(self$tail, n)$data
+      ring_buffer_env_check_underflow(self, n + 1L)
+      ring_buffer_env_move_forward(self$tail, n)$data
     },
 
     ## This is the unusual direction...
     take_head=function(n) {
-      dat <- circle_buffer_env_read_from_head(self, n)
+      dat <- ring_buffer_env_read_from_head(self, n)
       self$head <- dat[[2L]]
       self$buffer$.used <- self$buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
     read_head=function(n) {
-      circle_buffer_env_read_from_head(self, n)[[1L]]
+      ring_buffer_env_read_from_head(self, n)[[1L]]
     },
 
     ## This might come out as simply a free S3 method/function
     to_list=function() {
-      circle_buffer_env_read_from_tail(self, self$used())[[1L]]
+      ring_buffer_env_read_from_tail(self, self$used())[[1L]]
     }
   ))
 
-circle_buffer_env_read_from_tail <- function(buf, n) {
-  circle_buffer_env_check_underflow(buf, n)
+ring_buffer_env_read_from_tail <- function(buf, n) {
+  ring_buffer_env_check_underflow(buf, n)
   tail <- buf$tail
   ret <- vector("list", n)
   for (i in seq_len(n)) {
@@ -229,8 +202,8 @@ circle_buffer_env_read_from_tail <- function(buf, n) {
   list(ret, tail)
 }
 
-circle_buffer_env_read_from_head <- function(buf, n) {
-  circle_buffer_env_check_underflow(buf, n)
+ring_buffer_env_read_from_head <- function(buf, n) {
+  ring_buffer_env_check_underflow(buf, n)
   head <- buf$head
 
   ret <- vector("list", n)
@@ -241,7 +214,7 @@ circle_buffer_env_read_from_head <- function(buf, n) {
   list(ret, head)
 }
 
-circle_buffer_env_write_to_head <- function(buf, data) {
+ring_buffer_env_write_to_head <- function(buf, data) {
   buf$head$data <- data
   buf$head <- buf$head$.next
   if (buf$buffer$.used < buf$size()) {
@@ -251,7 +224,7 @@ circle_buffer_env_write_to_head <- function(buf, data) {
   }
 }
 
-circle_buffer_env_check_underflow <- function(obj, requested) {
+ring_buffer_env_check_underflow <- function(obj, requested) {
   ## TODO: Perhaps an S3 condition?
   if (requested > obj$used()) {
     stop(sprintf("Buffer underflow: requested %d, available %d",
@@ -259,7 +232,7 @@ circle_buffer_env_check_underflow <- function(obj, requested) {
   }
 }
 
-circle_buffer_env_distance_forward <- function(head, target) {
+ring_buffer_env_distance_forward <- function(head, target) {
   i <- 0L
   while (!identical(target, head)) {
     i <- i + 1L
@@ -268,7 +241,7 @@ circle_buffer_env_distance_forward <- function(head, target) {
   i
 }
 
-circle_buffer_env_distance_backward <- function(tail, target) {
+ring_buffer_env_distance_backward <- function(tail, target) {
   i <- 0L
   while (!identical(target, tail)) {
     i <- i + 1L
@@ -277,14 +250,14 @@ circle_buffer_env_distance_backward <- function(tail, target) {
   i
 }
 
-circle_buffer_env_move_forward <- function(x, n) {
+ring_buffer_env_move_forward <- function(x, n) {
   for (i in seq_len(n)) {
     x <- x$.next
   }
   x
 }
 
-circle_buffer_env_move_backward <- function(x, n) {
+ring_buffer_env_move_backward <- function(x, n) {
   for (i in seq_len(n)) {
     x <- x$.prev
   }

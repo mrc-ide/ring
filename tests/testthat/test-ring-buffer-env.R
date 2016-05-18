@@ -1,8 +1,8 @@
-context("circle_buffer_env")
+context("ring_buffer_env")
 
 test_that("empty", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   expect_equal(buf$size(), n)
   expect_identical(buf$size(), as.integer(n))
 
@@ -16,7 +16,7 @@ test_that("empty", {
 
 test_that("push", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   m <- 4
   buf$push(1:m)
   expect_equal(buf$used(), m)
@@ -33,7 +33,7 @@ test_that("push", {
 
 test_that("read", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   m <- 4
   buf$push(1:m)
 
@@ -44,7 +44,7 @@ test_that("read", {
 
 test_that("tail_offset_data", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   m <- 4
   buf$push(1:m)
 
@@ -56,7 +56,7 @@ test_that("tail_offset_data", {
 
 test_that("head_offset_data", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   m <- 4
   buf$push(1:m)
 
@@ -68,7 +68,7 @@ test_that("head_offset_data", {
 
 test_that("take", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   m <- 4
   buf$push(1:m)
 
@@ -91,7 +91,7 @@ test_that("take", {
 
 test_that("fill buffer, then overflow", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   buf$push(1:n)
   expect_true(buf$full())
   expect_equal(buf$used(), n)
@@ -117,7 +117,7 @@ test_that("fill buffer, then overflow", {
 
 test_that("duplicate", {
   n <- 10
-  buf <- circle_buffer_env(10)
+  buf <- ring_buffer_env(10)
   buf$push(1:12)
   buf$take(3)
 
@@ -158,8 +158,8 @@ test_that("duplicate", {
 test_that("copy zero", {
   n1 <- 20
   n2 <- 10
-  buf1 <- circle_buffer_env(n1)
-  buf2 <- circle_buffer_env(n2)
+  buf1 <- ring_buffer_env(n1)
+  buf2 <- ring_buffer_env(n2)
 
   buf1$push(1:n1)
   buf1$copy(buf2, 0L)
@@ -175,8 +175,8 @@ test_that("copy zero", {
 test_that("copy some", {
   n1 <- 20
   n2 <- 10
-  buf1 <- circle_buffer_env(n1)
-  buf2 <- circle_buffer_env(n2)
+  buf1 <- ring_buffer_env(n1)
+  buf2 <- ring_buffer_env(n2)
 
   buf1$push(1:n1)
   buf1$copy(buf2, 5L)

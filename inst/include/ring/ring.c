@@ -1,8 +1,8 @@
-#include <circle/circle.h>
+#include <ring/ring.h>
 
 // Some prototypes used here that aren't public:
-data_t * circle_buffer_end(circle_buffer *buffer);
-data_t * circle_buffer_nextp(circle_buffer *buffer, const data_t *p);
+data_t * ring_buffer_end(ring_buffer *buffer);
+data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p);
 inline int imin(int a, int b);
 
 // only used for the Calloc and Free -- could drop back to use plain C?
@@ -12,81 +12,81 @@ inline int imin(int a, int b);
 // that's a pretty minor gain at this point.
 #include <R.h>
 
-circle_buffer * circle_buffer_create(size_t size, size_t stride) {
-  circle_buffer * buffer = Calloc(1, circle_buffer);
+ring_buffer * ring_buffer_create(size_t size, size_t stride) {
+  ring_buffer * buffer = Calloc(1, ring_buffer);
   buffer->size = size;
   buffer->stride = stride;
   buffer->bytes_data = size * stride + 1;
 
   buffer->data = Calloc(buffer->bytes_data, data_t);
-  circle_buffer_reset(buffer);
+  ring_buffer_reset(buffer);
   return buffer;
 }
 
-circle_buffer * circle_buffer_clone(const circle_buffer *buffer) {
-  circle_buffer *ret = circle_buffer_create(buffer->size, buffer->stride);
+ring_buffer * ring_buffer_clone(const ring_buffer *buffer) {
+  ring_buffer *ret = ring_buffer_create(buffer->size, buffer->stride);
   memcpy(ret->data, buffer->data, ret->bytes_data);
-  ret->head += circle_buffer_head_pos(buffer, 1);
-  ret->tail += circle_buffer_tail_pos(buffer, 1);
+  ret->head += ring_buffer_head_pos(buffer, 1);
+  ret->tail += ring_buffer_tail_pos(buffer, 1);
   return ret;
 }
 
-void circle_buffer_destroy(circle_buffer *buffer) {
+void ring_buffer_destroy(ring_buffer *buffer) {
   Free(buffer->data);
   Free(buffer);
 }
 
-size_t circle_buffer_bytes_data(const circle_buffer *buffer) {
+size_t ring_buffer_bytes_data(const ring_buffer *buffer) {
   return buffer->bytes_data;
 }
 
-size_t circle_buffer_size(const circle_buffer *buffer, int bytes) {
+size_t ring_buffer_size(const ring_buffer *buffer, int bytes) {
   return bytes ? buffer->bytes_data - 1 : buffer->size;
 }
 
-int circle_buffer_full(circle_buffer *buffer) {
-  return circle_buffer_free(buffer, 1) == 0;
+int ring_buffer_full(ring_buffer *buffer) {
+  return ring_buffer_free(buffer, 1) == 0;
 }
 
-int circle_buffer_empty(circle_buffer *buffer) {
-  return circle_buffer_free(buffer, 1) == circle_buffer_size(buffer, 1);
+int ring_buffer_empty(ring_buffer *buffer) {
+  return ring_buffer_free(buffer, 1) == ring_buffer_size(buffer, 1);
 }
 
-const void * circle_buffer_head(circle_buffer *buffer) {
+const void * ring_buffer_head(ring_buffer *buffer) {
   return buffer->head;
 }
-const void * circle_buffer_tail(circle_buffer *buffer) {
+const void * ring_buffer_tail(ring_buffer *buffer) {
   return buffer->tail;
 }
-const void * circle_buffer_data(circle_buffer *buffer) {
+const void * ring_buffer_data(ring_buffer *buffer) {
   return buffer->data;
 }
 
-int circle_buffer_head_pos(const circle_buffer *buffer, int bytes) {
+int ring_buffer_head_pos(const ring_buffer *buffer, int bytes) {
   size_t diff = buffer->head - buffer->data;
   return bytes ? diff : diff / buffer->stride;
 }
-int circle_buffer_tail_pos(const circle_buffer *buffer, int bytes) {
+int ring_buffer_tail_pos(const ring_buffer *buffer, int bytes) {
   size_t diff = buffer->tail - buffer->data;
   return bytes ? diff : diff / buffer->stride;
 }
 
-void circle_buffer_reset(circle_buffer *buffer) {
+void ring_buffer_reset(ring_buffer *buffer) {
   buffer->head = buffer->tail = buffer->data;
 }
 
-size_t circle_buffer_free(const circle_buffer *buffer, int bytes) {
+size_t ring_buffer_free(const ring_buffer *buffer, int bytes) {
   size_t diff;
   if (buffer->head >= buffer->tail) {
-    diff = circle_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
+    diff = ring_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
   } else {
     diff = buffer->tail - buffer->head - 1;
   }
   return bytes ? diff : diff / buffer->stride;
 }
 
-size_t circle_buffer_used(const circle_buffer *buffer, int bytes) {
-  return circle_buffer_size(buffer, bytes) - circle_buffer_free(buffer, bytes);
+size_t ring_buffer_used(const ring_buffer *buffer, int bytes) {
+  return ring_buffer_size(buffer, bytes) - ring_buffer_free(buffer, bytes);
 }
 
 /*
@@ -106,17 +106,17 @@ size_t circle_buffer_used(const circle_buffer *buffer, int bytes) {
  * may be different than it was before the function was called.
  *
  * Returns the actual number of bytes written to buffer: len, if len <
- * circle_buffer_bytes_data(buffer), else
- * circle_buffer_bytes_data(buffer).
+ * ring_buffer_bytes_data(buffer), else
+ * ring_buffer_bytes_data(buffer).
  */
 // It's not really clear what this should do with stride?  Probably if
 // len does not divide neatly through by stride we should error.  For
 // now, leave it be though.
-size_t circle_buffer_memset(circle_buffer *buffer, int c, size_t len) {
-  const data_t *bufend = circle_buffer_end(buffer);
+size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t len) {
+  const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;
-  size_t count = imin(len * buffer->stride, circle_buffer_bytes_data(buffer));
-  int overflow = count > circle_buffer_free(buffer, 1);
+  size_t count = imin(len * buffer->stride, ring_buffer_bytes_data(buffer));
+  int overflow = count > ring_buffer_free(buffer, 1);
 
   while (nwritten != count) {
     /* don't copy beyond the end of the buffer */
@@ -133,8 +133,8 @@ size_t circle_buffer_memset(circle_buffer *buffer, int c, size_t len) {
   }
 
   if (overflow) {
-    buffer->tail = circle_buffer_nextp(buffer, buffer->head);
-    //assert(circle_buffer_is_full(buffer));
+    buffer->tail = ring_buffer_nextp(buffer, buffer->head);
+    //assert(ring_buffer_is_full(buffer));
   }
 
   return nwritten;
@@ -154,13 +154,13 @@ size_t circle_buffer_memset(circle_buffer *buffer, int c, size_t len) {
  * overflow, the value of the ring buffer's tail pointer may be
  * different than it was before the function was called.
  */
-void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
+void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
                                 size_t count) {
   // TODO: if length of count is not divisible nicely by stride, it is an error
   const size_t len = count * buffer->stride;
   const data_t *source = src;
-  const data_t *bufend = circle_buffer_end(buffer);
-  size_t overflow = count > circle_buffer_free(buffer, 1);
+  const data_t *bufend = ring_buffer_end(buffer);
+  size_t overflow = count > ring_buffer_free(buffer, 1);
   size_t nread = 0;
   while (nread != len) {
     size_t n = imin(bufend - buffer->head, len - nread);
@@ -174,7 +174,7 @@ void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
   }
 
   if (overflow) {
-    buffer->tail = circle_buffer_nextp(buffer, buffer->head);
+    buffer->tail = ring_buffer_nextp(buffer, buffer->head);
   }
   return buffer->head;
 }
@@ -194,9 +194,9 @@ void *circle_buffer_memcpy_into(circle_buffer *buffer, const void *src,
  * count is greater than the number of bytes used in the ring buffer,
  * no bytes are copied, and the function will return 0.
  */
-void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
+void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer,
                                 size_t count) {
-  void * tail = circle_buffer_tail_read(buffer, dest, count);
+  void * tail = ring_buffer_tail_read(buffer, dest, count);
   if (tail != 0) {
     buffer->tail = tail;
   }
@@ -206,8 +206,8 @@ void *circle_buffer_memcpy_from(void *dest, circle_buffer *buffer,
 // This is like the function above, but it is not destructive to the
 // buffer.  I need to write a similar one that reads relative to the
 // head too (i.e. that will pull the most recently added data).
-void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
-  size_t bytes_used = circle_buffer_used(buffer, 1);
+void *ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count) {
+  size_t bytes_used = ring_buffer_used(buffer, 1);
   size_t len = count * buffer->stride;
   if (len > bytes_used) {
     return 0;
@@ -215,7 +215,7 @@ void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
   data_t *tail = buffer->tail;
 
   data_t *dest_data = dest;
-  const data_t *bufend = circle_buffer_end(buffer);
+  const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;
   // TODO: This can be rewritten to allow at once one switch point
   // which is probably the same assembly but might be nicer to read?
@@ -240,8 +240,8 @@ void *circle_buffer_tail_read(circle_buffer *buffer, void *dest, size_t count) {
 // here could be invalidated by any write function (any many of the
 // read functions too) so this is inherently unsafe, but on entry it
 // does seem worth checking.
-void *circle_buffer_tail_offset(circle_buffer *buffer, size_t offset) {
-  size_t bytes_used = circle_buffer_used(buffer, 1);
+void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
+  size_t bytes_used = ring_buffer_used(buffer, 1);
   size_t len = offset * buffer->stride;
   if (len >= bytes_used) {
     // TODO: elsewhere this is > bytes used but I think that here,
@@ -250,7 +250,7 @@ void *circle_buffer_tail_offset(circle_buffer *buffer, size_t offset) {
     return 0;
   }
   data_t *tail = buffer->tail;
-  const data_t *bufend = circle_buffer_end(buffer);
+  const data_t *bufend = ring_buffer_end(buffer);
   size_t nmoved = 0;
 
   // TODO: this is really a much simpler construct than this as we can
@@ -290,19 +290,19 @@ void *circle_buffer_tail_offset(circle_buffer *buffer, size_t offset) {
  * number of bytes used in src, no bytes are copied, and the function
  * returns 0.
  */
-void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src,
+void * ring_buffer_copy(ring_buffer *dst, ring_buffer *src,
                           size_t count) {
   // TODO: Not clear what should be done (if anything other than an
   // error) if the two buffers differ in their stride.
-  size_t src_bytes_used = circle_buffer_used(src, 1);
+  size_t src_bytes_used = ring_buffer_used(src, 1);
   size_t n_bytes = count * src->stride;
   if (n_bytes > src_bytes_used) {
     return 0;
   }
-  int overflow = n_bytes > circle_buffer_free(dst, 1);
+  int overflow = n_bytes > ring_buffer_free(dst, 1);
 
-  const data_t *src_bufend = circle_buffer_end(src);
-  const data_t *dst_bufend = circle_buffer_end(dst);
+  const data_t *src_bufend = ring_buffer_end(src);
+  const data_t *dst_bufend = ring_buffer_end(dst);
   size_t ncopied = 0;
   while (ncopied != n_bytes) {
     // assert(src_bufend > src->tail);
@@ -323,11 +323,11 @@ void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src,
     }
   }
 
-  // assert(n_bytes + circle_buffer_used(src, 1) == src_bytes_used);
+  // assert(n_bytes + ring_buffer_used(src, 1) == src_bytes_used);
 
   if (overflow) {
-    dst->tail = circle_buffer_nextp(dst, dst->head);
-    // assert(circle_buffer_full(dst));
+    dst->tail = ring_buffer_nextp(dst, dst->head);
+    // assert(ring_buffer_full(dst));
   }
 
   return dst->head;
@@ -346,8 +346,8 @@ void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src,
 // cursor around the buffer.
 
 // Internal functions below here...
-data_t * circle_buffer_end(circle_buffer *buffer) {
-  return buffer->data + circle_buffer_bytes_data(buffer);
+data_t * ring_buffer_end(ring_buffer *buffer) {
+  return buffer->data + ring_buffer_bytes_data(buffer);
 }
 
 /*
@@ -355,17 +355,17 @@ data_t * circle_buffer_end(circle_buffer *buffer) {
  * contiguous buffer, return the a pointer to the next logical
  * location in the ring buffer.
  */
-data_t * circle_buffer_nextp(circle_buffer *buffer, const data_t *p) {
+data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p) {
   /*
    * The assert guarantees the expression (++p - buffer->data) is
    * non-negative; therefore, the modulus operation is safe and
    * portable.
    */
-  // assert((p >= buffer->data) && (p < circle_buffer_end(buffer)));
+  // assert((p >= buffer->data) && (p < ring_buffer_end(buffer)));
   // TODO: fix this up for working with the stride information...
   //   p += buffer->stride;
-  //   buffer->data + (p - buffer->data) % circle_buffer_bytes_data(buffer);
-  return buffer->data + ((++p - buffer->data) % circle_buffer_bytes_data(buffer));
+  //   buffer->data + (p - buffer->data) % ring_buffer_bytes_data(buffer);
+  return buffer->data + ((++p - buffer->data) % ring_buffer_bytes_data(buffer));
 }
 
 inline int imin(int a, int b) {

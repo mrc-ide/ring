@@ -4,21 +4,22 @@
 ## The idea is that we have a matrix of one type (logical, int,
 ## double, complex) implemented as
 
-## NOTE: This is stored transposed to the original data at the moment.
-circle_matrix <- function(nr_max, nc, type, environment=TRUE) {
+## NOTE: This is stored transposed to the storage of the original data
+## at the moment.
+ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
   type <- match.arg(type, names(sizes))
   if (environment) {
-    buf <- circle_buffer_env(nr_max)
+    buf <- ring_buffer_env(nr_max)
   } else {
-    buf <- circle_buffer_bytes_typed(nr_max, create[[type]](nc))
+    buf <- ring_buffer_bytes_typed(nr_max, create[[type]](nc))
   }
   ret <- list(buf=buf, nr_max=nr_max, nc=nc, type=type,
               environment=environment)
-  class(ret) <- c("circle_matrix_environment", "circle_matrix")
+  class(ret) <- "ring_matrix"
   ret
 }
 
-circle_matrix_push <- function(x, data) {
+ring_matrix_push <- function(x, data) {
   ## Allow a vector of nc elements here too?
   if (!is.matrix(data)) {
     stop("Expected a matrix for 'data'")
@@ -35,7 +36,7 @@ circle_matrix_push <- function(x, data) {
   }
 }
 
-circle_matrix_get <- function(x, i=NULL) {
+ring_matrix_get <- function(x, i=NULL) {
   if (is.null(i)) {
     used <- x$buf$used()
     dat <- x$buf$read(x$buf$used())
@@ -70,37 +71,37 @@ circle_matrix_get <- function(x, i=NULL) {
 }
 
 ##' @export
-dim.circle_matrix <- function(x, ...) {
+dim.ring_matrix <- function(x, ...) {
   c(x$buf$used(), x$nc)
 }
 
 ##' @export
-head.circle_matrix <- function(x, n = 6L, ...) {
+head.ring_matrix <- function(x, n = 6L, ...) {
   head.matrix(x, n, ...)
 }
 
 ##' @export
-tail.circle_matrix <- function(x, n = 6L, ...) {
+tail.ring_matrix <- function(x, n = 6L, ...) {
   tail.matrix(x, n, ...)
 }
 
 ##' @export
-`[.circle_matrix` <- function(x, i, j, ..., drop=TRUE) {
+`[.ring_matrix` <- function(x, i, j, ..., drop=TRUE) {
   if (missing(i)) {
-    circle_matrix_get(x, NULL)[, j, drop=drop]
+    ring_matrix_get(x, NULL)[, j, drop=drop]
   } else if (is.matrix(i)) {
     if (!missing(j)) {
       stop("subscript out of bounds") # same error as [.matrix
     }
     j <- sort(unique(i[, 1L]))
-    circle_matrix_get(x, j)[cbind(match(i[, 1L], j), i[, 2L])]
+    ring_matrix_get(x, j)[cbind(match(i[, 1L], j), i[, 2L])]
   } else {
-    circle_matrix_get(x, i)[, j, drop=drop]
+    ring_matrix_get(x, i)[, j, drop=drop]
   }
 }
 
 ##' @export
-dimnames.circle_matrix <- function(x, ...) {
+dimnames.ring_matrix <- function(x, ...) {
   if (is.null(x$colnames)) {
     NULL
   } else {
@@ -109,7 +110,7 @@ dimnames.circle_matrix <- function(x, ...) {
 }
 
 ##' @export
-`dimnames<-.circle_matrix` <- function(x, value) {
+`dimnames<-.ring_matrix` <- function(x, value) {
   if (is.null(NULL)) {
     x$colnames <- NULL
   } else if (!is.list(value) || length(value) != 2L) {

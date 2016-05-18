@@ -1,11 +1,11 @@
-context("matrix")
+context("ring_matrix")
 
 test_that("basic use", {
   set.seed(1)
   nc <- 5L
   for (environment in c(TRUE, FALSE)) {
     for (type in names(sizes)) {
-      m <- circle_matrix(100, nc, type, environment)
+      m <- ring_matrix(100, nc, type, environment)
       if (!environment) {
         expect_equal(m$buf$stride(), nc * sizes[[type]])
       }
@@ -20,10 +20,10 @@ test_that("basic use", {
 
       dat <- matrix(sample(pool, nr * m$nc, TRUE), nr, m$nc)
 
-      circle_matrix_push(m, dat)
+      ring_matrix_push(m, dat)
 
-      expect_equal(circle_matrix_get(m), dat)
-      expect_equal(circle_matrix_get(m, 1:2), dat[1:2, , drop=FALSE])
+      expect_equal(ring_matrix_get(m), dat)
+      expect_equal(ring_matrix_get(m, 1:2), dat[1:2, , drop=FALSE])
 
       expect_equal(m[], dat[])
       expect_equal(m[, ], dat[, ])

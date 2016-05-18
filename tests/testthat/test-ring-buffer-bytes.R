@@ -17,8 +17,8 @@
 ## objects or whatever, then that will need some additional testing and
 ## support.
 
-## NOTE: None of the tests involving circle_buffer_read and
-## circle_buffer_write, which deal with file descriptors, are done.  I
+## NOTE: None of the tests involving ring_buffer_read and
+## ring_buffer_write, which deal with file descriptors, are done.  I
 ## don't believe that R makes it possible to pass fds back into C from
 ## R.  This might be implemented later though.
 
@@ -34,13 +34,13 @@
 ## pointer and set the head and tail pointers to have the same
 ## relative offset, plus set size and stride.
 
-context("circle (r, bytes)")
+context("ring_buffer_bytes")
 
 test_that("initial conditions", {
   size <- 100L
 
-  buf <- circle_buffer_bytes(size)
-  expect_is(buf, "circle_buffer_bytes")
+  buf <- ring_buffer_bytes(size)
+  expect_is(buf, "ring_buffer_bytes")
 
   expect_equal(buf$size(), size)
   expect_equal(buf$stride(), 1L)
@@ -67,15 +67,15 @@ test_that("initial conditions", {
 
 test_that("null pointer safe", {
   path <- tempfile()
-  saveRDS(circle_buffer_bytes(100), path)
+  saveRDS(ring_buffer_bytes(100), path)
   on.exit(file.remove(path))
-  expect_error(readRDS(path)$full(), "circle_buffer already freed")
+  expect_error(readRDS(path)$full(), "ring_buffer already freed")
 })
 
 test_that("reset", {
   size <- 24L
   for (write in c(8L, size + 1L)) {
-    buf <- circle_buffer_bytes(size)
+    buf <- ring_buffer_bytes(size)
     expect_equal(buf$set(as.raw(1), write), write)
     expect_null(buf$reset())
     expect_equal(buf$bytes_data(), size + 1L)
@@ -91,7 +91,7 @@ test_that("reset", {
 
 test_that("memset with zero count", {
   size <- 24L
-  buf <- circle_buffer_bytes(size)
+  buf <- ring_buffer_bytes(size)
 
   expect_equal(buf$set(1, 0), 0)
   expect_equal(buf$size(), size)
@@ -105,7 +105,7 @@ test_that("memset with zero count", {
 test_that("memset a few bytes", {
   size <- 4096L
 
-  buf <- circle_buffer_bytes(size)
+  buf <- ring_buffer_bytes(size)
   buf$reset()
   expect_equal(buf$set(57, 7), 7)
   expect_equal(buf$size(), size)
@@ -120,7 +120,7 @@ test_that("memset a few bytes", {
 
 test_that("memset full capacity", {
   size <- 4096L
-  buf <- circle_buffer_bytes(size)
+  buf <- ring_buffer_bytes(size)
 
   expect_equal(buf$set(57, size), size)
   expect_equal(buf$size(), size)
@@ -133,7 +133,7 @@ test_that("memset full capacity", {
 
 test_that("memset, twice", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
 
   rb1$reset()
   expect_equal(rb1$set(57, 7), 7)
@@ -151,7 +151,7 @@ test_that("memset, twice", {
 
 test_that("memset, twice, to full capacity", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
 
   rb1$reset()
   expect_equal(rb1$set(57, size - 1L), size - 1L)
@@ -164,9 +164,9 @@ test_that("memset, twice, to full capacity", {
   expect_equal(rb1$buffer_data(), rep(as.raw(57), size))
 })
 
-test_that("circle_buffer_memset, overflow by 1 byte", {
+test_that("ring_buffer_memset, overflow by 1 byte", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
   expect_equal(rb1$set(57, size + 1L), size + 1L)
@@ -183,9 +183,9 @@ test_that("circle_buffer_memset, overflow by 1 byte", {
   expect_equal(rb1$buffer_data(), rep(as.raw(57), size))
 })
 
-test_that("circle_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
+test_that("ring_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
   expect_equal(rb1$set(57, size), size)
@@ -203,12 +203,12 @@ test_that("circle_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
   expect_equal(rb1$buffer_data(), repr(57, size))
 })
 
-test_that("circle_buffer_memset, twice with oveflow", {
-  ## circle_buffer_memset, attempt to overflow by 2 bytes, but
-  ## circle_buffer_memset will stop at 1 byte overflow (length
-  ## clamping, see circle_buffer_memset documentation).
+test_that("ring_buffer_memset, twice with oveflow", {
+  ## ring_buffer_memset, attempt to overflow by 2 bytes, but
+  ## ring_buffer_memset will stop at 1 byte overflow (length
+  ## clamping, see ring_buffer_memset documentation).
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
   expect_equal(rb1$set(57, size + 2), size + 1L)
@@ -222,9 +222,9 @@ test_that("circle_buffer_memset, twice with oveflow", {
   expect_equal(rb1$buffer_data(), repr(57, size))
 })
 
-test_that("circle_buffer_memset, twice, overflowing both times", {
+test_that("ring_buffer_memset, twice, overflowing both times", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
   expect_equal(rb1$set(57, size + 1L), size + 1L)
@@ -239,9 +239,9 @@ test_that("circle_buffer_memset, twice, overflowing both times", {
   expect_equal(rb1$buffer_data(), repr(58, size))
 })
 
-test_that("circle_buffer_memcpy_into with zero count", {
+test_that("ring_buffer_memcpy_into with zero count", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
@@ -257,9 +257,9 @@ test_that("circle_buffer_memcpy_into with zero count", {
   expect_equal(rb1$buffer_data(), repr(1, size))
 })
 
-test_that("circle_buffer_memcpy_into a few bytes of data", {
+test_that("ring_buffer_memcpy_into a few bytes of data", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -278,9 +278,9 @@ test_that("circle_buffer_memcpy_into a few bytes of data", {
   expect_equal(rb1$buffer_data(), pad(bytes, size, 1))
 })
 
-test_that("circle_buffer_memcpy_into full capacity", {
+test_that("ring_buffer_memcpy_into full capacity", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -306,9 +306,9 @@ test_that("circle_buffer_memcpy_into full capacity", {
   ##              rb1$read(size))
 })
 
-test_that("circle_buffer_memcpy_into, twice", {
+test_that("ring_buffer_memcpy_into, twice", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -331,9 +331,9 @@ test_that("circle_buffer_memcpy_into, twice", {
   expect_equal(rb1$head_data(), as.raw(1))
 })
 
-test_that("circle_buffer_memcpy_into, twice (to full capacity)", {
+test_that("ring_buffer_memcpy_into, twice (to full capacity)", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -354,9 +354,9 @@ test_that("circle_buffer_memcpy_into, twice (to full capacity)", {
   expect_equal(rb1$buffer_data(), bytes)
 })
 
-test_that("circle_buffer_memcpy_into, overflow by 1 byte", {
+test_that("ring_buffer_memcpy_into, overflow by 1 byte", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -379,9 +379,9 @@ test_that("circle_buffer_memcpy_into, overflow by 1 byte", {
   expect_equal(rb1$read(size), bytes[-1L])
 })
 
-test_that("circle_buffer_memcpy_into, twice (overflow by 1 byte on 2nd copy)", {
+test_that("ring_buffer_memcpy_into, twice (overflow by 1 byte on 2nd copy)", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -409,9 +409,9 @@ test_that("circle_buffer_memcpy_into, twice (overflow by 1 byte on 2nd copy)", {
   expect_equal(rb1$read(size), bytes[-1L])
 })
 
-test_that("circle_buffer_memcpy_into, overflow by 2 bytes (will wrap)", {
+test_that("ring_buffer_memcpy_into, overflow by 2 bytes (will wrap)", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -431,9 +431,9 @@ test_that("circle_buffer_memcpy_into, overflow by 2 bytes (will wrap)", {
   expect_equal(rb1$read(size), bytes[-(1:2)])
 })
 
-test_that("circle_buffer_memcpy_from with zero count, empty ring buffer", {
+test_that("ring_buffer_memcpy_from with zero count, empty ring buffer", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -448,9 +448,9 @@ test_that("circle_buffer_memcpy_from with zero count, empty ring buffer", {
   expect_equal(rb1$tail_pos(), 0L)
 })
 
-test_that("circle_buffer_memcpy_from with zero count, non-empty ring buffer", {
+test_that("ring_buffer_memcpy_from with zero count, non-empty ring buffer", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -469,9 +469,9 @@ test_that("circle_buffer_memcpy_from with zero count, non-empty ring buffer", {
   expect_equal(rb1$tail_pos(), 0L)
 })
 
-test_that("circle_buffer_memcpy_from a few bytes of data", {
+test_that("ring_buffer_memcpy_from a few bytes of data", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -497,9 +497,9 @@ test_that("circle_buffer_memcpy_from a few bytes of data", {
   expect_equal(rb1$buffer_data(), pad(bytes, size, 1))
 })
 
-test_that("circle_buffer_memcpy_from full capacity", {
+test_that("ring_buffer_memcpy_from full capacity", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -519,9 +519,9 @@ test_that("circle_buffer_memcpy_from full capacity", {
   expect_equal(rb1$head_pos(), size)
 })
 
-test_that("circle_buffer_memcpy_from, twice", {
+test_that("ring_buffer_memcpy_from, twice", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -539,9 +539,9 @@ test_that("circle_buffer_memcpy_from, twice", {
   expect_equal(rb1$tail_pos(), 13)
 })
 
-test_that("circle_buffer_memcpy_from, twice (full capacity)", {
+test_that("ring_buffer_memcpy_from, twice (full capacity)", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -562,9 +562,9 @@ test_that("circle_buffer_memcpy_from, twice (full capacity)", {
   expect_equal(rb1$tail_pos(), size)
 })
 
-test_that("circle_buffer_memcpy_from, attempt to underflow", {
+test_that("ring_buffer_memcpy_from, attempt to underflow", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -584,9 +584,9 @@ test_that("circle_buffer_memcpy_from, attempt to underflow", {
   expect_equal(rb1$head_pos(), 15)
 })
 
-test_that("circle_buffer_memcpy_from, attempt to underflow on 2nd call", {
+test_that("ring_buffer_memcpy_from, attempt to underflow on 2nd call", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -607,9 +607,9 @@ test_that("circle_buffer_memcpy_from, attempt to underflow on 2nd call", {
   expect_equal(rb1$head_pos(), 15)
 })
 
-test_that("circle_buffer_memcpy_into followed by circle_buffer_memcpy_from", {
+test_that("ring_buffer_memcpy_into followed by ring_buffer_memcpy_from", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -628,9 +628,9 @@ test_that("circle_buffer_memcpy_into followed by circle_buffer_memcpy_from", {
   expect_equal(rb1$tail_pos(), rb1$head_pos())
 })
 
-test_that("circle_buffer_memcpy_into, partial circle_buffer_memcpy_from", {
+test_that("ring_buffer_memcpy_into, partial ring_buffer_memcpy_from", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -650,9 +650,9 @@ test_that("circle_buffer_memcpy_into, partial circle_buffer_memcpy_from", {
   expect_equal(rb1$head_pos(), 11)
 })
 
-test_that("circle_buffer_memcpy_into, from, into, no wrap", {
+test_that("ring_buffer_memcpy_into, from, into, no wrap", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -675,12 +675,12 @@ test_that("circle_buffer_memcpy_into, from, into, no wrap", {
   expect_equal(rb1$head_pos(), size)
 })
 
-test_that("circle_buffer_memcpy_into, from, into, no wrap", {
-  ## circle_buffer_memcpy_into, circle_buffer_memcpy_from, then
-  ## circle_buffer_memcpy_into to the end of the contiguous buffer,
+test_that("ring_buffer_memcpy_into, from, into, no wrap", {
+  ## ring_buffer_memcpy_into, ring_buffer_memcpy_from, then
+  ## ring_buffer_memcpy_into to the end of the contiguous buffer,
   ## which should cause the head pointer to wrap.
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -702,11 +702,11 @@ test_that("circle_buffer_memcpy_into, from, into, no wrap", {
 })
 
 ## TODO: This one might need work (see ringbuf-test.c, l. 1441)
-test_that("circle_buffer_memcpy_into, overflow when tail > head", {
-  ## Overflow with circle_buffer_memcpy_into when tail pointer is > head
+test_that("ring_buffer_memcpy_into, overflow when tail > head", {
+  ## Overflow with ring_buffer_memcpy_into when tail pointer is > head
   ## pointer. Should bump tail pointer to head + 1.
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -735,13 +735,13 @@ test_that("circle_buffer_memcpy_into, overflow when tail > head", {
   expect_equal(rb1$tail_pos(), 12)
 })
 
-test_that("circle_buffer_memcpy_into, overflow with tail at end", {
-  ## Overflow with circle_buffer_memcpy_into when tail pointer is > head
+test_that("ring_buffer_memcpy_into, overflow with tail at end", {
+  ## Overflow with ring_buffer_memcpy_into when tail pointer is > head
   ## pointer, and tail pointer is at the end of the contiguous
   ## buffer. Should wrap tail pointer to beginning of contiguous
   ## buffer.
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
   rb1$reset()
 
@@ -775,10 +775,10 @@ test_that("circle_buffer_memcpy_into, overflow with tail at end", {
   expect_equal(rb1$tail_pos(), 0L)
 })
 
-test_that("circle_buffer_copy with zero count, empty buffers", {
+test_that("ring_buffer_copy with zero count, empty buffers", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -803,10 +803,10 @@ test_that("circle_buffer_copy with zero count, empty buffers", {
   expect_equal(rb2$head_pos(), 0L)
 })
 
-test_that("circle_buffer_copy with zero count, empty src", {
+test_that("ring_buffer_copy with zero count, empty src", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -834,10 +834,10 @@ test_that("circle_buffer_copy with zero count, empty src", {
   expect_equal(rb2$head_pos(), 0L)
 })
 
-test_that("circle_buffer_copy with zero count, empty dst", {
+test_that("ring_buffer_copy with zero count, empty dst", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -865,10 +865,10 @@ test_that("circle_buffer_copy with zero count, empty dst", {
   expect_equal(rb2$head_pos(), 2L)
 })
 
-test_that("circle_buffer_copy with zero count", {
+test_that("ring_buffer_copy with zero count", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -897,10 +897,10 @@ test_that("circle_buffer_copy with zero count", {
   expect_equal(rb2$head_pos(), 2)
 })
 
-test_that("circle_buffer_copy full contents of rb2 into rb1 (from empty)", {
+test_that("ring_buffer_copy full contents of rb2 into rb1 (from empty)", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -930,11 +930,11 @@ test_that("circle_buffer_copy full contents of rb2 into rb1 (from empty)", {
   expect_equal(rb1$read(2), bytes)
 })
 
-test_that("circle_buffer_copy full contents of rb2 into rb1", {
+test_that("ring_buffer_copy full contents of rb2 into rb1", {
   ## (latter initially has 3 bytes)
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -969,11 +969,11 @@ test_that("circle_buffer_copy full contents of rb2 into rb1", {
   expect_equal(rb1$read(nn), c(bytes1, bytes2))
 })
 
-test_that("circle_buffer_copy, wrap head of dst", {
+test_that("ring_buffer_copy, wrap head of dst", {
   ## (latter initially has 3 bytes)
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -986,7 +986,7 @@ test_that("circle_buffer_copy, wrap head of dst", {
   expect_equal(rb1$push(bytes1), size)
   expect_equal(rb1$head_pos(), size)
 
-  ## make sure rb1 doesn't overflow on later circle_buffer_copy
+  ## make sure rb1 doesn't overflow on later ring_buffer_copy
   expect_equal(rb1$take(1), bytes1[1])
   expect_equal(rb1$tail_pos(), 1)
 
@@ -1012,10 +1012,10 @@ test_that("circle_buffer_copy, wrap head of dst", {
   expect_equal(rb1$read(size), c(bytes1[-1], bytes2))
 })
 
-test_that("circle_buffer_copy, wrap head of dst and continue", {
+test_that("ring_buffer_copy, wrap head of dst and continue", {
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -1029,7 +1029,7 @@ test_that("circle_buffer_copy, wrap head of dst and continue", {
   expect_equal(rb1$push(bytes1), size)
   expect_equal(rb1$head_pos(), size)
 
-  ## make sure rb1 doesn't overflow on later circle_buffer_copy
+  ## make sure rb1 doesn't overflow on later ring_buffer_copy
   expect_equal(rb1$take(n2),
                bytes1[seq_len(n2)])
   expect_equal(rb1$tail_pos(), n2)
@@ -1057,12 +1057,12 @@ test_that("circle_buffer_copy, wrap head of dst and continue", {
                c(bytes1[-seq_len(n2)], bytes2))
 })
 
-test_that("circle_buffer_copy, wrap tail of src", {
-  ## circle_buffer_copy, wrap head of dst and continue copying into
+test_that("ring_buffer_copy, wrap tail of src", {
+  ## ring_buffer_copy, wrap head of dst and continue copying into
   ## start of contiguous buffer
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -1107,11 +1107,11 @@ test_that("circle_buffer_copy, wrap tail of src", {
   expect_equal(rb2$read(1), tail(bytes2, 1))
 })
 
-test_that("circle_buffer_copy, wrap tail of src and head of dst...", {
+test_that("ring_buffer_copy, wrap tail of src and head of dst...", {
   ##  simultaneously, then continue copying from start of contiguous buffer
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -1158,11 +1158,11 @@ test_that("circle_buffer_copy, wrap tail of src and head of dst...", {
                c(tail(bytes1, 2), bytes2))
 })
 
-test_that("circle_buffer_copy, force 3 separate memcpy's...", {
+test_that("ring_buffer_copy, force 3 separate memcpy's...", {
   ## up to end of src, then up to end of dst, then copy remaining bytes.
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -1211,11 +1211,11 @@ test_that("circle_buffer_copy, force 3 separate memcpy's...", {
   expect_equal(dat, c(tail(bytes3, 1), tail(bytes1, 1), head(bytes2, 4)))
 })
 
-test_that("circle_buffer_copy overflow", {
+test_that("ring_buffer_copy overflow", {
   ## up to end of src, then up to end of dst, then copy remaining bytes.
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -1253,11 +1253,11 @@ test_that("circle_buffer_copy overflow", {
                c(bytes1[-i], bytes2))
 })
 
-test_that("circle_buffer_copy attempted underflow", {
+test_that("ring_buffer_copy attempted underflow", {
   ## up to end of src, then up to end of dst, then copy remaining bytes.
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(size)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(size)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())
@@ -1289,11 +1289,11 @@ test_that("circle_buffer_copy attempted underflow", {
   expect_equal(rb2$head_pos(), 2)
 })
 
-test_that("circle_buffer_copy, different capacities, overflow 2nd", {
+test_that("ring_buffer_copy, different capacities, overflow 2nd", {
   ## up to end of src, then up to end of dst, then copy remaining bytes.
   size <- 4096L
-  rb1 <- circle_buffer_bytes(size)
-  rb2 <- circle_buffer_bytes(8)
+  rb1 <- ring_buffer_bytes(size)
+  rb2 <- ring_buffer_bytes(8)
 
   rb1$set(1, rb1$bytes_data())
   rb1$set(2, rb2$bytes_data())

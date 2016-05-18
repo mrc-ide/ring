@@ -1,7 +1,7 @@
 context("stride")
 
 test_that("empty", {
-  buf <- circle_buffer_bytes(100, 5)
+  buf <- ring_buffer_bytes(100, 5)
 
   expect_equal(buf$stride(), 5)
 
@@ -35,7 +35,7 @@ test_that("empty", {
 test_that("memset", {
   size <- 100L
   stride <- 5L
-  buf <- circle_buffer_bytes(100, 5)
+  buf <- ring_buffer_bytes(100, 5)
 
   ## First, set a few entries to something nonzero:
   n <- 3L
@@ -126,7 +126,7 @@ test_that("memset", {
 })
 
 test_that("incorrect push", {
-  buf <- circle_buffer_bytes(100, 5)
+  buf <- ring_buffer_bytes(100, 5)
   expect_error(buf$push(as.raw(rep(1, 3))), "Incorrect size data")
   expect_true(all(buf$buffer_data() == as.raw(0L)))
 })

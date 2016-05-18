@@ -1,4 +1,4 @@
 library(testthat)
-library(circle)
+library(ring)
 
-test_check("circle")
+test_check("ring")

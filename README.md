@@ -1,9 +1,9 @@
-# circle
+# ring
 
 > Circular Buffers
 
-[![Linux Build Status](https://travis-ci.org/richfitz/circle.svg?branch=master)](https://travis-ci.org/richfitz/circle)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/richfitz/circle?svg=true)](https://ci.appveyor.com/project/richfitz/circle)
+[![Linux Build Status](https://travis-ci.org/richfitz/ring.svg?branch=master)](https://travis-ci.org/richfitz/ring)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/richfitz/ring?svg=true)](https://ci.appveyor.com/project/richfitz/ring)
 
 Circular buffers in R and C.
 
@@ -12,13 +12,13 @@ There are two sorts of buffers implemented; a pure R circular buffer implemented
 ## Installation
 
 ```r
-devtools::install_github("richfitz/circle")
+devtools::install_github("richfitz/ring")
 ```
 
 ## Usage
 
 ```r
-library(circle)
+library(ring)
 ```
 
 ## License

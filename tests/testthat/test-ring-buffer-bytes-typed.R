@@ -1,9 +1,9 @@
-context("circle_buffer_bytes (typed)")
+context("ring_buffer_bytes_typed (typed)")
 
 test_that("basic", {
   size <- 100
   n <- 7
-  buf <- circle_buffer_bytes_typed(size, integer(n))
+  buf <- ring_buffer_bytes_typed(size, integer(n))
 
   expect_equal(buf$size(), size)
   expect_equal(buf$stride(), sizes[["integer"]] * n)
