@@ -7,7 +7,7 @@
 
 Circular buffers in R and C.
 
-There are two sorts of buffers implemented; a pure R circular buffer implemented as double linked list (using environments) that is genuinely circular, and one implemented in C that operates as an array of bytes.  Both can be used from R and I am looking for a way to make the C buffer available from other C packages without having to deal with dynamically loaded functions (being C rather than C++, being header-only is tricky but we might be able to fake it).
+There are two sorts of buffers implemented; a pure R circular buffer implemented as double linked list (using environments) that is genuinely circular, and one implemented in C that operates as an array of bytes.  Both can be used from R, and the C one can be used in other packages using R's `LinkingTo:` support.
 
 ## Installation
 

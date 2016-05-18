@@ -1,5 +1,5 @@
-/* #ifndef _CIRCLE_H_ */
-/* #define _CIRCLE_H_ */
+#ifndef _CIRCLE_H_
+#define _CIRCLE_H_
 #include <stddef.h>
 
 typedef unsigned char data_t;
@@ -59,9 +59,4 @@ void * circle_buffer_copy(circle_buffer *dst, circle_buffer *src, size_t count);
 
 void * circle_buffer_tail_offset(circle_buffer *buffer, size_t offset);
 
-#ifdef CIRCLE_INTERNAL_PROTOTYPES
-data_t * circle_buffer_end(circle_buffer *buffer);
-data_t * circle_buffer_nextp(circle_buffer *buffer, const data_t *p);
 #endif
-
-/* #endif */
