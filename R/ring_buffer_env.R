@@ -1,3 +1,17 @@
+##' An environment based ring buffer.  In contrast with the bytes
+##' buffer, this one is truely circular, implemented as a pair of
+##' doubly linked lists.
+##'
+##' @title Environment-based ring buffer
+##' @param size The number of entries the buffer can contain.
+##' @export
+##' @author Rich FitzJohn
+##' @examples
+##' buf <- ring_buffer_env(10)
+##' buf$push(1:10)
+##' buf$take(3)
+##' buf$push(11:15)
+##' buf$take(2)
 ring_buffer_env <- function(size) {
   .R6_ring_buffer_env$new(size)
 }
