@@ -127,22 +127,26 @@ circle_buffer_env <- function(size) {
     full=function() self$used() == self$size(),
 
     ## Mostly debugging:
-    head_pos=function() distance_forward(self$buffer, self$head),
-    tail_pos=function() distance_forward(self$buffer, self$tail),
+    head_pos=function() {
+      circle_buffer_env_distance_forward(self$buffer, self$head)
+    },
+    tail_pos=function() {
+      circle_buffer_env_distance_forward(self$buffer, self$tail)
+    },
 
     head_data=function() {
-      check_buffer_underflow(self, 1L)
+      circle_buffer_env_check_underflow(self, 1L)
       self$head$.prev$data
     },
     tail_data=function() {
-      check_buffer_underflow(self, 1L)
+      circle_buffer_env_check_underflow(self, 1L)
       self$tail$data
     },
 
     ## Start getting strong divergence here:
     set=function(data, n) {
       for (i in seq_len(min(n, self$size))) {
-        write_to_head(self, data)
+        circle_buffer_env_write_to_head(self, data)
       }
     },
 
@@ -158,52 +162,64 @@ circle_buffer_env <- function(size) {
     push=function(data, iterate=TRUE) {
       if (iterate) {
         for (el in data) {
-          write_to_head(self, el)
+          circle_buffer_env_write_to_head(self, el)
         }
       } else {
-        write_to_head(self, data)
+        circle_buffer_env_write_to_head(self, data)
       }
     },
 
     take=function(n) {
-      dat <- read_from_tail(self, n)
+      dat <- circle_buffer_env_read_from_tail(self, n)
       self$tail <- dat[[2L]]
       self$buffer$.used <- self$buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
-    read=function(n) read_from_tail(self, n)[[1L]],
-    copy=function(dest, n) circle_buffer_env_copy(self, dest, n),
+    read=function(n) circle_buffer_env_read_from_tail(self, n)[[1L]],
+
+    copy=function(dest, n) {
+      circle_buffer_env_check_underflow(self, n)
+
+      tail <- self$tail
+      for (i in seq_len(n)) {
+        dest$push(tail$data)
+        tail <- tail$.next
+      }
+
+      self$tail <- tail
+      self$buffer$.used <- self$buffer$.used - as.integer(n)
+    },
 
     head_offset_data=function(n) {
-      check_buffer_underflow(self, n + 1L)
-      move_backward(self$head$.prev, n)$data
+      circle_buffer_env_check_underflow(self, n + 1L)
+      circle_buffer_env_move_backward(self$head$.prev, n)$data
     },
     tail_offset_data=function(n) {
-      check_buffer_underflow(self, n + 1L)
-      move_forward(self$tail, n)$data
+      circle_buffer_env_check_underflow(self, n + 1L)
+      circle_buffer_env_move_forward(self$tail, n)$data
     },
 
     ## This is the unusual direction...
     take_head=function(n) {
-      dat <- read_from_head(self, n)
+      dat <- circle_buffer_env_read_from_head(self, n)
       self$head <- dat[[2L]]
       self$buffer$.used <- self$buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
     read_head=function(n) {
-      read_from_head(self, n)[[1L]]
+      circle_buffer_env_read_from_head(self, n)[[1L]]
     },
 
     ## This might come out as simply a free S3 method/function
     to_list=function() {
-      read_from_tail(self, self$used())[[1L]]
+      circle_buffer_env_read_from_tail(self, self$used())[[1L]]
     }
   ))
 
-read_from_tail <- function(buf, n) {
-  check_buffer_underflow(buf, n)
+circle_buffer_env_read_from_tail <- function(buf, n) {
+  circle_buffer_env_check_underflow(buf, n)
   tail <- buf$tail
   ret <- vector("list", n)
   for (i in seq_len(n)) {
@@ -213,8 +229,8 @@ read_from_tail <- function(buf, n) {
   list(ret, tail)
 }
 
-read_from_head <- function(buf, n) {
-  check_buffer_underflow(buf, n)
+circle_buffer_env_read_from_head <- function(buf, n) {
+  circle_buffer_env_check_underflow(buf, n)
   head <- buf$head
 
   ret <- vector("list", n)
@@ -225,7 +241,7 @@ read_from_head <- function(buf, n) {
   list(ret, head)
 }
 
-write_to_head <- function(buf, data) {
+circle_buffer_env_write_to_head <- function(buf, data) {
   buf$head$data <- data
   buf$head <- buf$head$.next
   if (buf$buffer$.used < buf$size()) {
@@ -235,7 +251,7 @@ write_to_head <- function(buf, data) {
   }
 }
 
-check_buffer_underflow <- function(obj, requested) {
+circle_buffer_env_check_underflow <- function(obj, requested) {
   ## TODO: Perhaps an S3 condition?
   if (requested > obj$used()) {
     stop(sprintf("Buffer underflow: requested %d, available %d",
@@ -243,13 +259,7 @@ check_buffer_underflow <- function(obj, requested) {
   }
 }
 
-buffer_underflow <- function(requested, available) {
-  ## TODO: classed error?
-  stop(sprintf("Buffer underflow: requested %d, available %d",
-               requested, available))
-}
-
-distance_forward <- function(head, target) {
+circle_buffer_env_distance_forward <- function(head, target) {
   i <- 0L
   while (!identical(target, head)) {
     i <- i + 1L
@@ -258,7 +268,7 @@ distance_forward <- function(head, target) {
   i
 }
 
-distance_backward <- function(tail, target) {
+circle_buffer_env_distance_backward <- function(tail, target) {
   i <- 0L
   while (!identical(target, tail)) {
     i <- i + 1L
@@ -267,29 +277,16 @@ distance_backward <- function(tail, target) {
   i
 }
 
-move_forward <- function(x, n) {
+circle_buffer_env_move_forward <- function(x, n) {
   for (i in seq_len(n)) {
     x <- x$.next
   }
   x
 }
 
-move_backward <- function(x, n) {
+circle_buffer_env_move_backward <- function(x, n) {
   for (i in seq_len(n)) {
     x <- x$.prev
   }
   x
-}
-
-circle_buffer_env_copy <- function(buf, dest, n) {
-  check_buffer_underflow(buf, n)
-
-  tail <- buf$tail
-  for (i in seq_len(n)) {
-    dest$push(tail$data)
-    tail <- tail$.next
-  }
-
-  buf$tail <- tail
-  buf$buffer$.used <- buf$buffer$.used - as.integer(n)
 }
