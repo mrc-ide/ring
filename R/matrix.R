@@ -82,7 +82,7 @@ head.ring_matrix <- function(x, n = 6L, ...) {
 
 ##' @export
 tail.ring_matrix <- function(x, n = 6L, ...) {
-  tail.matrix(x, n, ...)
+  tail.matrix(x, n, FALSE, ...)
 }
 
 ##' @export
@@ -111,19 +111,19 @@ dimnames.ring_matrix <- function(x, ...) {
 
 ##' @export
 `dimnames<-.ring_matrix` <- function(x, value) {
-  if (is.null(NULL)) {
+  if (is.null(value)) {
     x$colnames <- NULL
   } else if (!is.list(value) || length(value) != 2L) {
     stop("Invalid input for dimnames")
   } else {
-    val <- value[[2L]]
-    if (is.null(val)) {
-      x$colnames <- NULL
-    } else {
-      if (length(val) != x$nc) {
-        stop("Invalid length dimnames")
-      }
+    if (!is.null(value[[1L]])) {
+      stop("Cannot set rownames of a ring matrix")
     }
+    val <- value[[2L]]
+    if (!is.null(val) && length(val) != x$nc) {
+      stop("Invalid length dimnames")
+    }
+    x$colnames <- val
   }
   x
 }
