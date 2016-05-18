@@ -65,6 +65,14 @@ test_that("basic use", {
                    "Cannot set rownames of a ring matrix")
       expect_error(dimnames(m) <- list(letters[1:3], letters[1:nc]),
                    "Cannot set rownames of a ring matrix")
+
+      m2 <- rbind(m, dat)
+      expect_identical(m, m2) # reference
+      expect_equal(nrow(m), 6)
+      expect_equal(as.matrix(m), rbind(dat, dat))
+
+      m3 <- rbind(m, dat[3:1, ], dat[3,])
+      expect_equal(as.matrix(m), rbind(dat, dat,dat[3:1, ], dat[3, ]))
     }
   }
 })

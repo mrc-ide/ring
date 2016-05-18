@@ -28,27 +28,43 @@ ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
   } else {
     buf <- ring_buffer_bytes_typed(nr_max, create[[type]](nc))
   }
-  ret <- list(buf=buf, nr_max=nr_max, nc=nc, type=type,
-              environment=environment)
+  ret <- list(buf=buf, nr_max=as.integer(nr_max), nc=as.integer(nc),
+              type=type, environment=environment)
   class(ret) <- "ring_matrix"
   ret
 }
 
-ring_matrix_push <- function(x, data) {
-  ## Allow a vector of nc elements here too?
-  if (!is.matrix(data)) {
-    stop("Expected a matrix for 'data'")
-  }
-  if (ncol(data) != x$nc) {
-    stop(sprintf("Expected a matrix of '%d' columns", x$nc))
+ring_matrix_push <- function(x, data, check=TRUE) {
+  if (check) {
+    ring_matrix_compatible(x, data)
   }
   if (x$environment) {
-    for (i in seq_len(nrow(data))) {
-      x$buf$push(data[i, ], FALSE)
+    if (is.matrix(data)) {
+      for (i in seq_len(nrow(data))) {
+        x$buf$push(data[i, ], FALSE)
+      }
+    } else {
+      x$buf$push(data, FALSE)
     }
   } else {
-    x$buf$push(t(data))
+    x$buf$push(if (is.matrix(data)) t(data) else data)
   }
+}
+
+ring_matrix_compatible <- function(x, data) {
+  if (storage.mode(data) != x$type) {
+    stop("Expected storage.mode of ", x$type)
+  }
+  if (is.matrix(data)) {
+    if (ncol(data) != x$nc) {
+      stop(sprintf("Expected a matrix of '%d' columns", x$nc))
+    }
+  } else {
+    if (length(data) != x$nc) {
+      stop(sprintf("Expected a matrix of '%d' columns", x$nc))
+    }
+  }
+  TRUE
 }
 
 ring_matrix_get <- function(x, i=NULL) {
@@ -141,4 +157,29 @@ dimnames.ring_matrix <- function(x, ...) {
     x$colnames <- val
   }
   x
+}
+
+##' @export
+as.matrix.ring_matrix <- function(x, ...) {
+  ring_matrix_get(x, NULL)
+}
+
+##' @export
+cbind.ring_matrix <- function(x, ...) {
+  stop("It is not possible to cbind() ring_matrices (use as.matrix first?)")
+}
+
+##' @export
+rbind.ring_matrix <- function(...) {
+  if (!inherits(..1, "ring_matrix")) {
+    ## This could be relaxed but complicates overflow logic a *lot*
+    stop("First rbind element must be a ring_buffer")
+  }
+  x <- ..1
+  args <- list(...)[-1]
+  lapply(args, ring_matrix_compatible, x=x)
+  for (m in args) {
+    ring_matrix_push(x, m)
+  }
+  invisible(x)
 }
