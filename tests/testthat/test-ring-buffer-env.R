@@ -188,3 +188,27 @@ test_that("copy some", {
   expect_equal(buf1$used(), n1 - 5)
   expect_equal(buf2$used(), 5)
 })
+
+## Because we do things that create circular references, I want to
+## check that R will delete everything appropriately.
+test_that("destruction", {
+  buf <- ring_buffer_env(10)
+  buf$push(1:10)
+
+  deleted <- integer(0)
+  finaliser <- function(obj) {
+    deleted <<- c(deleted, obj$data)
+  }
+  local({
+    head <- buf$head
+    for (i in seq_len(buf$size())) {
+      reg.finalizer(head, finaliser)
+      head <- head$.next
+    }
+  })
+  rm(buf)
+  gc()
+
+  expect_equal(length(deleted), 10L)
+  expect_equal(sort(deleted), 1:10)
+})
