@@ -1,11 +1,26 @@
-## This is really an example of use, but it's a common type so we'll
-## implement it here to prevent duplication of effort.
+##' Simulate a matrix with a ring buffer.  This exists mostly as an
+##' example of use of a ring buffer designed to work with R functions
+##' that do not know (or care) that the object is implemented with a
+##' ring buffer behind the scenes.  Rows will be added at the bottom
+##' of the matrix.
+##'
+##' Note that because the matrix is stored row-wise but R stores
+##' matrices column wise, there is a lot of data transposing going on
+##' here.  If something like this was needed for performance then
+##' you'd want to redo this with column storage.
+##'
+##' @param nr_max The maximum number of rows
+##'
+##' @param nc The number of columns in the matrix
+##'
+##' @param type The type of storage.  Can be "logical", "integer",
+##'   "double", or "complex"
+##'
+##' @param environment Logical indicating if we should use an
+##'   environment buffer (\code{\link{circle_buffer_environment}}) or
+##'   a bytes buffer (\code{\link{circle_buffer_bytes}}).
 ##
-## The idea is that we have a matrix of one type (logical, int,
-## double, complex) implemented as
-
-## NOTE: This is stored transposed to the storage of the original data
-## at the moment.
+##' @export
 ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
   type <- match.arg(type, names(sizes))
   if (environment) {
