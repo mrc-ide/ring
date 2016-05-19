@@ -14,10 +14,6 @@ ring_buffer_bytes <- function(size, stride=1L) {
   .R6_ring_buffer_bytes$new(size, stride)
 }
 
-ring_buffer_bytes_typed <- function(size, what) {
-  .R6_ring_buffer_bytes_typed$new(size, what)
-}
-
 ##' @importFrom R6 R6Class
 .R6_ring_buffer_bytes <- R6::R6Class(
   "ring_buffer_bytes",
@@ -82,59 +78,43 @@ ring_buffer_bytes_typed <- function(size, what) {
     read_head=function(n) stop("read_head not yet implemented")
   ))
 
-.R6_ring_buffer_bytes_typed <- R6::R6Class(
-  "ring_buffer_bytes_typed",
+## This is used in ring_buffer_typed but is not itself exported yet.
+## The definition must follow .R6_ring_buffer_bytes, so either we use
+## roxygen @import to set the collation or we have to leave it in this
+## file.
+.R6_ring_buffer_bytes_translate <- R6::R6Class(
+  "ring_buffer_bytes_translate",
   cloneable=FALSE,
   inherit=.R6_ring_buffer_bytes,
 
   public=list(
-    type=NULL,
     to=NULL,
     from=NULL,
+    type=NULL,
 
-    ## TODO: consider having a 'type' / 'len' option as well as 'what'
-    initialize=function(size, what, ptr=NULL) {
-      if (is.null(ptr)) {
-        if (length(what) == 0L) {
-          stop("'what' must have nonzero length")
-        }
-        type <- storage.mode(what)
-        if (type %in% names(sizes)) {
-          self$type <- type
-          super$initialize(size, sizes[[type]] * length(what))
-        }
-      } else {
-        super$initialize(NULL, NULL, ptr)
-        self$type <- what
-      }
-      self$to <- convert_to[[self$type]]
-      self$from <- convert_from[[self$type]]
+    initialize=function(size, stride, to, from, type=NULL, ptr=NULL) {
+      super$initialize(size, stride, ptr)
+      self$to <- to
+      self$from <- from
+      self$type <- type
     },
 
-    ## inherit reset
+    ## inherits: reset, size, bytes_data, stride, used, free,
+    ##   head_pos, tail_pos, copy
+
     duplicate=function() {
-      .R6_ring_buffer_bytes_typed$new(NULL, self$type, self$ptr)
+      .R6_ring_buffer_bytes_typed$new(
+        NULL, self$stride(), self$to, self$from, self$type, self$ptr)
     },
-
-    ## inherit size, bytes_data, stride, used, free, head_pos, tail_pos
 
     head_data=function() self$from(super$head_data()),
     tail_data=function() self$from(super$tail_data()),
-
-    ## This needs extra support on the bytes buffer
-    set=function() stop("not yet implemented"),
+    set=function() super$push(self$to(data)),
     push=function(data) super$push(self$to(data)),
-    ## TODO: possibly should return a matrix, but if so we'd need to
-    ## do this transposed of the matrix class itself...
     take=function(n) self$from(super$take(n)),
     read=function(n) self$from(super$read(n)),
-
-    ## inherit copy
-
     head_offset_data=function(n) self$from(super$head_offset_data(n)),
     tail_offset_data=function(n) self$from(super$tail_offset_data(n)),
-
-    ## TODO: should return matrix?
     take_head=function(n) self$from(super$take_head(n)),
     read_head=function(n) self$from(super$read_head(n))
   ))
