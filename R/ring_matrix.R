@@ -164,22 +164,30 @@ as.matrix.ring_matrix <- function(x, ...) {
   ring_matrix_get(x, NULL)
 }
 
-##' @export
-cbind.ring_matrix <- function(x, ...) {
+## NOTE: Roxygen complains about S3method being deprecated here, but
+## it's incapable of doing the right thing either (rbind and cbind are
+## special and don't obviously look like S3 metods)
+
+##' @S3method cbind ring_matrix
+cbind.ring_matrix <- function(...) {
   stop("It is not possible to cbind() ring_matrices (use as.matrix first?)")
 }
 
-##' @export
+##' @S3method rbind ring_matrix
 rbind.ring_matrix <- function(...) {
   if (!inherits(..1, "ring_matrix")) {
-    ## This could be relaxed but complicates overflow logic a *lot*
-    stop("First rbind element must be a ring_buffer")
+    args <- list(...)
+    i <- vapply(args, inherits, logical(1), "ring_matrix")
+    args[i] <- lapply(args[i], as.matrix)
+    eval(as.call(c(quote(rbind), args)))
+  } else {
+    x <- ..1
+    args <- list(...)[-1]
+    ## TODO: does not deal with other ring buffers here yet.
+    lapply(args, ring_matrix_compatible, x=x)
+    for (m in args) {
+      ring_matrix_push(x, m)
+    }
+    x
   }
-  x <- ..1
-  args <- list(...)[-1]
-  lapply(args, ring_matrix_compatible, x=x)
-  for (m in args) {
-    ring_matrix_push(x, m)
-  }
-  invisible(x)
 }

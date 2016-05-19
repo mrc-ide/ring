@@ -73,6 +73,8 @@ test_that("basic use", {
 
       m3 <- rbind(m, dat[3:1, ], dat[3,])
       expect_equal(as.matrix(m), rbind(dat, dat,dat[3:1, ], dat[3, ]))
+
+      expect_equal(rbind(dat, m), rbind(dat, as.matrix(m)))
     }
   }
 })
