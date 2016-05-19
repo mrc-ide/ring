@@ -1,3 +1,15 @@
+##' Construct a ring buffer where the buffer holds a stream of bytes.
+##' Optionally the buffer can be "strided" so that the bytes naturally
+##' fall into chunks of exactly the same size.  It is implemented in C
+##' and will be fast, with the limitation that any data transfer
+##' always involves copies.
+##'
+##' @title Byte array based ring buffer
+##' @param size Size fo the buffer, each entry of which will be
+##'   \code{stride} bytes long.
+##' @param stride Number of bytes per buffer entry.  Defaults to 1
+##'   byte.
+##' @export
 ring_buffer_bytes <- function(size, stride=1L) {
   .R6_ring_buffer_bytes$new(size, stride)
 }
