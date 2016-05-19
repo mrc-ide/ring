@@ -17,8 +17,8 @@
 ##'   "double", or "complex"
 ##'
 ##' @param environment Logical indicating if we should use an
-##'   environment buffer (\code{\link{circle_buffer_environment}}) or
-##'   a bytes buffer (\code{\link{circle_buffer_bytes}}).
+##'   environment buffer (\code{\link{ring_buffer_env}}) or
+##'   a bytes buffer (\code{ring_buffer_bytes}).
 ##
 ##' @export
 ring_matrix <- function(nr_max, nc, type, environment=TRUE) {

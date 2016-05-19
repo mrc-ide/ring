@@ -19,8 +19,8 @@ ring_matrix(nr_max, nc, type, environment = TRUE)
 "double", or "complex"}
 
 \item{environment}{Logical indicating if we should use an
-environment buffer (\code{\link{circle_buffer_environment}}) or
-a bytes buffer (\code{\link{circle_buffer_bytes}}).}
+environment buffer (\code{\link{ring_buffer_env}}) or
+a bytes buffer (\code{ring_buffer_bytes}).}
 }
 \description{
 Note that because the matrix is stored row-wise but R stores

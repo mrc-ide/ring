@@ -1,6 +1,8 @@
 ##' @useDynLib ring, .registration = TRUE
+##' @import utils
 sizes <- NULL
 .onLoad <- function(...) {
-  sizes <<- setNames(.Call("sizeof_types", PACKAGE="ring"),
-                     c("logical", "integer", "double", "complex"))
+  s <- .Call("sizeof_types", PACKAGE="ring")
+  names(s) <- c("logical", "integer", "double", "complex")
+  sizes <<- s
 }
