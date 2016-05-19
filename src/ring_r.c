@@ -3,13 +3,10 @@
 #include <Rinternals.h>
 #include "convert.h"
 
-// TODO: Something for safely returning INTEGER(x)[0], possibly also
-// doing the coersion from REAL so we can drop the as.integers
-// elsewhere?
-
 static void ring_buffer_finalize(SEXP extPtr);
 ring_buffer* ring_buffer_get(SEXP extPtr, int closed_error);
-int logical_scalar(SEXP x);
+int scalar_logical(SEXP x);
+size_t scalar_size(SEXP x);
 
 SEXP R_ring_buffer_build(ring_buffer *buffer) {
   SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));
@@ -19,7 +16,8 @@ SEXP R_ring_buffer_build(ring_buffer *buffer) {
 }
 
 SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride) {
-  size_t size = (size_t)INTEGER(r_size)[0], stride = INTEGER(r_stride)[0];
+  size_t size = (size_t)scalar_size(r_size),
+    stride = scalar_size(r_stride);
   if (size == 0) {
     Rf_error("Can't create ring buffer with size 0");
   }
@@ -36,7 +34,7 @@ SEXP R_ring_buffer_clone(SEXP extPtr) {
 
 SEXP R_ring_buffer_size(SEXP extPtr, SEXP bytes) {
   return ScalarInteger(ring_buffer_size(ring_buffer_get(extPtr, 1),
-                                          logical_scalar(bytes)));
+                                          scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_stride(SEXP extPtr) {
@@ -88,22 +86,22 @@ SEXP R_ring_buffer_data(SEXP extPtr) {
 
 SEXP R_ring_buffer_head_pos(SEXP extPtr, SEXP bytes) {
   return ScalarInteger(ring_buffer_head_pos(ring_buffer_get(extPtr, 1),
-                                              logical_scalar(bytes)));
+                                              scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_tail_pos(SEXP extPtr, SEXP bytes) {
   return ScalarInteger(ring_buffer_tail_pos(ring_buffer_get(extPtr, 1),
-                                              logical_scalar(bytes)));
+                                              scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_free(SEXP extPtr, SEXP bytes) {
   return ScalarInteger(ring_buffer_free(ring_buffer_get(extPtr, 1),
-                                          logical_scalar(bytes)));
+                                          scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_used(SEXP extPtr, SEXP bytes) {
   return ScalarInteger(ring_buffer_used(ring_buffer_get(extPtr, 1),
-                                          logical_scalar(bytes)));
+                                          scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_reset(SEXP extPtr) {
@@ -113,7 +111,7 @@ SEXP R_ring_buffer_reset(SEXP extPtr) {
 
 SEXP R_ring_buffer_memset(SEXP extPtr, SEXP c, SEXP len) {
   ring_buffer *buffer = ring_buffer_get(extPtr, 1);
-  size_t n = INTEGER(len)[0];
+  size_t n = scalar_size(len);
   data_t *data = RAW(c);
   if (length(c) == 1) {
     return ScalarInteger(ring_buffer_memset(buffer, data[0], n));
@@ -138,7 +136,7 @@ SEXP R_ring_buffer_memcpy_into(SEXP extPtr, SEXP src) {
 }
 
 SEXP R_ring_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
-  size_t count = INTEGER(r_count)[0];
+  size_t count = scalar_size(r_count);
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, count * buffer->stride));
   if (ring_buffer_memcpy_from(RAW(ret), buffer, count) == NULL) {
@@ -155,7 +153,7 @@ SEXP R_ring_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
 }
 
 SEXP R_ring_buffer_tail_read(SEXP extPtr, SEXP r_count) {
-  size_t count = INTEGER(r_count)[0];
+  size_t count = scalar_size(r_count);
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, count * buffer->stride));
   if (ring_buffer_tail_read(buffer, RAW(ret), count) == NULL) {
@@ -168,7 +166,7 @@ SEXP R_ring_buffer_tail_read(SEXP extPtr, SEXP r_count) {
 }
 
 SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
-  size_t offset = INTEGER(r_offset)[0];
+  size_t offset = scalar_size(r_offset);
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
   data_t *data = (data_t*) ring_buffer_tail_offset(buffer, offset);
@@ -183,7 +181,7 @@ SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
 }
 
 SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_count) {
-  size_t count = INTEGER(r_count)[0];
+  size_t count = scalar_size(r_count);
   ring_buffer *src = ring_buffer_get(srcPtr, 1),
     *dest = ring_buffer_get(destPtr, 1);
   data_t * head = (data_t *) ring_buffer_copy(dest, src, count);
@@ -216,11 +214,30 @@ ring_buffer* ring_buffer_get(SEXP extPtr, int closed_error) {
   return buffer;
 }
 
-int logical_scalar(SEXP x) {
+int scalar_logical(SEXP x) {
   if (TYPEOF(x) == LGLSXP && LENGTH(x) == 1) {
     return INTEGER(x)[0];
   } else {
     Rf_error("Expected a logical scalar");
+    return 0;
+  }
+}
+
+size_t scalar_size(SEXP x) {
+  if (TYPEOF(x) == INTSXP && LENGTH(x) == 1){
+    int val = INTEGER(x)[0];
+    if (val == NA_INTEGER || val < 0) {
+      Rf_error("Expected a nonnegative value");
+    }
+    return INTEGER(x)[0];
+  } else if (TYPEOF(x) == REALSXP && LENGTH(x) == 1) {
+    double val = REAL(x)[0];
+    if (!R_FINITE(val) || val < 0) {
+      Rf_error("Expected a nonnegative value");
+    }
+    return (size_t) val;
+  } else {
+    Rf_error("Expected a nonnegative scalar integer");
     return 0;
   }
 }

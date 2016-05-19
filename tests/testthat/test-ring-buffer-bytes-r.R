@@ -45,3 +45,20 @@ test_that("impossible sizes", {
   expect_error(ring_buffer_bytes(10, 0),
                "Can't create ring buffer with stride 0")
 })
+
+test_that("input validation", {
+  ## Truncation:
+  expect_identical(ring_buffer_bytes(pi)$size(), 3L)
+  expect_identical(ring_buffer_bytes(10, pi)$stride(), 3L)
+
+  expect_error(ring_buffer_bytes(-1),
+               "Expected a nonnegative value")
+  expect_error(ring_buffer_bytes(-1L),
+               "Expected a nonnegative value")
+  expect_error(ring_buffer_bytes(Inf),
+               "Expected a nonnegative value")
+  expect_error(ring_buffer_bytes(NA_real_),
+               "Expected a nonnegative value")
+  expect_error(ring_buffer_bytes(NA_integer_),
+               "Expected a nonnegative value")
+})

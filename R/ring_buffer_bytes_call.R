@@ -1,9 +1,5 @@
-## TODO: All the as.integer functions are really 'assert and convert
-## scalar integer'.  We *do* need to validate this somewhere because
-## we just blindly dereference that pointer in the C code which may
-## crash R.
 ring_buffer_create <- function(size, stride=1L) {
-  .Call(Cring_buffer_create, as.integer(size), as.integer(stride))
+  .Call(Cring_buffer_create, size, stride)
 }
 
 ring_buffer_reset <- function(ptr) {
@@ -62,7 +58,7 @@ ring_buffer_buffer_data <- function(ptr) {
 ## 1 or length stride (no behaviour change on stride 1 buffers), and
 ## route through a separate function in the case of length(c) > 1.
 ring_buffer_memset <- function(ptr, c, len) {
-  invisible(.Call(Cring_buffer_memset, ptr, as.raw(c), as.integer(len)))
+  invisible(.Call(Cring_buffer_memset, ptr, as.raw(c), len))
 }
 
 ## TODO: This is exposed as 'push' with argument 'data'.  Check what
@@ -74,19 +70,19 @@ ring_buffer_memcpy_into <- function(ptr, src) {
 
 ## TODO: This is exposed as 'take' with argument 'n'
 ring_buffer_memcpy_from <- function(ptr, count) {
-  .Call(Cring_buffer_memcpy_from, ptr, as.integer(count))
+  .Call(Cring_buffer_memcpy_from, ptr, count)
 }
 
 ## TODO: This is exposed as 'read' with argument 'n'
 ring_buffer_tail_read <- function(ptr, count) {
-  .Call(Cring_buffer_tail_read, ptr, as.integer(count))
+  .Call(Cring_buffer_tail_read, ptr, count)
 }
 
 ## TODO: This is exposed with argument 'n'
 ring_buffer_copy <- function(src, dest, count) {
-  invisible(.Call(Cring_buffer_copy, src, dest, as.integer(count)))
+  invisible(.Call(Cring_buffer_copy, src, dest, count))
 }
 
 ring_buffer_tail_offset <- function(ptr, offset) {
-  .Call(Cring_buffer_tail_offset, ptr, as.integer(offset))
+  .Call(Cring_buffer_tail_offset, ptr, offset)
 }
