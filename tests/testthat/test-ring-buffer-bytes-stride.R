@@ -130,3 +130,32 @@ test_that("incorrect push", {
   expect_error(buf$push(as.raw(rep(1, 3))), "Incorrect size data")
   expect_true(all(buf$buffer_data() == as.raw(0L)))
 })
+
+test_that("set with vector", {
+  s <- 5L
+  buf <- ring_buffer_bytes(100, s)
+  expect_true(all(buf$buffer_data() == as.raw(0)))
+  pat <- random_bytes(s)
+  expect_equal(buf$set(pat, 1), 1)
+
+  expect_equal(buf$buffer_data(), pad(pat, buf$size(TRUE)))
+
+  pat2 <- random_bytes(s)
+  expect_equal(buf$set(pat2, 20), 20)
+
+  expect_equal(buf$buffer_data(), pad(c(pat, rep(pat2, 20)), buf$size(TRUE)))
+
+  pat3 <- random_bytes(s)
+  expect_equal(buf$set(pat3, 85), 85)
+
+  buf$buffer_data()
+
+  expect_equal(buf$read(100), c(rep(pat2, 15), rep(pat3, 85)))
+
+  expect_error(buf$set(random_bytes(0), 1), "Invalid length")
+  expect_error(buf$set(random_bytes(2), 1), "Invalid length")
+  expect_error(buf$set(random_bytes(10), 1), "Invalid length")
+
+  buf$set(1, 100)
+  expect_equal(buf$read(100), rep(as.raw(1), s * 100))
+})

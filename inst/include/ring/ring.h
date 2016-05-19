@@ -49,7 +49,8 @@ void ring_buffer_reset(ring_buffer *buffer);
 size_t ring_buffer_free(const ring_buffer *buffer, int bytes);
 size_t ring_buffer_used(const ring_buffer *buffer, int bytes);
 
-size_t ring_buffer_memset(ring_buffer *dst, int c, size_t len);
+size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t len);
+size_t ring_buffer_memset_stride(ring_buffer *buffer, data_t *x, size_t len);
 void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
                                 size_t count);
 void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer,

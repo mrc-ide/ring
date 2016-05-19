@@ -3,6 +3,10 @@
 #include <Rinternals.h>
 #include "convert.h"
 
+// TODO: Something for safely returning INTEGER(x)[0], possibly also
+// doing the coersion from REAL so we can drop the as.integers
+// elsewhere?
+
 static void ring_buffer_finalize(SEXP extPtr);
 ring_buffer* ring_buffer_get(SEXP extPtr, int closed_error);
 int logical_scalar(SEXP x);
@@ -108,8 +112,17 @@ SEXP R_ring_buffer_reset(SEXP extPtr) {
 }
 
 SEXP R_ring_buffer_memset(SEXP extPtr, SEXP c, SEXP len) {
-  return ScalarInteger(ring_buffer_memset(ring_buffer_get(extPtr, 1),
-                                            RAW(c)[0], INTEGER(len)[0]));
+  ring_buffer *buffer = ring_buffer_get(extPtr, 1);
+  size_t n = INTEGER(len)[0];
+  data_t *data = RAW(c);
+  if (length(c) == 1) {
+    return ScalarInteger(ring_buffer_memset(buffer, data[0], n));
+  } else if (length(c) == buffer->stride) {
+    return ScalarInteger(ring_buffer_memset_stride(buffer, data, n));
+  } else {
+    Rf_error("Invalid length input");
+    return R_NilValue;
+  }
 }
 
 SEXP R_ring_buffer_memcpy_into(SEXP extPtr, SEXP src) {

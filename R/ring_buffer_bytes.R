@@ -109,7 +109,7 @@ ring_buffer_bytes <- function(size, stride=1L) {
 
     head_data=function() self$from(super$head_data()),
     tail_data=function() self$from(super$tail_data()),
-    set=function() super$push(self$to(data)),
+    set=function(data) super$push(self$to(data)),
     push=function(data) super$push(self$to(data)),
     take=function(n) self$from(super$take(n)),
     read=function(n) self$from(super$read(n)),

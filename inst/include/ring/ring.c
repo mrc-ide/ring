@@ -140,6 +140,14 @@ size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t len) {
   return nwritten;
 }
 
+size_t ring_buffer_memset_stride(ring_buffer *buffer, data_t *x, size_t len) {
+  size_t count = imin(len, ring_buffer_size(buffer, 0));
+  for (size_t i = 0; i < count; ++i) {
+    ring_buffer_memcpy_into(buffer, x, 1);
+  }
+  return count;
+}
+
 // The bits that are complicated..
 /*
  * Copy n * stride bytes from a contiguous memory area src into the
@@ -155,8 +163,7 @@ size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t len) {
  * different than it was before the function was called.
  */
 void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
-                                size_t count) {
-  // TODO: if length of count is not divisible nicely by stride, it is an error
+                              size_t count) {
   const size_t len = count * buffer->stride;
   const data_t *source = src;
   const data_t *bufend = ring_buffer_end(buffer);

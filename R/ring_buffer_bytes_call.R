@@ -62,7 +62,7 @@ ring_buffer_buffer_data <- function(ptr) {
 ## 1 or length stride (no behaviour change on stride 1 buffers), and
 ## route through a separate function in the case of length(c) > 1.
 ring_buffer_memset <- function(ptr, c, len) {
-  .Call(Cring_buffer_memset, ptr, as.raw(c), as.integer(len))
+  invisible(.Call(Cring_buffer_memset, ptr, as.raw(c), as.integer(len)))
 }
 
 ## TODO: This is exposed as 'push' with argument 'data'.  Check what
