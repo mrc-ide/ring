@@ -3,7 +3,7 @@
 // Some prototypes used here that aren't public:
 data_t * ring_buffer_end(ring_buffer *buffer);
 data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p);
-inline int imin(int a, int b);
+int imin(int a, int b);
 
 // only used for the Calloc and Free -- could drop back to use plain C?
 //
@@ -368,6 +368,6 @@ data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p) {
   return buffer->data + ((++p - buffer->data) % ring_buffer_bytes_data(buffer));
 }
 
-inline int imin(int a, int b) {
+int imin(int a, int b) {
   return a < b ? a : b;
 }
