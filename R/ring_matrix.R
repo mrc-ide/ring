@@ -38,6 +38,9 @@ ring_matrix_push <- function(x, data, check=TRUE) {
   if (check) {
     ring_matrix_compatible(x, data)
   }
+  ## NOTE: This is the only place outside of construction where we
+  ## need to care about the different types of buffer.  So they're not
+  ## totally substitutable but not too bad either.
   if (x$environment) {
     if (is.matrix(data)) {
       for (i in seq_len(nrow(data))) {

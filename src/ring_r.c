@@ -53,7 +53,7 @@ SEXP R_ring_buffer_empty(SEXP extPtr) {
   return ScalarLogical(ring_buffer_empty(ring_buffer_get(extPtr, 1)));
 }
 
-SEXP R_ring_buffer_head(SEXP extPtr) {
+SEXP R_ring_buffer_head_data(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   if (ring_buffer_empty(buffer)) {
     Rf_error("Buffer is empty");
@@ -64,7 +64,7 @@ SEXP R_ring_buffer_head(SEXP extPtr) {
   return ret;
 }
 
-SEXP R_ring_buffer_tail(SEXP extPtr) {
+SEXP R_ring_buffer_tail_data(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   if (ring_buffer_empty(buffer)) {
     Rf_error("Buffer is empty");
@@ -75,7 +75,7 @@ SEXP R_ring_buffer_tail(SEXP extPtr) {
   return ret;
 }
 
-SEXP R_ring_buffer_data(SEXP extPtr) {
+SEXP R_ring_buffer_buffer_data(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   size_t len = ring_buffer_size(buffer, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, len));
@@ -253,9 +253,9 @@ static const R_CallMethodDef callMethods[] = {
   {"Cring_buffer_stride",      (DL_FUNC) &R_ring_buffer_stride,      1},
   {"Cring_buffer_full",        (DL_FUNC) &R_ring_buffer_full,        1},
   {"Cring_buffer_empty",       (DL_FUNC) &R_ring_buffer_empty,       1},
-  {"Cring_buffer_head",        (DL_FUNC) &R_ring_buffer_head,        1},
-  {"Cring_buffer_tail",        (DL_FUNC) &R_ring_buffer_tail,        1},
-  {"Cring_buffer_data",        (DL_FUNC) &R_ring_buffer_data,        1},
+  {"Cring_buffer_head_data",   (DL_FUNC) &R_ring_buffer_head_data,   1},
+  {"Cring_buffer_tail_data",   (DL_FUNC) &R_ring_buffer_tail_data,   1},
+  {"Cring_buffer_buffer_data", (DL_FUNC) &R_ring_buffer_buffer_data, 1},
   {"Cring_buffer_head_pos",    (DL_FUNC) &R_ring_buffer_head_pos,    2},
   {"Cring_buffer_tail_pos",    (DL_FUNC) &R_ring_buffer_tail_pos,    2},
   {"Cring_buffer_free",        (DL_FUNC) &R_ring_buffer_free,        2},

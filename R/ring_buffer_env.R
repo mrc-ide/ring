@@ -137,15 +137,13 @@ ring_buffer_env_duplicate <- function(buffer) {
       }
     },
 
-    ## TODO: What about writing *single* things to the head and tail
-    ## here?  The loop here is likely to be very annoying!  In some
-    ## ways the loop is the natural analogue of memcpy but it's not
-    ## really needed either.
+    ## TODO: It will be probably useful on occassion to add a
+    ## data.frame here row-by-row and things like that.  So we might
+    ## have to make this one generic -- or find something that makes
+    ## things iterable.  There are iterator packages we could depend
+    ## on so that it could be possible to say something like:
     ##
-    ## It will be probably useful on occassion to add a data.frame
-    ## here row-by-row and things like that.  So we might have to make
-    ## this one generic -- or find something that makes things
-    ## iterable.
+    ## buf$push(iterate_by_row(data.frame))
     push=function(data, iterate=TRUE) {
       if (iterate) {
         for (el in data) {

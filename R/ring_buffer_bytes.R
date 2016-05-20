@@ -24,54 +24,59 @@ ring_buffer_bytes <- function(size, stride=1L) {
 
     initialize=function(size, stride, ptr=NULL) {
       if (is.null(ptr)) {
-        self$ptr <- ring_buffer_create(size, stride)
+        self$ptr <- .Call(Cring_buffer_create, size, stride)
       } else {
         self$ptr <- ptr
       }
     },
 
-    reset=function() ring_buffer_reset(self$ptr),
+    reset=function() .Call(Cring_buffer_reset, self$ptr),
 
+    ## NOTE: duplicate is not implemented like the typical R6 clone
+    ## method because we need a deep clone here but I don't want a
+    ## private set of methods.  Instead we create a clone of the
+    ## data and return a brand new instance of the class.
     duplicate=function() {
-      ## NOTE: this is not implemented like the typical R6 clone
-      ## method because we need a deep clone here.  Instead we create
-      ## a clone of the data and return a brand new instance of the
-      ## class.
-      .R6_ring_buffer_bytes$new(ptr=ring_buffer_clone(self$ptr))
+      .R6_ring_buffer_bytes$new(ptr=.Call(Cring_buffer_clone, self$ptr))
     },
 
-    size=function(bytes=FALSE) ring_buffer_size(self$ptr, bytes),
-    bytes_data=function() ring_buffer_bytes_data(self$ptr), # NOENV
-    stride=function() ring_buffer_stride(self$ptr), # NOENV
+    size=function(bytes=FALSE) .Call(Cring_buffer_size, self$ptr, bytes),
+    bytes_data=function() .Call(Cring_buffer_bytes_data, self$ptr),
+    stride=function() .Call(Cring_buffer_stride, self$ptr),
 
-    used=function(bytes=FALSE) ring_buffer_used(self$ptr, bytes),
-    free=function(bytes=FALSE) ring_buffer_free(self$ptr, bytes),
+    used=function(bytes=FALSE) .Call(Cring_buffer_used, self$ptr, bytes),
+    free=function(bytes=FALSE) .Call(Cring_buffer_free, self$ptr, bytes),
 
-    empty=function() ring_buffer_empty(self$ptr),
-    full=function() ring_buffer_full(self$ptr),
+    empty=function() .Call(Cring_buffer_empty, self$ptr),
+    full=function() .Call(Cring_buffer_full, self$ptr),
 
-    head_pos=function(bytes=FALSE) ring_buffer_head_pos(self$ptr, bytes),
-    tail_pos=function(bytes=FALSE) ring_buffer_tail_pos(self$ptr, bytes),
+    head_pos=function(bytes=FALSE) {
+      .Call(Cring_buffer_head_pos, self$ptr, bytes)
+    },
+    tail_pos=function(bytes=FALSE) {
+      .Call(Cring_buffer_tail_pos, self$ptr, bytes)
+    },
 
-    head_data=function() ring_buffer_head_data(self$ptr),
-    tail_data=function() ring_buffer_tail_data(self$ptr),
-    buffer_data=function() ring_buffer_buffer_data(self$ptr), # NOENV
+    head_data=function() .Call(Cring_buffer_head_data, self$ptr),
+    tail_data=function() .Call(Cring_buffer_tail_data, self$ptr),
+    buffer_data=function() .Call(Cring_buffer_buffer_data, self$ptr),
 
-    set=function(data, n) ring_buffer_memset(self$ptr, data, n),
-    push=function(data) ring_buffer_memcpy_into(self$ptr, data),
-    take=function(n) ring_buffer_memcpy_from(self$ptr, n),
-    read=function(n) ring_buffer_tail_read(self$ptr, n),
+    set=function(data, n) .Call(Cring_buffer_memset, self$ptr, as.raw(data), n),
+    push=function(data) .Call(Cring_buffer_memcpy_into, self$ptr, as.raw(data)),
+    take=function(n) .Call(Cring_buffer_memcpy_from, self$ptr, n),
+    read=function(n) .Call(Cring_buffer_tail_read, self$ptr, n),
 
     copy=function(dest, n) {
       if (!inherits(dest, "ring_buffer_bytes")) {
         stop("'dest' must be a 'ring_buffer_bytes'")
       }
-      ring_buffer_copy(self$ptr, dest$ptr, n)
+      .Call(Cring_buffer_copy, self$ptr, dest$ptr, n)
     },
 
+    ## TODO: things to implement down here:
     ## Nondestructive:
     head_offset_data=function(n) stop("head_offset_data not yet implemented"),
-    tail_offset_data=function(n) ring_buffer_tail_offset(self$ptr, n),
+    tail_offset_data=function(n) .Call(Cring_buffer_tail_offset, self$ptr, n),
 
     ## Unusual direction:
     take_head=function(n) stop("take_head not yet implemented"),
