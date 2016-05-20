@@ -232,6 +232,7 @@ ring_buffer_env_write_to_head <- function(buf, data) {
   if (buf$buffer$.used < buf$size()) {
     buf$buffer$.used <- buf$buffer$.used + 1L
   } else {
+    ## overflow! (TODO: make this optional)
     buf$tail <- buf$tail$.next
   }
 }

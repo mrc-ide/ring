@@ -128,6 +128,35 @@ buf$empty()
 ## implementation is largely due to
 ## [@dhess](https://github.com/dhess/c-ringbuf).
 
+## This operates basically the same way as `ring_buffer_env` but with
+## a few differences:
+
+## * The contents of the buffer are raw bytes (R's raw vectors).
+##   These are a bit fiddly to work with but can be very powerful.
+## * The `iterate` distinction of `push` disappears because there is
+##   no ambiguity with R objects
+## * Reading from the head is not currently implemented.
+## * There are a few methods that each implementation has that the
+##   other does not but these are not needed for most uses.  These
+##   will be documented in the reference documentation.
+
+## To construct a buffer of 1000 bytes:
+buf <- ring::ring_buffer_bytes(1000)
+
+## Most of the same methods apply directly:
+buf$free()
+buf$used()
+buf$full()
+buf$empty()
+
+## Generate a byte sequence:
+bytes <- as.raw(0:255)
+
+## ...and push them into the buffer:
+buf$push(bytes)
+
+
+
 ## ### Striding
 
 ## ### The typed bytes buffer `ring_buffer_bytes_typed`
