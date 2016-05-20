@@ -212,3 +212,10 @@ test_that("destruction", {
   expect_equal(length(deleted), 10L)
   expect_equal(sort(deleted), 1:10)
 })
+
+test_that("set", {
+  buf <- ring_buffer_env(10)
+  expect_null(buf$set(1, 10))
+  expect_true(buf$full())
+  expect_equal(buf$read(10), rep(list(1), 10))
+})

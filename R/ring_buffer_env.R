@@ -132,7 +132,7 @@ ring_buffer_env_duplicate <- function(buffer) {
 
     ## Start getting strong divergence here:
     set=function(data, n) {
-      for (i in seq_len(min(n, self$size))) {
+      for (i in seq_len(min(n, self$size()))) {
         ring_buffer_env_write_to_head(self, data)
       }
     },
