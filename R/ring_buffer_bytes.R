@@ -5,7 +5,7 @@
 ##' always involves copies.
 ##'
 ##' @title Byte array based ring buffer
-##' @param size Size fo the buffer, each entry of which will be
+##' @param size Size of the buffer, each entry of which will be
 ##'   \code{stride} bytes long.
 ##' @param stride Number of bytes per buffer entry.  Defaults to 1
 ##'   byte.

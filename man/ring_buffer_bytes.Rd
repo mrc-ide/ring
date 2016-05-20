@@ -7,7 +7,7 @@
 ring_buffer_bytes(size, stride = 1L)
 }
 \arguments{
-\item{size}{Size fo the buffer, each entry of which will be
+\item{size}{Size of the buffer, each entry of which will be
 \code{stride} bytes long.}
 
 \item{stride}{Number of bytes per buffer entry.  Defaults to 1
