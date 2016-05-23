@@ -572,7 +572,7 @@ test_that("ring_buffer_memcpy_from, attempt to underflow", {
   rb1$push(bytes)
 
   expect_error(rb1$take(16L),
-               "Buffer underflow (requested 16 bytes but 15 available)",
+               "Buffer underflow (requested 16 elements but 15 available)",
                fixed=TRUE)
 
   expect_equal(rb1$size(), size)
@@ -595,7 +595,7 @@ test_that("ring_buffer_memcpy_from, attempt to underflow on 2nd call", {
 
   expect_equal(rb1$take(14L), bytes[-15])
   expect_error(rb1$take(2L),
-               "Buffer underflow (requested 2 bytes but 1 available)",
+               "Buffer underflow (requested 2 elements but 1 available)",
                fixed=TRUE)
 
   expect_equal(rb1$size(), size)
