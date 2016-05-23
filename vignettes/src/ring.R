@@ -229,9 +229,35 @@ bytes <- as.raw(0:255)
 ## ...and push them into the buffer:
 buf$push(bytes)
 
-
-
 ## ### Striding
+
+## Single bytes can hold only values 0 to 255 (or character
+## equivalents, such as `a` becomes `r charToRaw("a")` via
+## `charToRaw("a")`.  But if you want to hold a full integer, that
+## (usually) takes 4 bytes, a double (usually) takes 8.
+
+## To allow this, a bytes buffer can be "strided"; this indicates the
+## number of consecutive bytes that should together make up one
+## logical entry.  The buffer then contains `size` of these.  So to
+## create a buffer of 100 entries, each of `8` bytes you could do:
+buf <- ring::ring_buffer_bytes(100, 8)
+
+## Each element pushed onto the buffer must have the correct size.  So
+## to push the byte sequence 1..8 onto the buffer:
+buf$push(as.raw(1:8))
+
+## but if you pushed more or less it would be an error:
+##+ error=TRUE
+buf$push(as.raw(1:4))
+
+## Reading happens in *logical* units, not bytes:
+buf$read(1)
+
+## and you can get the number of elements used:
+buf$used()
+
+## or the number of bytes
+buf$used(bytes=TRUE)
 
 ## ### The typed bytes buffer `ring_buffer_bytes_typed`
 
