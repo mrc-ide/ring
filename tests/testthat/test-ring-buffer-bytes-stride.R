@@ -17,8 +17,8 @@ test_that("empty", {
   expect_equal(buf$free(FALSE), 100L)
   expect_equal(buf$free(), 100L)
 
-  expect_equal(buf$buffer_data(), raw(500))
-  expect_equal(buf$bytes_data(), 501L)
+  expect_equal(buf$buffer_data(), raw(505))
+  expect_equal(buf$bytes_data(), 505L)
 
   expect_equal(buf$head_pos(TRUE), 0L)
   expect_equal(buf$head_pos(FALSE), 0L)
@@ -58,8 +58,8 @@ test_that("memset", {
   expect_equal(buf$free(), size - n)
 
   expect_equal(buf$buffer_data(),
-               pad(as.raw(rep(1, n * stride)), size * stride))
-  expect_equal(buf$bytes_data(), size * stride + 1)
+               pad(as.raw(rep(1, n * stride)), (size + 1) * stride))
+  expect_equal(buf$bytes_data(), (size + 1) * stride)
 
   expect_equal(buf$head_pos(TRUE), n * stride)
   expect_equal(buf$head_pos(FALSE), n)
@@ -138,12 +138,13 @@ test_that("set with vector", {
   pat <- random_bytes(s)
   expect_equal(buf$set(pat, 1), 1)
 
-  expect_equal(buf$buffer_data(), pad(pat, buf$size(TRUE)))
+  expect_equal(buf$buffer_data(), pad(pat, buf$size(TRUE) + s))
 
   pat2 <- random_bytes(s)
   expect_equal(buf$set(pat2, 20), 20)
 
-  expect_equal(buf$buffer_data(), pad(c(pat, rep(pat2, 20)), buf$size(TRUE)))
+  expect_equal(buf$buffer_data(),
+               pad(c(pat, rep(pat2, 20)), buf$size(TRUE) + s))
 
   pat3 <- random_bytes(s)
   expect_equal(buf$set(pat3, 85), 85)
@@ -158,4 +159,68 @@ test_that("set with vector", {
 
   buf$set(1, 100)
   expect_equal(buf$read(100), rep(as.raw(1), s * 100))
+})
+
+test_that("overflow works (memcpy)", {
+  size <- 10
+  stride <- 2
+
+  buf <- ring::ring_buffer_bytes(size, stride)
+  expect_equal(buf$free(), size)
+  expect_equal(buf$free(TRUE), size * stride)
+
+  d1 <- as.raw(rep(1, stride))
+  d2 <- as.raw(rep(2:(size + 1), each=stride))
+
+  x1 <- buf$push(d1)
+  expect_equal(buf$free(), size - 1)
+  expect_equal(buf$free(TRUE), (size - 1) * stride)
+  expect_equal(x1, stride)
+
+  ## Overflow, just:
+  x2 <- buf$push(d2)
+  expect_equal(x2, 0)
+
+  expect_equal(buf$free(), 0)
+  expect_equal(buf$free(TRUE), 0)
+
+  ## All the data is still in here :)
+  expect_equal(buf$buffer_data(), c(d1, d2))
+
+  expect_equal(buf$head_pos(), 0) # ready to write to the beginning
+  expect_equal(buf$tail_pos(), 1) # ready to read from position 1
+  expect_equal(buf$head_pos(TRUE), 0)
+  expect_equal(buf$tail_pos(TRUE), stride)
+})
+
+test_that("overflow works (memset)", {
+  size <- 10
+  stride <- 2
+
+  buf <- ring::ring_buffer_bytes(size, stride)
+  expect_equal(buf$free(), size)
+  expect_equal(buf$free(TRUE), size * stride)
+
+  d1 <- as.raw(1)
+  d2 <- as.raw(2)
+
+  x1 <- buf$set(d1, 1)
+  expect_equal(buf$free(), size - 1)
+  expect_equal(buf$free(TRUE), (size - 1) * stride)
+  expect_equal(x1, stride)
+
+  ## Overflow, just:
+  x2 <- buf$set(d2, size)
+  expect_equal(x2, stride * size)
+
+  expect_equal(buf$free(), 0)
+  expect_equal(buf$free(TRUE), 0)
+
+  ## All the data is still in here :)
+  expect_equal(buf$buffer_data(), rep(c(d1, d2), c(1, size) * stride))
+
+  expect_equal(buf$head_pos(), 0) # ready to write to the beginning
+  expect_equal(buf$tail_pos(), 1) # ready to read from position 1
+  expect_equal(buf$head_pos(TRUE), 0)
+  expect_equal(buf$tail_pos(TRUE), stride)
 })

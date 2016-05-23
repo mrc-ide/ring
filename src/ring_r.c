@@ -77,7 +77,7 @@ SEXP R_ring_buffer_tail_data(SEXP extPtr) {
 
 SEXP R_ring_buffer_buffer_data(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
-  size_t len = ring_buffer_size(buffer, 1);
+  size_t len = buffer->bytes_data;
   SEXP ret = PROTECT(allocVector(RAWSXP, len));
   memcpy(RAW(ret), ring_buffer_data(buffer), len);
   UNPROTECT(1);

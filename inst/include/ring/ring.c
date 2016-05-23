@@ -16,7 +16,7 @@ ring_buffer * ring_buffer_create(size_t size, size_t stride) {
   ring_buffer * buffer = Calloc(1, ring_buffer);
   buffer->size = size;
   buffer->stride = stride;
-  buffer->bytes_data = size * stride + 1;
+  buffer->bytes_data = (size + 1) * stride;
 
   buffer->data = Calloc(buffer->bytes_data, data_t);
   ring_buffer_reset(buffer);
@@ -41,7 +41,7 @@ size_t ring_buffer_bytes_data(const ring_buffer *buffer) {
 }
 
 size_t ring_buffer_size(const ring_buffer *buffer, int bytes) {
-  return bytes ? buffer->bytes_data - 1 : buffer->size;
+  return bytes ? buffer->bytes_data - buffer->stride : buffer->size;
 }
 
 int ring_buffer_full(ring_buffer *buffer) {
@@ -80,7 +80,7 @@ size_t ring_buffer_free(const ring_buffer *buffer, int bytes) {
   if (buffer->head >= buffer->tail) {
     diff = ring_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
   } else {
-    diff = buffer->tail - buffer->head - 1;
+    diff = buffer->tail - buffer->head - buffer->stride;
   }
   return bytes ? diff : diff / buffer->stride;
 }
@@ -112,16 +112,16 @@ size_t ring_buffer_used(const ring_buffer *buffer, int bytes) {
 // It's not really clear what this should do with stride?  Probably if
 // len does not divide neatly through by stride we should error.  For
 // now, leave it be though.
-size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t len) {
+size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t count) {
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;
-  size_t count = imin(len * buffer->stride, ring_buffer_bytes_data(buffer));
-  int overflow = count > ring_buffer_free(buffer, 1);
+  size_t len = imin(count * buffer->stride, ring_buffer_bytes_data(buffer));
+  int overflow = len > ring_buffer_free(buffer, 1);
 
-  while (nwritten != count) {
+  while (nwritten != len) {
     /* don't copy beyond the end of the buffer */
     // assert(bufend > buffer->head);
-    size_t n = imin(bufend - buffer->head, count - nwritten);
+    size_t n = imin(bufend - buffer->head, len - nwritten);
     memset(buffer->head, c, n);
     buffer->head += n;
     nwritten += n;
@@ -167,7 +167,7 @@ void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
   const size_t len = count * buffer->stride;
   const data_t *source = src;
   const data_t *bufend = ring_buffer_end(buffer);
-  size_t overflow = count > ring_buffer_free(buffer, 1);
+  size_t overflow = len > ring_buffer_free(buffer, 1);
   size_t nread = 0;
   while (nread != len) {
     size_t n = imin(bufend - buffer->head, len - nread);
@@ -369,10 +369,8 @@ data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p) {
    * portable.
    */
   // assert((p >= buffer->data) && (p < ring_buffer_end(buffer)));
-  // TODO: fix this up for working with the stride information...
-  //   p += buffer->stride;
-  //   buffer->data + (p - buffer->data) % ring_buffer_bytes_data(buffer);
-  return buffer->data + ((++p - buffer->data) % ring_buffer_bytes_data(buffer));
+  p += buffer->stride;
+  return buffer->data + (p - buffer->data) % ring_buffer_bytes_data(buffer);
 }
 
 int imin(int a, int b) {

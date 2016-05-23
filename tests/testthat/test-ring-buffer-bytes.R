@@ -115,7 +115,7 @@ test_that("memset a few bytes", {
   expect_false(buf$empty())
 
   expect_equal(buf$buffer_data(),
-               pad(rep(as.raw(57), 7), size))
+               pad(rep(as.raw(57), 7), size + 1))
 })
 
 test_that("memset full capacity", {
@@ -128,7 +128,7 @@ test_that("memset full capacity", {
   expect_equal(buf$used(), buf$size())
   expect_true(buf$full())
   expect_false(buf$empty())
-  expect_equal(buf$buffer_data(), as.raw(rep(57, size)))
+  expect_equal(buf$buffer_data(), pad(as.raw(rep(57, size)), size + 1))
 })
 
 test_that("memset, twice", {
@@ -146,7 +146,7 @@ test_that("memset, twice", {
   expect_false(rb1$empty())
 
   expect_equal(rb1$buffer_data(),
-               pad(rep(as.raw(57), 7 + 15), size))
+               pad(rep(as.raw(57), 7 + 15), size + 1))
 })
 
 test_that("memset, twice, to full capacity", {
@@ -161,7 +161,7 @@ test_that("memset, twice, to full capacity", {
   expect_equal(rb1$used(), size)
   expect_true(rb1$full())
   expect_false(rb1$empty())
-  expect_equal(rb1$buffer_data(), rep(as.raw(57), size))
+  expect_equal(rb1$buffer_data(), pad(rep(as.raw(57), size), size + 1))
 })
 
 test_that("ring_buffer_memset, overflow by 1 byte", {
@@ -180,7 +180,7 @@ test_that("ring_buffer_memset, overflow by 1 byte", {
   expect_equal(rb1$head_pos(), 0)
   ## tail should have bumped forward by 1 byte
   expect_equal(rb1$tail_pos(), 1L)
-  expect_equal(rb1$buffer_data(), rep(as.raw(57), size))
+  expect_equal(rb1$buffer_data(), repr(57, size + 1))
 })
 
 test_that("ring_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
@@ -200,7 +200,7 @@ test_that("ring_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
   ## tail should have bumped forward by 1 byte
   expect_equal(rb1$tail_pos(), 1L)
 
-  expect_equal(rb1$buffer_data(), repr(57, size))
+  expect_equal(rb1$buffer_data(), repr(57, size + 1))
 })
 
 test_that("ring_buffer_memset, twice with oveflow", {
@@ -219,7 +219,7 @@ test_that("ring_buffer_memset, twice with oveflow", {
   expect_false(rb1$empty())
   expect_equal(rb1$head_pos(), 0L)
   expect_equal(rb1$tail_pos(), 1L)
-  expect_equal(rb1$buffer_data(), repr(57, size))
+  expect_equal(rb1$buffer_data(), repr(57, size + 1))
 })
 
 test_that("ring_buffer_memset, twice, overflowing both times", {
@@ -236,7 +236,7 @@ test_that("ring_buffer_memset, twice, overflowing both times", {
   expect_false(rb1$empty())
   expect_equal(rb1$head_pos(), 0L)
   expect_equal(rb1$tail_pos(), 1L)
-  expect_equal(rb1$buffer_data(), repr(58, size))
+  expect_equal(rb1$buffer_data(), repr(58, size + 1))
 })
 
 test_that("ring_buffer_memcpy_into with zero count", {
@@ -254,7 +254,7 @@ test_that("ring_buffer_memcpy_into with zero count", {
   expect_true(rb1$empty())
   expect_equal(rb1$tail_pos(), rb1$head_pos())
 
-  expect_equal(rb1$buffer_data(), repr(1, size))
+  expect_equal(rb1$buffer_data(), repr(1, size + 1))
 })
 
 test_that("ring_buffer_memcpy_into a few bytes of data", {
@@ -275,7 +275,7 @@ test_that("ring_buffer_memcpy_into a few bytes of data", {
   expect_false(rb1$full())
   expect_false(rb1$empty())
 
-  expect_equal(rb1$buffer_data(), pad(bytes, size, 1))
+  expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
 })
 
 test_that("ring_buffer_memcpy_into full capacity", {
@@ -327,7 +327,7 @@ test_that("ring_buffer_memcpy_into, twice", {
   expect_equal(rb1$read(length(bytes) * 2),
                rep(bytes, 2))
   expect_equal(rb1$buffer_data(),
-               pad(rep(bytes, 2), size, 1))
+               pad(rep(bytes, 2), size + 1, 1))
   expect_equal(rb1$head_data(), as.raw(1))
 })
 
@@ -351,7 +351,7 @@ test_that("ring_buffer_memcpy_into, twice (to full capacity)", {
   expect_true(rb1$full())
   expect_false(rb1$empty())
 
-  expect_equal(rb1$buffer_data(), bytes)
+  expect_equal(head(rb1$buffer_data(), size), bytes)
 })
 
 test_that("ring_buffer_memcpy_into, overflow by 1 byte", {
@@ -494,7 +494,7 @@ test_that("ring_buffer_memcpy_from a few bytes of data", {
   expect_equal(rb1$head_pos(),
                rb1$tail_pos() + (length(bytes) - 3L))
   expect_equal(rb1$read(length(bytes) - 3L), bytes[-(1:3)])
-  expect_equal(rb1$buffer_data(), pad(bytes, size, 1))
+  expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
 })
 
 test_that("ring_buffer_memcpy_from full capacity", {
@@ -623,7 +623,7 @@ test_that("ring_buffer_memcpy_into followed by ring_buffer_memcpy_from", {
   expect_false(rb1$full())
   expect_true(rb1$empty())
 
-  expect_equal(rb1$buffer_data(), pad(bytes, size, 1))
+  expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
   expect_equal(rb1$tail_pos(), length(bytes))
   expect_equal(rb1$tail_pos(), rb1$head_pos())
 })
