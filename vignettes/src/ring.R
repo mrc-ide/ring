@@ -122,6 +122,80 @@ buf$reset()
 buf$used()
 buf$empty()
 
+## ### Application: simulation with recent history
+
+## The whole point of the ring buffer though is that we can push
+## things onto it and pull the most recent out, even when the number
+## of things pushed *overall* is larger than the buffer size.
+
+## So imagine a simulation where we need to keep track of the last 5
+## steps.  The simulation is a random walk.
+step <- function(x) {
+  if (runif(1) < 0.5) x - 1L else x + 1L
+}
+
+x <- 0L
+buf <- ring::ring_buffer_env(5)
+h <- integer(20)
+buf$push(x)
+h[1L] <- x
+
+set.seed(1)
+for (i in seq_len(length(h) - 1L)) {
+  x <- step(x)
+  buf$push(x)
+  h[i + 1L] <- x
+}
+
+## The whole history:
+h
+
+## The last 5 steps:
+unlist(buf$read(5))
+
+## So we could rewrite the simulation so that the random walk tends up
+## if the last few steps have been increases and tends down if the
+## last few steps have been decreases:
+step <- function(x) {
+  if (length(x) > 1) {
+    p <- mean(diff(x)) / 2 + 0.5
+  } else {
+    p <- 0.5
+  }
+  if (runif(1) < p) x[length(x)] - 1L else x[length(x)] + 1L
+}
+
+x <- 0L
+buf <- ring::ring_buffer_env(5)
+h <- integer(100)
+buf$push(x)
+h[1L] <- x
+
+set.seed(1)
+for (i in seq_len(length(h) - 1L)) {
+  x <- step(unlist(buf$read(buf$used())))
+  buf$push(x)
+  h[i + 1L] <- x
+}
+
+## Now we have a simulation with a strong mean reverting tendency:
+##+ fig.width=7
+par(mar=c(4, 4, .5, .5))
+plot(h, type="l", xlab="step", ylab="y", las=1)
+
+## Because the buffer always holds the last 5 (or fewer) elements the
+## book-keeping involved in working with the last few elements out is
+## simlified.  Ignoring the fact that we hold the entire history in
+## the fixed size vector `h`, only the last few elements need to be
+## retained which may be useful if the simulation generates a lot of
+## data.
+
+## A downside of this implementation is that `buf$read()` returns a
+## list that must be turned into a vector with `unlist`, even though
+## we know in this case that the simulation will always produce an
+## integer vector.  The ring buffers described below can help with
+## that problem.
+
 ## ## The bytes buffer `ring_buffer_bytes`
 
 ## This is the classical implementation of a ring buffer, and the
