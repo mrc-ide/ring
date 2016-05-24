@@ -4,6 +4,11 @@
 ##'
 ##' @title Environment-based ring buffer
 ##' @param size The number of entries the buffer can contain.
+##' @param prevent_overflow Logial indicating if buffer overflow is
+##'   not allowed.  If \code{FALSE} (the default) then the buffer will
+##'   overflow silently (that is, the oldest data will be
+##'   overwritten).  If \code{TRUE}, then on overflow an error will be
+##'   raised.
 ##' @export
 ##' @author Rich FitzJohn
 ##' @examples
@@ -12,8 +17,8 @@
 ##' buf$take(3)
 ##' buf$push(11:15)
 ##' buf$take(2)
-ring_buffer_env <- function(size) {
-  .R6_ring_buffer_env$new(size)
+ring_buffer_env <- function(size, prevent_overflow=FALSE) {
+  .R6_ring_buffer_env$new(size, prevent_overflow)
 }
 
 ## TODO: implement growth, which is fairly easy to do here; we break
@@ -88,9 +93,12 @@ ring_buffer_env_duplicate <- function(buffer) {
     buffer=NULL,
     head=NULL,
     tail=NULL,
+    prevent_overflow=NULL,
 
-    initialize=function(size) {
+    initialize=function(size, prevent_overflow) {
+      assert_scalar_logical(prevent_overflow)
       self$buffer <- ring_buffer_env_create(size)
+      self$prevent_overflow <- prevent_overflow
       self$reset()
     },
 
@@ -132,6 +140,7 @@ ring_buffer_env_duplicate <- function(buffer) {
 
     ## Start getting strong divergence here:
     set=function(data, n) {
+      ring_buffer_env_check_overflow(self, n)
       for (i in seq_len(min(n, self$size()))) {
         ring_buffer_env_write_to_head(self, data)
       }
@@ -145,6 +154,7 @@ ring_buffer_env_duplicate <- function(buffer) {
     ##
     ## buf$push(iterate_by_row(data.frame))
     push=function(data, iterate=TRUE) {
+      ring_buffer_env_check_overflow(self, if (iterate) length(data) else 1L)
       if (iterate) {
         for (el in data) {
           ring_buffer_env_write_to_head(self, el)
@@ -152,6 +162,7 @@ ring_buffer_env_duplicate <- function(buffer) {
       } else {
         ring_buffer_env_write_to_head(self, data)
       }
+      invisible(data)
     },
 
     take=function(n) {
@@ -165,6 +176,7 @@ ring_buffer_env_duplicate <- function(buffer) {
 
     copy=function(dest, n) {
       ring_buffer_env_check_underflow(self, n)
+      ring_buffer_env_check_overflow(dest, n)
 
       tail <- self$tail
       for (i in seq_len(n)) {
@@ -227,21 +239,34 @@ ring_buffer_env_read_from_head <- function(buf, n) {
 }
 
 ring_buffer_env_write_to_head <- function(buf, data) {
+  n <- buf$buffer$.used
+  full <- n == buf$size()
+  if (full && buf$prevent_overflow) {
+    stop("Buffer overflow")
+  }
+
   buf$head$data <- data
   buf$head <- buf$head$.next
-  if (buf$buffer$.used < buf$size()) {
-    buf$buffer$.used <- buf$buffer$.used + 1L
-  } else {
-    ## overflow! (TODO: make this optional)
+  if (full) {
     buf$tail <- buf$tail$.next
+  } else {
+    buf$buffer$.used <- n + 1L
   }
 }
 
 ring_buffer_env_check_underflow <- function(obj, requested) {
   ## TODO: Perhaps an S3 condition?
   if (requested > obj$used()) {
-    stop(sprintf("Buffer underflow: requested %d, available %d",
+    stop(sprintf("Buffer underflow (requested %d elements but %d available)",
                  requested, obj$used()))
+  }
+}
+
+ring_buffer_env_check_overflow <- function(obj, requested) {
+  ## TODO: Perhaps an S3 condition?
+  if (obj$prevent_overflow && requested > obj$free()) {
+    stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
+                 requested, obj$free()))
   }
 }
 

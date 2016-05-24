@@ -219,3 +219,14 @@ test_that("set", {
   expect_true(buf$full())
   expect_equal(buf$read(10), rep(list(1), 10))
 })
+
+test_that("no overflow", {
+  buf <- ring_buffer_env(10, TRUE)
+  expect_error(buf$push(1:11), "Buffer overflow")
+  expect_equal(buf$used(), 0)
+
+  buf$push(1:5)
+  expect_error(buf$push(6:11), "Buffer overflow")
+  expect_equal(buf$used(), 5)
+  expect_equal(buf$to_list(), as.list(1:5))
+})

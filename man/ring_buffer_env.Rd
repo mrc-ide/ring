@@ -4,10 +4,16 @@
 \alias{ring_buffer_env}
 \title{Environment-based ring buffer}
 \usage{
-ring_buffer_env(size)
+ring_buffer_env(size, prevent_overflow = FALSE)
 }
 \arguments{
 \item{size}{The number of entries the buffer can contain.}
+
+\item{prevent_overflow}{Logial indicating if buffer overflow is
+not allowed.  If \code{FALSE} (the default) then the buffer will
+overflow silently (that is, the oldest data will be
+overwritten).  If \code{TRUE}, then on overflow an error will be
+raised.}
 }
 \description{
 An environment based ring buffer.  In contrast with the bytes
