@@ -325,6 +325,53 @@ buf$used(bytes=TRUE)
 
 ### The typed bytes buffer `ring_buffer_bytes_typed`
 
-## Possible applications
+If 8 bytes is a double, it should be possible to make a bytes
+buffer that holds one (or more) doubles per entry.  That is what
+the `ring_buffer_bytes_typed` buffer does, with a few corner cases
+dealt with.  To use, you decide what the *R interpretation* of an
+entry is, it will determine the size per entry and appropriate
+encoding and decoding functions and you can ignore that it is
+storing bytes.  For performance reasons this does not use R's
+serialisation and simply copies the data stored in vectors.
 
-### Ring matrix with `ring_matrix`
+For example, to make a buffer of 10 elements, each of which is a
+single real number (double), use:
+``` {r }
+buf <- ring::ring_buffer_bytes_typed(10, double(1))
+```
+
+onto which real numbers can be pushed:
+``` {r }
+buf$push(pi)
+```
+
+And retrieve the data.
+``` {r }
+buf$take(1)
+```
+
+Entries can contain more than one number; to make a buffer of
+length 10, each element of which is a vector of 5 doubles:
+``` {r }
+buf <- ring::ring_buffer_bytes_typed(10, double(5))
+buf$push(rnorm(5))
+buf$read(1)
+```
+
+Because this is just implemented as a byte array, we can just push
+a bunch of numbers straight into the buffer:
+``` {r }
+buf$push(rnorm(5 * 10))
+```
+
+With elements in the buffer, we can request them.  The integer
+argument of `take` indicates the number of groups of 5 doubles we
+would like back:
+``` {r }
+buf$take(1)
+```
+
+If you try to take more than is in the buffer it is an error:
+``` {r error=TRUE}
+buf$take(10)
+```

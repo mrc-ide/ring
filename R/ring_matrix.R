@@ -22,11 +22,12 @@
 ##
 ##' @export
 ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
+  assert_scalar_logical(environment)
   type <- match.arg(type, names(sizes))
   if (environment) {
     buf <- ring_buffer_env(nr_max)
   } else {
-    buf <- ring_buffer_bytes_typed(nr_max, create[[type]](nc))
+    buf <- ring_buffer_bytes_typed(nr_max, type, nc)
   }
   ret <- list(buf=buf, nr_max=as.integer(nr_max), nc=as.integer(nc),
               type=type, environment=environment)
