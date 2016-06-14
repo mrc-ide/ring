@@ -2,7 +2,10 @@
 ## title: "ring"
 ## author: "Rich FitzJohn"
 ## date: "`r Sys.Date()`"
-## output: rmarkdown::html_vignette
+## output:
+##   rmarkdown::html_vignette:
+##     toc: true
+##     toc_depth: 2
 ## vignette: >
 ##   %\VignetteIndexEntry{ring}
 ##   %\VignetteEngine{knitr::rmarkdown}
@@ -32,7 +35,7 @@ knitr::opts_chunk$set(error=FALSE)
 ##   R's environments.  This buffer can hold arbitrary R objects at
 ##   each position.
 
-## ## The environment buffer `ring_buffer_env`
+## # The environment buffer `ring_buffer_env`
 
 ## This is the simplest buffer to understand because we don't have to
 ## deal with raw vectors.
@@ -122,7 +125,7 @@ buf$reset()
 buf$used()
 buf$empty()
 
-## ### Application: simulation with recent history
+## ## Application: simulation with recent history
 
 ## The whole point of the ring buffer though is that we can push
 ## things onto it and pull the most recent out, even when the number
@@ -196,7 +199,7 @@ plot(h, type="l", xlab="step", ylab="y", las=1)
 ## integer vector.  The ring buffers described below can help with
 ## that problem.
 
-## ## The bytes buffer `ring_buffer_bytes`
+## # The bytes buffer `ring_buffer_bytes`
 
 ## This is the classical implementation of a ring buffer, and the
 ## implementation is largely due to
@@ -229,7 +232,7 @@ bytes <- as.raw(0:255)
 ## ...and push them into the buffer:
 buf$push(bytes)
 
-## ### Striding
+## ## Striding
 
 ## Single bytes can hold only values 0 to 255 (or character
 ## equivalents, such as `a` becomes `r charToRaw("a")` via
@@ -259,7 +262,7 @@ buf$used()
 ## or the number of bytes
 buf$used(bytes=TRUE)
 
-## ### The typed bytes buffer `ring_buffer_bytes_typed`
+## ## The typed bytes buffer `ring_buffer_bytes_typed`
 
 ## If 8 bytes is a double, it should be possible to make a bytes
 ## buffer that holds one (or more) doubles per entry.  That is what
