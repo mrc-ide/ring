@@ -17,9 +17,7 @@ devtools::install_github("richfitz/ring")
 
 ## Usage
 
-```r
-library(ring)
-```
+See the vignette, either [online](https://richfitz.github.io/ring) or from the package as `vignette("ring")`.
 
 ## License
 
