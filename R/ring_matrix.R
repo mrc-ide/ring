@@ -55,6 +55,9 @@ ring_matrix_push <- function(x, data, check=TRUE) {
   }
 }
 
+##' @export
+push.ring_matrix <- ring_matrix_push
+
 ring_matrix_compatible <- function(x, data) {
   if (storage.mode(data) != x$type) {
     stop("Expected storage.mode of ", x$type)
@@ -73,7 +76,6 @@ ring_matrix_compatible <- function(x, data) {
 
 ring_matrix_get <- function(x, i=NULL) {
   if (is.null(i)) {
-    used <- x$buf$used()
     dat <- x$buf$read(x$buf$used())
     ret <- matrix(unlist(dat), ncol=x$nc, byrow=TRUE)
   } else {
@@ -123,7 +125,11 @@ tail.ring_matrix <- function(x, n = 6L, ...) {
 ##' @export
 `[.ring_matrix` <- function(x, i, j, ..., drop=TRUE) {
   if (missing(i)) {
-    ring_matrix_get(x, NULL)[, j, drop=drop]
+    if (missing(j)) {
+      ring_matrix_get(x, NULL)
+    } else {
+      ring_matrix_get(x, NULL)[, j, drop=drop]
+    }
   } else if (is.matrix(i)) {
     if (!missing(j)) {
       stop("subscript out of bounds") # same error as [.matrix
@@ -194,4 +200,9 @@ rbind.ring_matrix <- function(...) {
     }
     x
   }
+}
+
+##' @export
+length.ring_matrix <- function(x) {
+  x$buf$size()
 }
