@@ -301,3 +301,132 @@ buf$take(1)
 ## If you try to take more than is in the buffer it is an error:
 ##+ error=TRUE
 buf$take(10)
+
+## # Possible applications
+
+## ## Ring vector
+
+## The ring buffer above is a better data structure to implement the
+## simulation than the environment buffer is because the expected
+## elements in each entry of the buffer are the same.  But with a bit
+## of S3 syntactic sugar we can do a bit better.
+v <- ring::ring_vector(5, "integer", FALSE)
+
+## Convert back out to be an R vector (involves a copy)
+v[]
+
+## To add things to the vector, use the `push` generic:
+ring::push(v, 1L)
+v[]
+
+## This can push multiple items on at once:
+ring::push(v, 2:4)
+v[]
+length(v)
+
+## Random read access works:
+v[3]
+v[[1]]
+
+## Resetting the buffer zeros this all:
+v$buf$reset()
+length(v)
+
+## Returning to the simulation example from above:
+buf <- ring::ring_vector(5, "integer", FALSE)
+h <- integer(20)
+x <- 0L
+ring::push(buf, x)
+h[1L] <- x
+
+step <- function(x) {
+  if (runif(1) < 0.5) x - 1L else x + 1L
+}
+
+set.seed(1)
+for (i in seq_len(length(h) - 1L)) {
+  x <- step(x)
+  ring::push(buf, x)
+  h[i + 1L] <- x
+}
+
+## The whole history:
+h
+
+## The last 5 steps:
+buf[]
+
+## Now, rewriting again, this time with the step function taking the
+## buffer itself.  This simplifies the implementation, with most of
+## the details being handled by the S3 methods for `length`, `push`
+## and `[`.
+step <- function(x) {
+  if (length(x) > 1) {
+    p <- mean(diff(x[])) / 2 + 0.5
+  } else {
+    p <- 0.5
+  }
+  if (runif(1) < p) x[length(x)] - 1L else x[length(x)] + 1L
+}
+
+buf <- ring::ring_vector(5, "integer", FALSE)
+h <- integer(100)
+x <- 0L
+
+ring::push(buf, x)
+h[1L] <- x
+
+set.seed(1)
+for (i in seq_len(length(h) - 1L)) {
+  x <- step(buf)
+  ring::push(buf, x)
+  h[i + 1L] <- x
+}
+
+par(mar=c(4, 4, .5, .5))
+plot(h, type="l", xlab="step", ylab="y", las=1)
+
+## ## Ring matrix with `ring_matrix`
+
+## The `ring_matrix` data structure generalises the `ring_vector`; it
+## is a buffer that looks to R like a matrix that grows by adding rows
+## at the bottom and shrinks by consuming rows at the top.
+
+## This is even more contrived than above, but consider simultaneously
+## simulating the movement of `n` random particles with the same
+## reflecting random walk as above:
+
+n <- 10
+m <- ring::ring_matrix(5, n, "integer", FALSE)
+
+## The current state of the matrix is:
+m[]
+
+## We can set the initial state as:
+ring::push(m, matrix(0L, 1, n))
+m[]
+
+step <- function(x) {
+  if (nrow(x) > 1) {
+    p <- colMeans(diff(m[])) / 2 + 0.5
+  } else {
+    p <- rep(0.5, ncol(m))
+  }
+  x[nrow(x), ] + as.integer(ifelse(runif(length(p)) < p, -1, 1L))
+}
+
+m <- ring::ring_matrix(5, n, "integer", FALSE)
+x <- rep(0L, n)
+ring::push(m, x)
+
+h <- matrix(NA, 200, n)
+h[1, ] <- x
+set.seed(1)
+for (i in seq_len(nrow(h) - 1L)) {
+  x <- step(m)
+  ring::push(m, x)
+  h[i + 1L, ] <- x
+}
+
+par(mar=c(4, 4, .5, .5))
+matplot(h, type="l", lty=1)
