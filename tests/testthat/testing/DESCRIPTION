@@ -1,0 +1,11 @@
+Package: testing
+Title: Testing 'ring' Extensions
+Version: 0.0.1
+Description: Testing ring extensions work.
+License: CC0
+Author: Rich FitzJohn
+Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
+LinkingTo: ring
+Suggests:
+    testthat
+RoxygenNote: 5.0.1
