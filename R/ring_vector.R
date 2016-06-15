@@ -115,8 +115,3 @@ c.ring_vector <- function(..., recursive=TRUE) {
     x
   }
 }
-
-## @export
-as.vector <- function(x) {
-  ring_vector_get(x)
-}

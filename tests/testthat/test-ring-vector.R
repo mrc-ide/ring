@@ -46,10 +46,10 @@ test_that("basic use", {
       m2 <- c(m, dat)
       expect_identical(m, m2) # reference
       expect_equal(length(m), n * 2)
-      expect_equal(as.vector(m), c(dat, dat))
+      expect_equal(m[], c(dat, dat))
 
       m3 <- c(m, dat[n:1], dat[n])
-      expect_equal(as.vector(m), c(dat, dat, dat[n:1], dat[n]))
+      expect_equal(m[], c(dat, dat, dat[n:1], dat[n]))
 
       ## This does not work as expected, but that's because 'c' has
       ## different dispatch rules to rbind.
