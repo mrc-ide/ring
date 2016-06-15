@@ -77,7 +77,14 @@ ring_matrix_compatible <- function(x, data) {
 ring_matrix_get <- function(x, i=NULL) {
   if (is.null(i)) {
     dat <- x$buf$read(x$buf$used())
-    ret <- matrix(unlist(dat), ncol=x$nc, byrow=TRUE)
+    if (x$environment) {
+      if (length(dat) == 0L) {
+        dat <- create[[x$type]]()
+      } else {
+        dat <- unlist(dat)
+      }
+    }
+    ret <- matrix(dat, ncol=x$nc, byrow=TRUE)
   } else {
     if (is.logical(i)) {
       i <- which(i)
