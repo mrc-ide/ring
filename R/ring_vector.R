@@ -28,7 +28,7 @@ ring_vector <- function(length_max, type, environment=TRUE) {
   ret
 }
 
-ring_vector_push <- function(x, data, check=TRUE) {
+ring_vector_push <- function(x, data, check=TRUE, ...) {
   if (check) {
     ring_vector_compatible(x, data)
   }

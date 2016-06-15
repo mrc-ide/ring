@@ -35,7 +35,7 @@ ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
   ret
 }
 
-ring_matrix_push <- function(x, data, check=TRUE) {
+ring_matrix_push <- function(x, data, check=TRUE, ...) {
   if (check) {
     ring_matrix_compatible(x, data)
   }
