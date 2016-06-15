@@ -48,6 +48,13 @@ ring_vector_compatible <- function(x, data) {
 ring_vector_get <- function(x, i=NULL) {
   if (is.null(i)) {
     ret <- x$buf$read(x$buf$used())
+    if (x$environment) {
+      if (length(ret) == 0L) {
+        ret <- create[[x$type]]()
+      } else {
+        ret <- unlist(ret)
+      }
+    }
   } else {
     if (is.logical(i)) {
       i <- which(i)
@@ -90,7 +97,6 @@ length.ring_vector <- function(x, ...) {
 ##' @export
 `[[.ring_vector` <- `[.ring_vector`
 
-## @S3method c ring_vector
 ##' @export
 c.ring_vector <- function(..., recursive=TRUE) {
   if (!inherits(..1, "ring_vector")) {
