@@ -54,7 +54,7 @@ size_t ring_buffer_memset_stride(ring_buffer *buffer, data_t *x, size_t len);
 void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
                                 size_t count);
 void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer,
-                                size_t count);
+                              size_t count);
 
 void * ring_buffer_copy(ring_buffer *dst, ring_buffer *src, size_t count);
 

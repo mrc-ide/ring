@@ -8,3 +8,10 @@
 ^ignore$
 ^ring_.*\.tar.gz$
 ^update_web\.sh$
+^tests/testthat/testing\.Rcheck$
+^tests/testthat/testing_.*\.tar\.gz$
+^tests/testthat/testing/\.Rbuildignore$
+^tests/testthat/testing/src/.*\.o$
+^tests/testthat/testing/src/.*\.so$
+^tests/testthat/testing/src/.*\.dll$
+^notes\.md$

@@ -8,3 +8,5 @@ inst/web
 vignettes/.build.timestamp
 c-ringbuf
 ignore
+tests/testthat/testing.Rcheck
+tests/testthat/testing_*.tar.gz
