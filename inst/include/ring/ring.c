@@ -194,14 +194,21 @@ void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
 //
 // This requires alignment is bang on, and I think I have got that
 // working now.
+//
+// TODO: This needs solid testing, but that's actually pretty hard to
+// do because this one is designed only to be used in C code.
 void* ring_buffer_head_advance(ring_buffer* buffer) {
-  const size_t len = buffer->stride;
-  if (len > ring_buffer_free(buffer, 1)) {
+  int overflow = ring_buffer_full(buffer);
+  const data_t *bufend = ring_buffer_end(buffer);
+
+  buffer->head += buffer->stride;
+  if (buffer->head == bufend) {
     buffer->head = buffer->data;
-    buffer->tail = ring_buffer_nextp(buffer, buffer->head);
-  } else {
-    buffer->head += len;
   }
+  if (overflow) {
+    buffer->tail = ring_buffer_nextp(buffer, buffer->head);
+  }
+
   return buffer->head;
 }
 
