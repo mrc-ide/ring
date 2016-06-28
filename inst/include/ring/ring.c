@@ -186,6 +186,25 @@ void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
   return buffer->head;
 }
 
+// Advance the ring buffer by one position and return a pointer to the
+// memory *without writing anything to it*.  In this case, the calling
+// function is responsible for setting the memory to something
+// sensible.  This is currently used in dde where we want to write
+// directly to the head.
+//
+// This requires alignment is bang on, and I think I have got that
+// working now.
+void* ring_buffer_head_advance(ring_buffer* buffer) {
+  const size_t len = buffer->stride;
+  if (len > ring_buffer_free(buffer, 1)) {
+    buffer->head = buffer->data;
+    buffer->tail = ring_buffer_nextp(buffer, buffer->head);
+  } else {
+    buffer->head += len;
+  }
+  return buffer->head;
+}
+
 /*
  * Copy n bytes from the ring buffer src, starting from its tail
  * pointer, into a contiguous memory area dst. Returns the value of
@@ -202,7 +221,7 @@ void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
  * no bytes are copied, and the function will return 0.
  */
 void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer,
-                                size_t count) {
+                              size_t count) {
   void * tail = ring_buffer_tail_read(buffer, dest, count);
   if (tail != 0) {
     buffer->tail = tail;
