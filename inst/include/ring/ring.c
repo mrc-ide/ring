@@ -402,3 +402,76 @@ data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p) {
 int imin(int a, int b) {
   return a < b ? a : b;
 }
+
+// Do a search.  There a few possibilities of where to start from
+// here; we could start with the edges of the array, or we could start
+// at one end and grow, or from a position in the array itself.
+const data_t * ring_buffer_search(ring_buffer *buffer, int i,
+                                  ring_predicate *pred, void *data) {
+  size_t n = ring_buffer_used(buffer, 0);
+  size_t i0 = i, i1 = i;
+  data_t x0 = ring_buffer_tail_offset(i0), x1;
+  int inc = 1;
+
+  // Predicate should return 1 if we should look further back, -1
+  // otherwise.
+  if (pred(x0, data) > 0) { // advance up until we hit the top
+    if (i0 == n - 1) { // guess is already *at* the top.
+      return NULL;
+    }
+    i1 = i0 + 1;
+    x1 = ring_buffer_tail_offset(i1);
+    while (pred(x1, data) > 0) {
+      i0 = i1;
+      x0 = x1;
+      inc *= 2;
+      i1 += inc;
+      if (i1 >= n) { // off the end of the buffer
+        i1 = n - 1;
+        x1 = ring_buffer_tail_offset(i1);
+        break;
+      }
+      x1 = ring_buffer_tail_offset(i1);
+    }
+  } else { // advance down
+    if (i0 == 0) { // guess is already at the bottom
+      return x0;
+    }
+    x1 = x0;
+    i0 = i0 - 1;
+    x0 = ring_buffer_tail_offset(i1);
+    while (pred(x0, data) < 0) {
+      i1 = i0;
+      x1 = x0;
+      inc *= 2;
+      i0 -= inc;
+      if (i0 < 0) {
+        i0 = 0;
+        x0 = ring_buffer_tail_offset(i0);
+        break;
+      }
+      x0 = ring_buffer_tail_offset(i0);
+    }
+  }
+
+  // TODO: Here, we'll do a bit of trickery because we'll want to
+  // treat the case of the ends being wrapped or not.  This is going
+  // to be the case when x0 > x1; in that case we can pop the first
+  // point to check at the end of the buffer, compare that and
+  // continue.  The actual checks simplify after that because the
+  // indices go away and everything is pointer arithmetic, based on
+  // the ring buffer stride.  For now, use the bisection search:
+  while (i1 - i0 != 1) {
+    int i2 = (i1 + i0) / 2;
+    data_t x2 = ring_buffer_tail_offset(i2);
+    if (pred(x2, data) > 0) {
+      i0 = i2;
+      x0 = x2;
+    } else {
+      i1 = i2;
+      x1 = x2;
+    }
+  }
+
+  return x0;
+}
