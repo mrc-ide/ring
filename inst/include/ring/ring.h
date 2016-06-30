@@ -1,6 +1,7 @@
 #ifndef _RING_H_
 #define _RING_H_
 #include <stddef.h>
+#include <stdbool.h>
 
 typedef unsigned char data_t;
 
@@ -60,8 +61,10 @@ void * ring_buffer_tail_offset(ring_buffer *buffer, size_t offset);
 
 void* ring_buffer_head_advance(ring_buffer* buffer);
 
-typedef int ring_predicate(void *x, void *data);
-const data_t* ring_buffer_search(ring_buffer* buffer, ring_predicate pred,
-                                 void *data);
+typedef bool ring_predicate(void *x, void *data);
+void* ring_buffer_search_linear(ring_buffer* buffer,
+                                ring_predicate pred, void *data);
+void* ring_buffer_search(ring_buffer* buffer, size_t i,
+                         ring_predicate pred, void *data);
 
 #endif

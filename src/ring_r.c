@@ -115,7 +115,7 @@ SEXP R_ring_buffer_memset(SEXP extPtr, SEXP c, SEXP len) {
   data_t *data = RAW(c);
   if (length(c) == 1) {
     return ScalarInteger(ring_buffer_memset(buffer, data[0], n));
-  } else if (length(c) == buffer->stride) {
+  } else if ((size_t)length(c) == buffer->stride) {
     return ScalarInteger(ring_buffer_memset_stride(buffer, data, n));
   } else {
     Rf_error("Invalid length input");

@@ -403,35 +403,73 @@ int imin(int a, int b) {
   return a < b ? a : b;
 }
 
+// This one is really just for testing; it's designed to be stupid and
+// simple and check that the general search system works, but not to
+// be fast.
+void * ring_buffer_search_linear(ring_buffer *buffer,
+                                 ring_predicate *pred, void *data) {
+  size_t n = ring_buffer_used(buffer, 0);
+  if (n == 0) {
+    // Don't do any search here; there is no position such that
+    //   buffer[i] < data
+    return NULL;
+  }
+  size_t i = 0;
+  void *xl = ring_buffer_tail_offset(buffer, i), *xr;
+  if (!pred(xl, data)) {
+    // There will be not a single value here that satisfies the
+    // required condition
+    return NULL;
+  }
+
+  do {
+    i++;
+    if (i == n) {
+      return xl;
+    }
+    xr = ring_buffer_tail_offset(buffer, i);
+    if (!pred(xr, data)) {
+      return xl;
+    } else {
+      xl = xr;
+    }
+  } while (1);
+
+  return xl;
+}
+
 // Do a search.  There a few possibilities of where to start from
 // here; we could start with the edges of the array, or we could start
 // at one end and grow, or from a position in the array itself.
-const data_t * ring_buffer_search(ring_buffer *buffer, int i,
-                                  ring_predicate *pred, void *data) {
+void * ring_buffer_search(ring_buffer *buffer, size_t i,
+                          ring_predicate *pred, void *data) {
   size_t n = ring_buffer_used(buffer, 0);
-  size_t i0 = i, i1 = i;
-  data_t x0 = ring_buffer_tail_offset(i0), x1;
+  if (n == 0) {
+    return NULL;
+  }
+  int i0 = i, i1 = i;
+  void *x0 = ring_buffer_tail_offset(buffer, i0), *x1;
   int inc = 1;
 
   // Predicate should return 1 if we should look further back, -1
   // otherwise.
-  if (pred(x0, data) > 0) { // advance up until we hit the top
+  if (pred((void*) x0, data)) { // advance up until we hit the top
     if (i0 == n - 1) { // guess is already *at* the top.
       return NULL;
     }
     i1 = i0 + 1;
-    x1 = ring_buffer_tail_offset(i1);
-    while (pred(x1, data) > 0) {
+    x1 = ring_buffer_tail_offset(buffer, i1);
+    while (pred((void*) x1, data)) {
       i0 = i1;
       x0 = x1;
       inc *= 2;
       i1 += inc;
       if (i1 >= n) { // off the end of the buffer
         i1 = n - 1;
-        x1 = ring_buffer_tail_offset(i1);
+        x1 = ring_buffer_tail_offset(buffer, i1);
         break;
       }
-      x1 = ring_buffer_tail_offset(i1);
+      x1 = ring_buffer_tail_offset(buffer, i1);
     }
   } else { // advance down
     if (i0 == 0) { // guess is already at the bottom
@@ -439,18 +477,18 @@ const data_t * ring_buffer_search(ring_buffer *buffer, int i,
     }
     x1 = x0;
     i0 = i0 - 1;
-    x0 = ring_buffer_tail_offset(i1);
-    while (pred(x0, data) < 0) {
+    x0 = ring_buffer_tail_offset(buffer, i1);
+    while (!pred((void*) x0, data)) {
       i1 = i0;
       x1 = x0;
       inc *= 2;
       i0 -= inc;
-      if (i0 < 0) {
+      if (i0 < 0) { // this needs care, should avoid doing the minus instead.
         i0 = 0;
-        x0 = ring_buffer_tail_offset(i0);
+        x0 = ring_buffer_tail_offset(buffer, i0);
         break;
       }
-      x0 = ring_buffer_tail_offset(i0);
+      x0 = ring_buffer_tail_offset(buffer, i0);
     }
   }
 
@@ -463,8 +501,8 @@ const data_t * ring_buffer_search(ring_buffer *buffer, int i,
   // the ring buffer stride.  For now, use the bisection search:
   while (i1 - i0 != 1) {
     int i2 = (i1 + i0) / 2;
-    data_t x2 = ring_buffer_tail_offset(i2);
-    if (pred(x2, data) > 0) {
+    void *x2 = ring_buffer_tail_offset(buffer, i2);
+    if (pred((void*) x2, data)) {
       i0 = i2;
       x0 = x2;
     } else {

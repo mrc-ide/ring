@@ -33,3 +33,10 @@ first <- function(x) {
 last <- function(x) {
   tail(x, 1L)
 }
+
+test_search_linear <- function(buffer, value) {
+  .Call("test_search_linear", buffer, as.double(value), PACKAGE="ring")
+}
+test_search <- function(buffer, value, i=0L) {
+  .Call("test_search", buffer, as.double(value), as.integer(i), PACKAGE="ring")
+}
