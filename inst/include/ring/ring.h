@@ -64,7 +64,7 @@ void* ring_buffer_head_advance(ring_buffer* buffer);
 typedef bool ring_predicate(void *x, void *data);
 void* ring_buffer_search_linear(ring_buffer* buffer,
                                 ring_predicate pred, void *data);
-void* ring_buffer_search(ring_buffer* buffer, size_t i,
-                         ring_predicate pred, void *data);
+void* ring_buffer_search_bisect(ring_buffer* buffer, size_t i,
+                                ring_predicate pred, void *data);
 
 #endif

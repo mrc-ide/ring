@@ -52,11 +52,11 @@ SEXP test_search_linear(SEXP r_buffer, SEXP r_value) {
   return ScalarInteger(ring_buffer_compute_offset(buffer, x));
 }
 
-SEXP test_search(SEXP r_buffer, SEXP r_value, SEXP r_i) {
+SEXP test_search_bisect(SEXP r_buffer, SEXP r_value, SEXP r_i) {
   ring_buffer *buffer = ring_buffer_get(r_buffer, 1);
   double value = REAL(r_value)[0];
   int i = INTEGER(r_i)[0];
   data_t *x = (data_t*)
-    ring_buffer_search(buffer, i, test_find_double, &value);
+    ring_buffer_search_bisect(buffer, i, test_find_double, &value);
   return ScalarInteger(ring_buffer_compute_offset(buffer, x));
 }
