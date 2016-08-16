@@ -2,7 +2,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-// TODO: Duplicated from ring_r.c
+// NOTE: Duplicated from ring_r.c
 ring_buffer* ring_buffer_get(SEXP extPtr, int closed_error);
 
 size_t ring_buffer_compute_offset(ring_buffer* buffer, data_t *x) {
@@ -36,12 +36,10 @@ size_t ring_buffer_compute_offset(ring_buffer* buffer, data_t *x) {
 // Off-by-one issues here are tricky though; how we should behave when
 // the values are identical is not obvious and may require some
 // tweaking.
-bool test_find_double(void *x, void *data) {
+bool test_find_double(const void *x, void *data) {
   double x_value = *((double*) x);
   double data_value = *((double*) data);
-  bool ret = x_value <= data_value;
-  // Rprintf("above? %s\n", ret ? "true" : "false");
-  return ret;
+  return x_value <= data_value;
 }
 
 SEXP test_search_linear(SEXP r_buffer, SEXP r_value) {

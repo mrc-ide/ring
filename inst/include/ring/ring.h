@@ -3,18 +3,32 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef unsigned char data_t;
-
-// TODO: consider having an integer that keeps track of the number f
-// times that the buffer has wrapped.  We could use this to test
-// cursor invalidation (though that would require some care I think).
-
-// As we move from storing bytes to storing all sorts of things, we
-// need to tweak the storage model a bit:
+// The underlying data structure.  None of the fields here should be
+// directly accessed in normal use; use the accessor functions
+// instead.
 //
-//   size: the number of logical units that may be stored in the buffer
-//   bytes_data: the number of bytes (including padding) that data holds
-
+// The ring buffer is a FIFO (first-in-first-out) queue.  It is
+// implemented as a single block of memory (data) and a pair of
+// pointers:
+//
+//   head: the starting location where data should be written when
+//         copying data *into* the buffer.
+//
+//   tail: the starting location where data should be read when
+//         copying data *from* the buffer.
+//
+// The buffer has a concept of a stride; the number of bytes per
+// buffer entry.  This is fixed across the entire ring.  As such, some
+// functions that return size_t have a booleanargument "bytes" that
+// switches between measuring in bytes and measuring in logical
+// elements.  In the case where stride=1, these are identical.
+//
+// In general, the ring buffer is totally happy to overflow; if you
+// write too much into the ring buffer it will destructively erase
+// data (i.e., your tail will move).  The ring buffer will never
+// underflow, but functions may return `NULL` on underflow - read the
+// documentation below carefully.
+typedef unsigned char data_t;
 typedef struct ring_buffer {
   size_t size;
   size_t stride;
@@ -25,46 +39,264 @@ typedef struct ring_buffer {
   data_t *tail;
 } ring_buffer;
 
+//// Creation, deletion, etc: ////
+
+// Create a ring buffer.  After creating, be sure to free the memory
+// with `ring_buffer_destroy`.  If the buffer cannot be allocated
+// (e.g., too big a buffer is requested) then an R error will be
+// thrown as this uses `Calloc`.
+//
+//   size: (maximum) number of elements that the ring buffer may contain
+//
+//   stride: number of *bytes* per ring buffer element
+//
+// See the note above the struct for details on size/stride.
 ring_buffer * ring_buffer_create(size_t size, size_t stride);
-ring_buffer * ring_buffer_clone(const ring_buffer *buffer);
+
+// Destroy a ring buffer.  Frees the memory
+//
+//   buffer: the ring buffer to copy; after calling this function all
+//           memory associated with the buffer is freed.
 void ring_buffer_destroy(ring_buffer *buffer);
-size_t ring_buffer_bytes_data(const ring_buffer *buffer);
 
-size_t ring_buffer_size(const ring_buffer *buffer, int bytes);
+// Clone (copy) a ring buffer.  Copies both the underlying data and
+// the position of the head and tail.  A new buffer will be allocated
+// and must be freed when finished with, using `ring_buffer_destroy`
+//
+//   buffer: a ring buffer to copy from; will not be modified
+ring_buffer * ring_buffer_clone(const ring_buffer *buffer);
 
-int ring_buffer_full(ring_buffer *buffer);
-int ring_buffer_empty(ring_buffer *buffer);
-
-const void * ring_buffer_head(ring_buffer *buffer);
-const void * ring_buffer_tail(ring_buffer *buffer);
-const void * ring_buffer_data(ring_buffer *buffer);
-
-int ring_buffer_head_pos(const ring_buffer *buffer, int bytes);
-int ring_buffer_tail_pos(const ring_buffer *buffer, int bytes);
-
-void * ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count);
-
+// Reset the state of the buffer.  This "zeros" the head and tail
+// pointer (and may or may not actually reset the data) so that the
+// buffer can be used as if fresh.
 void ring_buffer_reset(ring_buffer *buffer);
 
-size_t ring_buffer_free(const ring_buffer *buffer, int bytes);
-size_t ring_buffer_used(const ring_buffer *buffer, int bytes);
+//// Basic querying: ////
 
-size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t len);
-size_t ring_buffer_memset_stride(ring_buffer *buffer, data_t *x, size_t len);
+// Return the maximum size of the ring buffer
+//
+//   buffer: the ring buffer to test (will not be modified)
+//
+//   bytes: indicates if size should be in bytes (if true) or elements
+//          (if false)
+size_t ring_buffer_size(const ring_buffer *buffer, bool bytes);
+
+// Report the free and used space in the ring buffer
+//
+//   buffer: the ring buffer to test (will not be modified)
+//
+//   bytes: indicates if used/free space should be in bytes (if true)
+//          or elements (if false)
+size_t ring_buffer_free(const ring_buffer *buffer, bool bytes);
+size_t ring_buffer_used(const ring_buffer *buffer, bool bytes);
+
+// Report the number of bytes of data that have been allocated.  Note
+// that this is likely `stride` more bytes than was requested as this
+// avoids a lot of awkward bookkeeping later, allowing the "full"
+// state to be distinguished from the "empty" state.
+size_t ring_buffer_bytes_data(const ring_buffer *buffer);
+
+// Report if the ring buffer is full or empty
+bool ring_buffer_full(const ring_buffer *buffer);
+bool ring_buffer_empty(const ring_buffer *buffer);
+
+//// Additional querying: ////
+
+// Return the position of the head and tail pointers relative to the
+// data pointer (this is an offset, so 0 means the pointer is at the
+// start of the data array).
+//
+//   bytes: indicates if offset should be bytes (if true) or elements (if false)
+size_t ring_buffer_head_pos(const ring_buffer *buffer, bool bytes);
+size_t ring_buffer_tail_pos(const ring_buffer *buffer, bool bytes);
+
+// Return pointers to the the data, head and tail members of the ring
+// buffer.  These are preferred over directly accessing the "data",
+// "head" and "tail" elements of the ring buffer structure itself
+// because with these the compiler will enforce read-only access for
+// you.
+const void * ring_buffer_data(ring_buffer *buffer);
+const void * ring_buffer_head(ring_buffer *buffer);
+const void * ring_buffer_tail(ring_buffer *buffer);
+
+//// Setting repeated values: ////
+
+// Set all bytes of a length of the buffer to 'c'.  Here, 'len' is the
+// number of *entries*, so stride * len bytes will be set.  This will
+// mostly be uesful with c=0.
+//
+//   buffer: the ring buffer to set data into
+//
+//   c: value (0-255) to set all bytes to
+//
+//   len: number of elements to set
+//
+// This starts adding data at `head`.  If the buffer will overflow, at
+// most `bytes_data` bytes will be written (i.e., each element will be
+// written to once).
+size_t ring_buffer_memset(ring_buffer *buffer, data_t c, size_t len);
+
+// Set a number of the elements of the buffer to a particular byte
+// pattern.  In contrast with `ring_buffer_memset`, this does not set
+// individual bytes, but instead complete elements.
+//
+//    buffer: the ring buffer to set data into
+//
+//    x: pointer to a set of data to copy into the ring buffer.  This
+//            must be (at least) stride bytes long.
+//
+//    len: number of elements to set
+//
+// This starts adding data at `head`.  If the buffer will overflow, at
+// most `bytes_data` bytes will be written (i.e., each element will be
+// written to once).
+size_t ring_buffer_memset_stride(ring_buffer *buffer, void *x, size_t len);
+
+//// Read and write ////
+
+// Copy `count` entries, each of `stride` bytes from a contiguous
+// memory area src into the ring `buffer`. Returns the ring buffer's
+// new head pointer.
+//
+// It is possible to overflow the buffer with this function
+//
+//   buffer: the ring buffer to copy data into
+//
+//   src: the source memory to copy from (make sure this is big enough
+//           or you will get crashes and other terrible things).
+//
+//   count: the number of entries to copy from `src` into `buffer`
+//           (each of which is `stride` bytes long).
 void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
                               size_t count);
+
+// Destructively copy `count` entries (each of which is `stride`
+// bytes) from a ring buffer `buffer` into contiguous memory region
+// `dest`.  This updates the `tail` pointers in the ring buffer and
+// returns the new tail pointer.
+//
+// The `count` entries will no longer be available in the ring buffer.
+// To do a nondestructive read, use `ring_buffer_tail_read()`.
+//
+// The slightly odd argument naming here is meant to reflect usage of
+// `memcpy()`
+//
+//   dest: the destination memory to copy into (make sure this is big enough
+//           or you will get crashes and other terrible things).
+//
+//   buffer: the ring buffer to copy data from
+//
+//   count: the number of entries to copy from `src` into `buffer`
+//           (each of which is `stride` bytes long).
+//
+// This function will not allow the ring buffer to underflow.  If
+// `count` is greater than the number of available entries, then
+// nothing is copied (and the ring buffer remains unmodified) and NULL
+// is returned.
 void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer, size_t count);
 
-void * ring_buffer_copy(ring_buffer *dst, ring_buffer *src, size_t count);
+// Nondestructively read from a ring buffer.  This function is
+// essentially identical to `ring_buffer_memcpy_from` but does not
+// alter the tail pointer.
+void * ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count);
 
-void * ring_buffer_tail_offset(ring_buffer *buffer, size_t offset);
+// TODO: I think there is ring_buffer_head_read here needed too.
 
+// Copy `count` entries (each of `stride` bytes) from one ring buffer
+// `src` into another `dest`.
+//
+//   dest: A ring buffer to copy data into
+//
+//   src: A ring buffer to copy data from
+//
+//   count: the number of entries to copy (each of which is `stride` bytes)
+//
+// This is destructive to the data in ring buffer `src`; the tail
+// pointer will be updated.  The function returns the new tail
+// pointer.
+//
+// It is not possible to underflow `src`; if too few entries are
+// available, then nothing is copied, `src` and `dest` are not
+// modified, and the function returns NULL
+//
+// It is possible to overflow `dest` and the tail pointer will be
+// updated appropriately if so.
+void * ring_buffer_copy(ring_buffer *dest, ring_buffer *src, size_t count);
+
+// Returns a pointer to the tail (reading end) of the buffer, offset
+// by `offset` entries.  When used as `ring_buffer_tail_offset(x, 0)`
+// this is equivalent to `ring_buffer_tail(x)` except that it will do
+// underflow checking.
+//
+//   buffer: the ring buffer to use
+//
+//   offset: the number of entries (each of which are `stride` bytes)
+//           to offset by
+//
+// It is not possible to underflow the buffer here; if `offset` is so
+// large that it would underflow, then NULL will be returned.
+const void * ring_buffer_tail_offset(ring_buffer *buffer, size_t offset);
+
+//// For advanced use: ////
+
+// Advance the ring buffer by one entry and return a pointer to the
+// memory *without writing anything to it*.  In this case, the calling
+// function is responsible for setting the memory to something
+// sensible.  This is currently used in the dde package where we want
+// to write directly to the head.
+//
+// This is (roughly) equivalent to:
+//
+//    ring_buffer_memset(buffer, 0, 1);
+//    return buffer->head;
+//
+// but does not actually copy any data.
 void* ring_buffer_head_advance(ring_buffer* buffer);
 
-typedef bool ring_predicate(void *x, void *data);
-void* ring_buffer_search_linear(ring_buffer* buffer,
-                                ring_predicate pred, void *data);
-void* ring_buffer_search_bisect(ring_buffer* buffer, size_t i,
-                                ring_predicate pred, void *data);
+//// Search: ////
+
+// There are two functions for searching for data within a ring buffer
+// that consists of *sorted* entries.  This might be the case if
+// entries are added sequentially with (say) a timestamp.
+//
+// To locate an entry, a predicate function (pointer) must be
+// provided.  This must be a function taking two void pointers as
+// arguments; the first will be the pointer to an entry in the ring
+// buffer, the second will be any data that *you* provide (may be
+// NULL).  This function must return "true" if the value is *less
+// than* the target value (i.e. true if we should search *earlier* in
+// the buffer).  The "x" argument must be treated as read-only.
+//
+// For example, a predictate function that would find an entry where
+// the first 8 bytes of a ring buffer entry represent doubles could be
+// written as:
+//
+//     bool test_find_double(const void *x, void *data) {
+//       double x_value = *((double*) x);
+//       double data_value = *((double*) data);
+//       return x_value <= data_value;
+//     }
+//
+// Where the "data" argument will be passed through as the number to
+// search for.
+//
+// These functions return NULL if no entry is found, otherwise they
+// return the pointer to the largest entry in the buffer that the
+// predicate returns false.
+//
+// The _linear search does a naive linear search from the tail of the
+// buffer (i.e., the last entry that was added) towards the beginning.
+//
+// The _bisect search tries to be more clever and does a bisect
+// search.  It requires an initial guess "i" to the location of the
+// data.  You can provide '0' as 'i' to start at the tail.
+//
+// The "data" argument to both functions will be passed through to the
+// predicate function.
+typedef bool ring_predicate(const void *x, void *data);
+const void* ring_buffer_search_linear(ring_buffer* buffer,
+                                      ring_predicate pred, void *data);
+const void* ring_buffer_search_bisect(ring_buffer* buffer, size_t i,
+                                      ring_predicate pred, void *data);
 
 #endif

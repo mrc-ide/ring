@@ -40,15 +40,15 @@ size_t ring_buffer_bytes_data(const ring_buffer *buffer) {
   return buffer->bytes_data;
 }
 
-size_t ring_buffer_size(const ring_buffer *buffer, int bytes) {
+size_t ring_buffer_size(const ring_buffer *buffer, bool bytes) {
   return bytes ? buffer->bytes_data - buffer->stride : buffer->size;
 }
 
-int ring_buffer_full(ring_buffer *buffer) {
+bool ring_buffer_full(const ring_buffer *buffer) {
   return ring_buffer_free(buffer, 1) == 0;
 }
 
-int ring_buffer_empty(ring_buffer *buffer) {
+bool ring_buffer_empty(const ring_buffer *buffer) {
   return ring_buffer_free(buffer, 1) == ring_buffer_size(buffer, 1);
 }
 
@@ -62,11 +62,11 @@ const void * ring_buffer_data(ring_buffer *buffer) {
   return buffer->data;
 }
 
-int ring_buffer_head_pos(const ring_buffer *buffer, int bytes) {
+size_t ring_buffer_head_pos(const ring_buffer *buffer, bool bytes) {
   size_t diff = buffer->head - buffer->data;
   return bytes ? diff : diff / buffer->stride;
 }
-int ring_buffer_tail_pos(const ring_buffer *buffer, int bytes) {
+size_t ring_buffer_tail_pos(const ring_buffer *buffer, bool bytes) {
   size_t diff = buffer->tail - buffer->data;
   return bytes ? diff : diff / buffer->stride;
 }
@@ -75,7 +75,7 @@ void ring_buffer_reset(ring_buffer *buffer) {
   buffer->head = buffer->tail = buffer->data;
 }
 
-size_t ring_buffer_free(const ring_buffer *buffer, int bytes) {
+size_t ring_buffer_free(const ring_buffer *buffer, bool bytes) {
   size_t diff;
   if (buffer->head >= buffer->tail) {
     diff = ring_buffer_size(buffer, 1) - (buffer->head - buffer->tail);
@@ -85,7 +85,7 @@ size_t ring_buffer_free(const ring_buffer *buffer, int bytes) {
   return bytes ? diff : diff / buffer->stride;
 }
 
-size_t ring_buffer_used(const ring_buffer *buffer, int bytes) {
+size_t ring_buffer_used(const ring_buffer *buffer, bool bytes) {
   return ring_buffer_size(buffer, bytes) - ring_buffer_free(buffer, bytes);
 }
 
@@ -112,7 +112,7 @@ size_t ring_buffer_used(const ring_buffer *buffer, int bytes) {
 // It's not really clear what this should do with stride?  Probably if
 // len does not divide neatly through by stride we should error.  For
 // now, leave it be though.
-size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t count) {
+size_t ring_buffer_memset(ring_buffer *buffer, data_t c, size_t count) {
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;
   size_t len = imin(count * buffer->stride, ring_buffer_bytes_data(buffer));
@@ -140,7 +140,7 @@ size_t ring_buffer_memset(ring_buffer *buffer, int c, size_t count) {
   return nwritten;
 }
 
-size_t ring_buffer_memset_stride(ring_buffer *buffer, data_t *x, size_t len) {
+size_t ring_buffer_memset_stride(ring_buffer *buffer, void *x, size_t len) {
   size_t count = imin(len, ring_buffer_size(buffer, 0));
   for (size_t i = 0; i < count; ++i) {
     ring_buffer_memcpy_into(buffer, x, 1);
@@ -151,7 +151,7 @@ size_t ring_buffer_memset_stride(ring_buffer *buffer, data_t *x, size_t len) {
 // The bits that are complicated..
 /*
  * Copy n * stride bytes from a contiguous memory area src into the
- * ring buffer dst. Returns the ring buffer's new head pointer.
+ * ring buffer dest. Returns the ring buffer's new head pointer.
  *
  * It is possible to copy more data from src than is available in the
  * buffer; i.e., it's possible to overflow the ring buffer using this
@@ -214,7 +214,7 @@ void* ring_buffer_head_advance(ring_buffer* buffer) {
 
 /*
  * Copy n bytes from the ring buffer src, starting from its tail
- * pointer, into a contiguous memory area dst. Returns the value of
+ * pointer, into a contiguous memory area dest. Returns the value of
  * src's tail pointer after the copy is finished.
  *
  * Note that this copy is destructive with respect to the ring buffer:
@@ -225,7 +225,7 @@ void* ring_buffer_head_advance(ring_buffer* buffer) {
  *
 *  This function will *not* allow the ring buffer to underflow. If
  * count is greater than the number of bytes used in the ring buffer,
- * no bytes are copied, and the function will return 0.
+ * no bytes are copied, and the function will return NULL.
  */
 void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer,
                               size_t count) {
@@ -243,7 +243,7 @@ void *ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count) {
   size_t bytes_used = ring_buffer_used(buffer, 1);
   size_t len = count * buffer->stride;
   if (len > bytes_used) {
-    return 0;
+    return NULL;
   }
   data_t *tail = buffer->tail;
 
@@ -269,18 +269,18 @@ void *ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count) {
 // OK, so it would be great to have a check here that can be used to
 // move an offset around without doing the inbounds check
 // everyiteration.  But to do that I think that we'll still have to
-// separate into a safe and unsafe interface.  The memoset returned
+// separate into a safe and unsafe interface.  The memory returned
 // here could be invalidated by any write function (any many of the
 // read functions too) so this is inherently unsafe, but on entry it
 // does seem worth checking.
-void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
+const void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
   size_t bytes_used = ring_buffer_used(buffer, 1);
   size_t len = offset * buffer->stride;
   if (len >= bytes_used) {
     // TODO: elsewhere this is > bytes used but I think that here,
     // because the offset is the number of places to *move* the
     // pointer, then copy one, we can't do that.
-    return 0;
+    return NULL;
   }
   data_t *tail = buffer->tail;
   const data_t *bufend = ring_buffer_end(buffer);
@@ -302,20 +302,20 @@ void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
 
 /*
  * Copy count bytes from ring buffer src, starting from its tail
- * pointer, into ring buffer dst. Returns dst's new head pointer after
+ * pointer, into ring buffer dest. Returns dest's new head pointer after
  * the copy is finished.
  *
  * Note that this copy is destructive with respect to the ring buffer
- * src: any bytes copied from src into dst are no longer available in
+ * src: any bytes copied from src into dest are no longer available in
  * src after the copy is complete, and src will have 'count' more free
  * bytes than it did before the function was called.
  *
- * It is possible to copy more data from src than is available in dst;
- * i.e., it's possible to overflow dst using this function. When an
- * overflow occurs, the state of dst is guaranteed to be consistent,
+ * It is possible to copy more data from src than is available in dest;
+ * i.e., it's possible to overflow dest using this function. When an
+ * overflow occurs, the state of dest is guaranteed to be consistent,
  * including the head and tail pointers; old data will simply be
  * overwritten in FIFO fashion, as needed. However, note that, if
- * calling the function results in an overflow, the value dst's tail
+ * calling the function results in an overflow, the value dest's tail
  * pointer may be different than it was before the function was
  * called.
  *
@@ -323,47 +323,47 @@ void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
  * number of bytes used in src, no bytes are copied, and the function
  * returns 0.
  */
-void * ring_buffer_copy(ring_buffer *dst, ring_buffer *src,
+void * ring_buffer_copy(ring_buffer *dest, ring_buffer *src,
                           size_t count) {
   // TODO: Not clear what should be done (if anything other than an
   // error) if the two buffers differ in their stride.
   size_t src_bytes_used = ring_buffer_used(src, 1);
   size_t n_bytes = count * src->stride;
   if (n_bytes > src_bytes_used) {
-    return 0;
+    return NULL;
   }
-  int overflow = n_bytes > ring_buffer_free(dst, 1);
+  int overflow = n_bytes > ring_buffer_free(dest, 1);
 
   const data_t *src_bufend = ring_buffer_end(src);
-  const data_t *dst_bufend = ring_buffer_end(dst);
+  const data_t *dest_bufend = ring_buffer_end(dest);
   size_t ncopied = 0;
   while (ncopied != n_bytes) {
     // assert(src_bufend > src->tail);
     size_t nsrc = imin(src_bufend - src->tail, n_bytes - ncopied);
-    // assert(dst_bufend > dst->head);
-    size_t n = imin(dst_bufend - dst->head, nsrc);
-    memcpy(dst->head, src->tail, n);
+    // assert(dest_bufend > dest->head);
+    size_t n = imin(dest_bufend - dest->head, nsrc);
+    memcpy(dest->head, src->tail, n);
     src->tail += n;
-    dst->head += n;
+    dest->head += n;
     ncopied += n;
 
     /* wrap ? */
     if (src->tail == src_bufend) {
       src->tail = src->data;
     }
-    if (dst->head == dst_bufend) {
-      dst->head = dst->data;
+    if (dest->head == dest_bufend) {
+      dest->head = dest->data;
     }
   }
 
   // assert(n_bytes + ring_buffer_used(src, 1) == src_bytes_used);
 
   if (overflow) {
-    dst->tail = ring_buffer_nextp(dst, dst->head);
-    // assert(ring_buffer_full(dst));
+    dest->tail = ring_buffer_nextp(dest, dest->head);
+    // assert(ring_buffer_full(dest));
   }
 
-  return dst->head;
+  return dest->head;
 }
 
 // TODO: Still need one that can copy an element from 'n' ago without moving
@@ -406,8 +406,8 @@ int imin(int a, int b) {
 // This one is really just for testing; it's designed to be stupid and
 // simple and check that the general search system works, but not to
 // be fast.
-void * ring_buffer_search_linear(ring_buffer *buffer,
-                                 ring_predicate *pred, void *data) {
+const void * ring_buffer_search_linear(ring_buffer *buffer,
+                                       ring_predicate *pred, void *data) {
   size_t n = ring_buffer_used(buffer, 0);
   if (n == 0) {
     // Don't do any search here; there is no position such that
@@ -415,7 +415,7 @@ void * ring_buffer_search_linear(ring_buffer *buffer,
     return NULL;
   }
   size_t i = 0;
-  void *xl = ring_buffer_tail_offset(buffer, i), *xr;
+  const void *xl = ring_buffer_tail_offset(buffer, i), *xr;
   if (!pred(xl, data)) {
     // There will be not a single value here that satisfies the
     // required condition
@@ -441,14 +441,14 @@ void * ring_buffer_search_linear(ring_buffer *buffer,
 // Do a search.  There a few possibilities of where to start from
 // here; we could start with the edges of the array, or we could start
 // at one end and grow, or from a position in the array itself.
-void * ring_buffer_search_bisect(ring_buffer *buffer, size_t i,
-                                 ring_predicate *pred, void *data) {
+const void * ring_buffer_search_bisect(ring_buffer *buffer, size_t i,
+                                       ring_predicate *pred, void *data) {
   size_t n = ring_buffer_used(buffer, 0);
   if (n == 0) {
     return NULL;
   }
   int i0 = i, i1 = i;
-  void *x0 = ring_buffer_tail_offset(buffer, i0), *x1;
+  const void *x0 = ring_buffer_tail_offset(buffer, i0), *x1;
   int inc = 1;
 
   // Predicate should return 1 if we should look further back, -1
@@ -508,7 +508,7 @@ void * ring_buffer_search_bisect(ring_buffer *buffer, size_t i,
   // the ring buffer stride.  For now, use the bisection search:
   while (i1 - i0 > 1) {
     int i2 = (i1 + i0) / 2;
-    void *x2 = ring_buffer_tail_offset(buffer, i2);
+    const void *x2 = ring_buffer_tail_offset(buffer, i2);
     if (pred((void*) x2, data)) {
       i0 = i2;
       x0 = x2;
