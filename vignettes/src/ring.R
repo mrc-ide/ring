@@ -430,3 +430,32 @@ for (i in seq_len(nrow(h) - 1L)) {
 
 par(mar=c(4, 4, .5, .5))
 matplot(h, type="l", lty=1)
+
+## # The C API
+
+## The `ring` package can be used in other R packages using the
+## `LinkingTo` mechanism.  To do so:
+##
+## * In your `DESCRIPTION`, add a line `LinkingTo: ring` (you do not
+##   need to include `ring` in `Depends` or `Imports` as we need it
+##   only for the package build).
+##
+## * In your `src/` directory, add a file `ring.c` containing just the
+##   line `#include <ring/ring.c>`
+##
+## * Anywhere in your code you want to use the ring buffer, include
+##   the line `#include <dde/dde.h>` to include the prototypes and use
+##   the interface as described below.
+##
+## (I am not sure what the best practice way of doing this with a
+## standalone shared library compiled with `R CMD SHLIB` is though;
+## probably best to make a package.)
+
+## The C API is documented only in the header file, and it should be
+## fairly straightforward to use (with reference to the docs above;
+## this is the code underlying the `ring_buffer_bytes` interface).
+
+##+ echo=FALSE, results="asis"
+writeLines(c("```c",
+             readLines(system.file("include/ring/ring.h", package="ring")),
+             "```"))
