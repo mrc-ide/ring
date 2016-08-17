@@ -81,10 +81,9 @@ ring_buffer_bytes <- function(size, stride=1L) {
     head_offset_data=function(n) .Call(Cring_buffer_head_offset, self$ptr, n),
     tail_offset_data=function(n) .Call(Cring_buffer_tail_offset, self$ptr, n),
 
-    ## TODO: things to implement down here:
     ## Unusual direction:
-    take_head=function(n) stop("take_head not yet implemented"),
-    read_head=function(n) stop("read_head not yet implemented")
+    take_head=function(n) .Call(Cring_buffer_take_head, self$ptr, n),
+    read_head=function(n) .Call(Cring_buffer_read_head, self$ptr, n)
   ))
 
 ## This is used in ring_buffer_typed but is not itself exported yet.

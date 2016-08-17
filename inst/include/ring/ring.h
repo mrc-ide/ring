@@ -216,6 +216,18 @@ const void * ring_buffer_take(ring_buffer *buffer, void *dest,
 const void * ring_buffer_read(const ring_buffer *buffer, void *dest,
                               size_t count);
 
+// ring_buffer_take_head and ring_buffer_read_head are like
+// ring_buffer_take and ring_buffer_read (respectively) but operate on
+// the *head* of the ring (i.e., removing the most recently added
+// elements rather than the oldest elements).
+//
+// Neither will underflow, returning NULL if there are not enough
+// elements, and without copying anything.
+const void * ring_buffer_take_head(ring_buffer *buffer, void *dest,
+                                   size_t count);
+const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
+                                   size_t count);
+
 // Copy `count` entries (each of `stride` bytes) from one ring buffer
 // `src` into another `dest`.
 //

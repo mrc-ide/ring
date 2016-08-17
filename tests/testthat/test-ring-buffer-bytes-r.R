@@ -109,3 +109,37 @@ test_that("input validation", {
   expect_error(ring_buffer_bytes(NA_integer_),
                "Expected a nonnegative value")
 })
+
+## unusual direction:
+test_that("take_head", {
+  bytes <- as.raw(0:255)
+  n <- length(bytes)
+  buf <- ring_buffer_bytes(n)
+  expect_equal(buf$push(bytes), n)
+  expect_true(buf$full())
+
+  expect_equal(buf$read_head(0), raw(0))
+  expect_equal(buf$read_head(1), tail(bytes, 1))
+  expect_equal(buf$read_head(2), rev(tail(bytes, 2)))
+  expect_equal(buf$read_head(n), rev(bytes))
+  expect_error(buf$read_head(n + 1L), "Buffer underflow")
+
+  m <- 15
+  buf$take(m)
+  b2 <- sample(bytes, m)
+  buf$push(b2)
+  expect_equal(buf$read_head(0), raw(0))
+  expect_equal(buf$read_head(1), tail(b2, 1))
+  expect_equal(buf$read_head(m), rev(b2))
+  cmp <- c(rev(b2), rev(bytes[-seq_len(m)]))
+  expect_equal(buf$read_head(n), cmp)
+
+  expect_equal(buf$take_head(0), raw(0))
+  expect_equal(buf$read_head(n), cmp)
+
+  expect_equal(buf$take_head(1), cmp[1])
+  expect_equal(buf$read_head(n - 1), cmp[-1])
+
+  expect_equal(buf$take_head(m - 1), cmp[2:m])
+  expect_equal(buf$read_head(n - m), cmp[-seq_len(m)])
+})

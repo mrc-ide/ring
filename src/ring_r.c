@@ -162,6 +162,33 @@ SEXP R_ring_buffer_read(SEXP extPtr, SEXP r_count) {
   return ret;
 }
 
+SEXP R_ring_buffer_take_head(SEXP extPtr, SEXP r_count) {
+  size_t count = scalar_size(r_count);
+  ring_buffer * buffer = ring_buffer_get(extPtr, true);
+  SEXP ret = PROTECT(allocVector(RAWSXP, count * buffer->stride));
+  if (ring_buffer_take_head(buffer, RAW(ret), count) == NULL) {
+    Rf_error("Buffer underflow (requested %d elements but %d available)",
+             count, ring_buffer_used(buffer, false));
+  }
+  UNPROTECT(1);
+  // NOTE: In C we return the head position here but that is not done
+  // for the R version.
+  return ret;
+}
+
+SEXP R_ring_buffer_read_head(SEXP extPtr, SEXP r_count) {
+  size_t count = scalar_size(r_count);
+  ring_buffer * buffer = ring_buffer_get(extPtr, true);
+  SEXP ret = PROTECT(allocVector(RAWSXP, count * buffer->stride));
+  if (ring_buffer_read_head(buffer, RAW(ret), count) == NULL) {
+    Rf_error("Buffer underflow");
+  }
+  UNPROTECT(1);
+  // NOTE: In C we return the head position here but that is not done
+  // for the R version.
+  return ret;
+}
+
 SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
   size_t offset = scalar_size(r_offset);
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
@@ -277,6 +304,8 @@ static const R_CallMethodDef callMethods[] = {
   {"Cring_buffer_push",        (DL_FUNC) &R_ring_buffer_push,        2},
   {"Cring_buffer_take",        (DL_FUNC) &R_ring_buffer_take,        2},
   {"Cring_buffer_read",        (DL_FUNC) &R_ring_buffer_read,        2},
+  {"Cring_buffer_take_head",   (DL_FUNC) &R_ring_buffer_take_head,   2},
+  {"Cring_buffer_read_head",   (DL_FUNC) &R_ring_buffer_read_head,   2},
   {"Cring_buffer_copy",        (DL_FUNC) &R_ring_buffer_copy,        3},
   {"Cring_buffer_tail_offset", (DL_FUNC) &R_ring_buffer_tail_offset, 2},
   {"Cring_buffer_head_offset", (DL_FUNC) &R_ring_buffer_head_offset, 2},

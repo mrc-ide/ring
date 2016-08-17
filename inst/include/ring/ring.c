@@ -286,6 +286,41 @@ const void * ring_buffer_read(const ring_buffer *buffer, void *dest,
   return tail;
 }
 
+const void * ring_buffer_take_head(ring_buffer *buffer, void *dest,
+                                   size_t count) {
+  const void * head = ring_buffer_read_head(buffer, dest, count);
+  if (head != 0) {
+    buffer->head = buffer->data + ((data_t*)head - buffer->data);
+  }
+  return head;
+}
+
+// This is like the function above, but it is not destructive to the
+// buffer.  I need to write a similar one that reads relative to the
+// head too (i.e. that will pull the most recently added data).
+const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
+                                   size_t count) {
+  size_t bytes_used = ring_buffer_used(buffer, true);
+  size_t len = count * buffer->stride;
+  if (len > bytes_used) {
+    return NULL;
+  }
+  const data_t *head = buffer->head;
+  const data_t *bufend = ring_buffer_end(buffer);
+  data_t *dest_data = (data_t*) dest; // cast so pointer arithmetic works
+
+  for (size_t nwritten = 0; nwritten < len; ++nwritten) {
+    if (head == buffer->data) {
+      head = bufend;
+    }
+    head -= buffer->stride;
+    memcpy((void*)dest_data, head, buffer->stride);
+    dest_data += buffer->stride;
+  }
+
+  return head;
+}
+
 // OK, so it would be great to have a check here that can be used to
 // move an offset around without doing the inbounds check
 // everyiteration.  But to do that I think that we'll still have to
