@@ -3,7 +3,7 @@
 #include <Rinternals.h>
 
 // NOTE: Duplicated from ring_r.c
-ring_buffer* ring_buffer_get(SEXP extPtr, int closed_error);
+ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error);
 
 size_t ring_buffer_compute_offset(ring_buffer* buffer, data_t *x) {
   int ret = -1;
@@ -43,7 +43,7 @@ bool test_find_double(const void *x, void *data) {
 }
 
 SEXP test_search_linear(SEXP r_buffer, SEXP r_value) {
-  ring_buffer *buffer = ring_buffer_get(r_buffer, 1);
+  ring_buffer *buffer = ring_buffer_get(r_buffer, true);
   double value = REAL(r_value)[0];
   data_t *x = (data_t*)
     ring_buffer_search_linear(buffer, test_find_double, &value);
@@ -51,7 +51,7 @@ SEXP test_search_linear(SEXP r_buffer, SEXP r_value) {
 }
 
 SEXP test_search_bisect(SEXP r_buffer, SEXP r_value, SEXP r_i) {
-  ring_buffer *buffer = ring_buffer_get(r_buffer, 1);
+  ring_buffer *buffer = ring_buffer_get(r_buffer, true);
   double value = REAL(r_value)[0];
   int i = INTEGER(r_i)[0];
   data_t *x = (data_t*)
