@@ -127,9 +127,9 @@ size_t ring_buffer_tail_pos(const ring_buffer *buffer, bool bytes);
 // "head" and "tail" elements of the ring buffer structure itself
 // because with these the compiler will enforce read-only access for
 // you.
-const void * ring_buffer_data(ring_buffer *buffer);
-const void * ring_buffer_head(ring_buffer *buffer);
-const void * ring_buffer_tail(ring_buffer *buffer);
+const void * ring_buffer_data(const ring_buffer *buffer);
+const void * ring_buffer_head(const ring_buffer *buffer);
+const void * ring_buffer_tail(const ring_buffer *buffer);
 
 //// Setting repeated values: ////
 
@@ -162,7 +162,7 @@ size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t len);
 // This starts adding data at `head`.  If the buffer will overflow, at
 // most `bytes_data` bytes will be written (i.e., each element will be
 // written to once).
-size_t ring_buffer_set_stride(ring_buffer *buffer, void *x, size_t len);
+size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t len);
 
 //// Read and write ////
 
@@ -179,7 +179,8 @@ size_t ring_buffer_set_stride(ring_buffer *buffer, void *x, size_t len);
 //
 //   count: the number of entries to copy from `src` into `buffer`
 //           (each of which is `stride` bytes long).
-void *ring_buffer_push(ring_buffer *buffer, const void *src, size_t count);
+const void * ring_buffer_push(ring_buffer *buffer, const void *src,
+                              size_t count);
 
 // Destructively copy `count` entries (each of which is `stride`
 // bytes) from a ring buffer `buffer` into contiguous memory region
@@ -201,12 +202,14 @@ void *ring_buffer_push(ring_buffer *buffer, const void *src, size_t count);
 // `count` is greater than the number of available entries, then
 // nothing is copied (and the ring buffer remains unmodified) and NULL
 // is returned.
-void *ring_buffer_take(ring_buffer *buffer, void *dest, size_t count);
+const void * ring_buffer_take(ring_buffer *buffer, void *dest,
+                              size_t count);
 
 // Nondestructively read from a ring buffer.  This function is
 // essentially identical to `ring_buffer_take` but does not alter the
 // tail pointer.
-void * ring_buffer_read(ring_buffer *buffer, void *dest, size_t count);
+const void * ring_buffer_read(const ring_buffer *buffer, void *dest,
+                              size_t count);
 
 // Copy `count` entries (each of `stride` bytes) from one ring buffer
 // `src` into another `dest`.
@@ -227,7 +230,8 @@ void * ring_buffer_read(ring_buffer *buffer, void *dest, size_t count);
 //
 // It is possible to overflow `dest` and the tail pointer will be
 // updated appropriately if so.
-void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t count);
+const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest,
+                              size_t count);
 
 // Returns a pointer to the tail (reading end) of the buffer, offset
 // by `offset` entries.  When used as `ring_buffer_tail_offset(x, 0)`
@@ -241,12 +245,12 @@ void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t count);
 //
 // It is not possible to underflow the buffer here; if `offset` is so
 // large that it would underflow, then NULL will be returned.
-const void * ring_buffer_tail_offset(ring_buffer *buffer, size_t offset);
+const void * ring_buffer_tail_offset(const ring_buffer *buffer, size_t offset);
 
 // As for `ring_buffer_tail_offset`, but offsetting the *head*
 // pointer.  This offsets in the opposite direction (moving from the
 // most recently added element towards the oldest element).
-const void * ring_buffer_head_offset(ring_buffer *buffer, size_t offset);
+const void * ring_buffer_head_offset(const ring_buffer *buffer, size_t offset);
 
 //// For advanced use: ////
 
@@ -262,7 +266,10 @@ const void * ring_buffer_head_offset(ring_buffer *buffer, size_t offset);
 //    return buffer->head;
 //
 // but does not actually copy any data.
-void* ring_buffer_head_advance(ring_buffer* buffer);
+//
+// Note that the pointer returned is *not* const; this is always used
+// in a case where the aim is to write to the head directly!
+void * ring_buffer_head_advance(ring_buffer *buffer);
 
 //// Search: ////
 
@@ -305,9 +312,9 @@ void* ring_buffer_head_advance(ring_buffer* buffer);
 // The "data" argument to both functions will be passed through to the
 // predicate function.
 typedef bool ring_predicate(const void *x, void *data);
-const void* ring_buffer_search_linear(ring_buffer* buffer,
-                                      ring_predicate pred, void *data);
-const void* ring_buffer_search_bisect(ring_buffer* buffer, size_t i,
-                                      ring_predicate pred, void *data);
+const void * ring_buffer_search_linear(const ring_buffer *buffer,
+                                       ring_predicate pred, void *data);
+const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
+                                       ring_predicate pred, void *data);
 
 #endif
