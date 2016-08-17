@@ -56,7 +56,7 @@ test_that("tail_offset_data", {
 
 test_that("head_offset_data", {
   n <- 10
-  buf <- ring_buffer_env(10)
+  buf <- ring_buffer_env(n)
   m <- 4
   buf$push(1:m)
 

@@ -208,8 +208,6 @@ void *ring_buffer_take(ring_buffer *buffer, void *dest, size_t count);
 // tail pointer.
 void * ring_buffer_read(ring_buffer *buffer, void *dest, size_t count);
 
-// TODO: I think there is ring_buffer_head_read here needed too.
-
 // Copy `count` entries (each of `stride` bytes) from one ring buffer
 // `src` into another `dest`.
 //
@@ -244,6 +242,11 @@ void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t count);
 // It is not possible to underflow the buffer here; if `offset` is so
 // large that it would underflow, then NULL will be returned.
 const void * ring_buffer_tail_offset(ring_buffer *buffer, size_t offset);
+
+// As for `ring_buffer_tail_offset`, but offsetting the *head*
+// pointer.  This offsets in the opposite direction (moving from the
+// most recently added element towards the oldest element).
+const void * ring_buffer_head_offset(ring_buffer *buffer, size_t offset);
 
 //// For advanced use: ////
 

@@ -37,6 +37,55 @@ test_that("tail offset", {
   expect_true(buf$full())
 })
 
+## This one duplicates the simple checks used in the environment based
+## ring buffer:
+test_that("head offset (1)", {
+  n <- 10
+  buf <- ring_buffer_bytes(n)
+  m <- 4
+  data <- as.raw(1:m)
+  buf$push(data)
+
+  expect_equal(buf$head_offset_data(0), data[m])
+  expect_equal(buf$head_offset_data(1), data[m - 1])
+  expect_equal(buf$head_offset_data(m - 1), data[1])
+  expect_error(buf$head_offset_data(m), "Buffer underflow")
+})
+
+## This one is more involved.
+test_that("head offset", {
+  bytes <- as.raw(0:255)
+  buf <- ring_buffer_bytes(length(bytes))
+  expect_equal(buf$push(bytes), length(bytes))
+  expect_true(buf$full())
+
+  n <- 20
+
+  cmp <- rev(bytes)[seq_len(n)]
+  ## expect_equal(buf$read_head(n), cmp)
+  tmp <- vapply(seq_len(n) - 1L,
+                function(x) buf$head_offset_data(x), raw(1))
+  expect_equal(tmp, cmp)
+
+  buf$take(n)
+
+  expect_error(buf$head_offset_data(300), "Buffer underflow")
+  expect_equal(buf$head_offset_data(255 - n), bytes[n + 1])
+  expect_error(buf$head_offset_data(255 - n + 1),
+               "Buffer underflow")
+
+  ## Add a bunch more bytes in so that we wrap the tail:
+  cmp <- as.raw(rev(seq_len(n) - 1L))
+  buf$push(cmp)
+  expect_true(buf$full())
+
+  tmp1 <- vapply(seq_len(256) - 1L,
+                 function(x) buf$head_offset_data(x), raw(1))
+  tmp2 <- vapply(seq_len(256) - 1L,
+                 function(x) buf$tail_offset_data(x), raw(1))
+  expect_equal(tmp1, rev(tmp2))
+})
+
 test_that("impossible sizes", {
   expect_error(ring_buffer_bytes(0),
                "Can't create ring buffer with size 0")

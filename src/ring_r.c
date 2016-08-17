@@ -177,6 +177,21 @@ SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
   return ret;
 }
 
+SEXP R_ring_buffer_head_offset(SEXP extPtr, SEXP r_offset) {
+  size_t offset = scalar_size(r_offset);
+  ring_buffer * buffer = ring_buffer_get(extPtr, true);
+  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  data_t *data = (data_t*) ring_buffer_head_offset(buffer, offset);
+  if (data == NULL) {
+    Rf_error("Buffer underflow");
+  }
+  memcpy(RAW(ret), data, buffer->stride);
+  UNPROTECT(1);
+  // NOTE: In C we return the tail position here but that is not done
+  // for the R version.
+  return ret;
+}
+
 SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_count) {
   size_t count = scalar_size(r_count);
   ring_buffer *src = ring_buffer_get(srcPtr, true),
@@ -264,14 +279,15 @@ static const R_CallMethodDef callMethods[] = {
   {"Cring_buffer_read",        (DL_FUNC) &R_ring_buffer_read,        2},
   {"Cring_buffer_copy",        (DL_FUNC) &R_ring_buffer_copy,        3},
   {"Cring_buffer_tail_offset", (DL_FUNC) &R_ring_buffer_tail_offset, 2},
+  {"Cring_buffer_head_offset", (DL_FUNC) &R_ring_buffer_head_offset, 2},
   // conversion code
-  {"Cint_to_bytes",              (DL_FUNC) &int_to_bytes,                1},
-  {"Cbytes_to_int",              (DL_FUNC) &bytes_to_int,                1},
-  {"Cdouble_to_bytes",           (DL_FUNC) &double_to_bytes,             1},
-  {"Cbytes_to_double",           (DL_FUNC) &bytes_to_double,             1},
-  {"Ccomplex_to_bytes",          (DL_FUNC) &complex_to_bytes,            1},
-  {"Cbytes_to_complex",          (DL_FUNC) &bytes_to_complex,            1},
-  {NULL,                         NULL,                                   0}
+  {"Cint_to_bytes",              (DL_FUNC) &int_to_bytes,            1},
+  {"Cbytes_to_int",              (DL_FUNC) &bytes_to_int,            1},
+  {"Cdouble_to_bytes",           (DL_FUNC) &double_to_bytes,         1},
+  {"Cbytes_to_double",           (DL_FUNC) &bytes_to_double,         1},
+  {"Ccomplex_to_bytes",          (DL_FUNC) &complex_to_bytes,        1},
+  {"Cbytes_to_complex",          (DL_FUNC) &bytes_to_complex,        1},
+  {NULL,                         NULL,                               0}
 };
 
 void R_init_ring(DllInfo *info) {

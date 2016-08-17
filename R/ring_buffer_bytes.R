@@ -77,11 +77,11 @@ ring_buffer_bytes <- function(size, stride=1L) {
       .Call(Cring_buffer_copy, self$ptr, dest$ptr, n)
     },
 
-    ## TODO: things to implement down here:
     ## Nondestructive:
-    head_offset_data=function(n) stop("head_offset_data not yet implemented"),
+    head_offset_data=function(n) .Call(Cring_buffer_head_offset, self$ptr, n),
     tail_offset_data=function(n) .Call(Cring_buffer_tail_offset, self$ptr, n),
 
+    ## TODO: things to implement down here:
     ## Unusual direction:
     take_head=function(n) stop("take_head not yet implemented"),
     read_head=function(n) stop("read_head not yet implemented")

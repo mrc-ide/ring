@@ -297,17 +297,15 @@ const void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
   size_t bytes_used = ring_buffer_used(buffer, true);
   size_t len = offset * buffer->stride;
   if (len >= bytes_used) {
-    // TODO: elsewhere this is > bytes used but I think that here,
-    // because the offset is the number of places to *move* the
-    // pointer, then copy one, we can't do that.
     return NULL;
   }
-  data_t *tail = buffer->tail;
+  const data_t *tail = buffer->tail;
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nmoved = 0;
 
   // TODO: this is really a much simpler construct than this as we can
-  // only go around once.
+  // only go around once (see also head_offset below which is
+  // basically the same code).
   while (nmoved < len) {
     size_t n = imin(bufend - tail, len - nmoved);
     tail += n;
@@ -318,6 +316,29 @@ const void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
   }
 
   return tail;
+}
+
+// So close:
+const void *ring_buffer_head_offset(ring_buffer *buffer, size_t offset) {
+  size_t bytes_used = ring_buffer_used(buffer, true);
+  size_t len = (offset + 1) * buffer->stride;
+  if (len > bytes_used) {
+    return NULL;
+  }
+  const data_t *head = buffer->head;
+  const data_t *bufend = ring_buffer_end(buffer);
+  size_t nmoved = 0;
+
+  while (nmoved < len) {
+    if (head == buffer->data) {
+      head = bufend;
+    }
+    size_t n = imin(head - buffer->data, len - nmoved);
+    head -= n;
+    nmoved += n;
+  }
+
+  return head;
 }
 
 /*
