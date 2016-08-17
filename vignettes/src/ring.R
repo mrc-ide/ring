@@ -206,8 +206,9 @@ plot(h, type="l", xlab="step", ylab="y", las=1)
 ## # The bytes buffer `ring_buffer_bytes`
 
 ## This is the classical implementation of a ring buffer, and the
-## implementation is largely due to
-## [@dhess](https://github.com/dhess/c-ringbuf).
+## implementation is broadly based on the one
+## [here](https://github.com/dhess/c-ringbuf), by
+## [\@dhess](https://github.com/dhess).
 
 ## This operates basically the same way as `ring_buffer_env` but with
 ## a few differences:
@@ -216,10 +217,6 @@ plot(h, type="l", xlab="step", ylab="y", las=1)
 ##   These are a bit fiddly to work with but can be very powerful.
 ## * The `iterate` distinction of `push` disappears because there is
 ##   no ambiguity with R objects
-## * Reading from the head is not currently implemented.
-## * There are a few methods that each implementation has that the
-##   other does not but these are not needed for most uses.  These
-##   will be documented in the reference documentation.
 
 ## To construct a buffer of 1000 bytes:
 buf <- ring::ring_buffer_bytes(1000)
@@ -483,6 +480,6 @@ writeLines(c("```c",
 ##   the line `#include <dde/dde.hpp>` to include the class definition:
 
 ##+ echo=FALSE, results="asis"
-writeLines(c("```c++",
+writeLines(c("```cpp",
              readLines(system.file("include/ring/ring.hpp", package="ring")),
              "```"))
