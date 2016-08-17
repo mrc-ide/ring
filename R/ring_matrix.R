@@ -8,6 +8,8 @@
 ##' matrices column wise, there is a lot of data transposing going on
 ##' here.  If something like this was needed for performance then
 ##' you'd want to redo this with column storage.
+##
+##' @title Ring matrix
 ##'
 ##' @param nr_max The maximum number of rows
 ##'

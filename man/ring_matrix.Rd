@@ -2,11 +2,7 @@
 % Please edit documentation in R/ring_matrix.R
 \name{ring_matrix}
 \alias{ring_matrix}
-\title{Simulate a matrix with a ring buffer.  This exists mostly as an
-example of use of a ring buffer designed to work with R functions
-that do not know (or care) that the object is implemented with a
-ring buffer behind the scenes.  Rows will be added at the bottom
-of the matrix.}
+\title{Ring matrix}
 \usage{
 ring_matrix(nr_max, nc, type, environment = TRUE)
 }
@@ -23,6 +19,13 @@ environment buffer (\code{\link{ring_buffer_env}}) or
 a bytes buffer (\code{\link{ring_buffer_bytes}}).}
 }
 \description{
+Simulate a matrix with a ring buffer.  This exists mostly as an
+example of use of a ring buffer designed to work with R functions
+that do not know (or care) that the object is implemented with a
+ring buffer behind the scenes.  Rows will be added at the bottom
+of the matrix.
+}
+\details{
 Note that because the matrix is stored row-wise but R stores
 matrices column wise, there is a lot of data transposing going on
 here.  If something like this was needed for performance then

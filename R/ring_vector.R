@@ -4,6 +4,8 @@
 ##' implemented with a ring buffer behind the scenes.  Elements will
 ##' be added at the end of the vector and taken from the beginning.
 ##'
+##' @title Ring vector
+##'
 ##' @param length_max The maximum number of elements
 ##'
 ##' @param type The type of storage.  Can be "logical", "integer",

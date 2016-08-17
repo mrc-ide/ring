@@ -2,11 +2,7 @@
 % Please edit documentation in R/ring_vector.R
 \name{ring_vector}
 \alias{ring_vector}
-\title{Simulate an atomic vector with a ring buffer.  This exists mostly
-as an example of use of a ring buffer designed to work with R
-functions that do not know (or care) that the object is
-implemented with a ring buffer behind the scenes.  Elements will
-be added at the end of the vector and taken from the beginning.}
+\title{Ring vector}
 \usage{
 ring_vector(length_max, type, environment = TRUE)
 }
