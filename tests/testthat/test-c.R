@@ -10,10 +10,12 @@ test_that("check package", {
   res <- system2(R, c("CMD", "check", "--no-manual", path),
                  stdout=TRUE, stderr=TRUE)
   expect_null(attr(res, "status"))
+  file.remove(path)
+  unlink("testing.Rcheck", recursive=TRUE)
 })
 
 test_that("standalone", {
-  ## skip_on_cran()
+  skip_on_cran()
   gcc <- Sys.which("gcc")
   if (!nzchar(gcc)) {
     skip("No gcc")
