@@ -16,3 +16,4 @@
 ^tests/testthat/testing/src/.*\.dll$
 ^notes\.md$
 ^tests/testthat/ring_standalone$
+^src/ring.so.dSYM$

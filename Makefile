@@ -6,6 +6,9 @@ all: install
 test:
 	${RSCRIPT} -e 'library(methods); devtools::test()'
 
+test_leaks:
+	R -d 'valgrind --leak-check=full' -e 'devtools::test()'
+
 roxygen:
 	@mkdir -p man
 	${RSCRIPT} -e "library(methods); devtools::document()"
