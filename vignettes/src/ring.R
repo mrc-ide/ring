@@ -464,3 +464,25 @@ matplot(h, type="l", lty=1, las=1)
 writeLines(c("```c",
              readLines(system.file("include/ring/ring.h", package="ring")),
              "```"))
+
+## # The C++ API
+
+## If you're using C++ you may find the [Boost circular
+## buffer](http://www.boost.org/doc/libs/1_61_0/doc/html/circular_buffer.html)
+## is likely to be far better; you can use this by `LinkingTo:` the
+## `BH` package and using `#include <boost/circular_buffer.hpp>` in
+## your code.
+
+## Alternatively, the `ring` C code can be directly used in C++
+## as above.  Or, there is a class-based approach available:
+##
+## * In your `src/` directory, add a file `ring.cpp` containing just the
+##   line `#include <ring/ring.cpp>`
+##
+## * Anywhere in your code you want to use the ring buffer, include
+##   the line `#include <dde/dde.hpp>` to include the class definition:
+
+##+ echo=FALSE, results="asis"
+writeLines(c("```c++",
+             readLines(system.file("include/ring/ring.hpp", package="ring")),
+             "```"))
