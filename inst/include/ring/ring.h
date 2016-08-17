@@ -3,6 +3,11 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+// Allow use from C++
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // The underlying data structure.  None of the fields here should be
 // directly accessed in normal use; use the accessor functions
 // instead.
@@ -317,4 +322,7 @@ const void * ring_buffer_search_linear(const ring_buffer *buffer,
 const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
                                        ring_predicate pred, void *data);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

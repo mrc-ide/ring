@@ -28,3 +28,18 @@ test_that("standalone", {
   expect_equal(code, 0)
   file.remove("ring_standalone")
 })
+
+test_that("standalone (c++)", {
+  skip_on_cran()
+  gpp <- Sys.which("g++")
+  if (!nzchar(gpp)) {
+    skip("No g++")
+  }
+  path <- system.file("include", package="ring")
+  args <- c("-I", path, "-o", "ring_standalone", "ring_standalone.cpp")
+  code <- system2(gpp, args)
+  expect_equal(code, 0)
+  code <- system2(normalizePath("ring_standalone"))
+  expect_equal(code, 0)
+  file.remove("ring_standalone")
+})
