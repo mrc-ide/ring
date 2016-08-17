@@ -21,12 +21,14 @@ test_that("standalone", {
     skip("No gcc")
   }
   path <- system.file("include", package="ring")
-  args <- c("-I", path, "-o", "ring_standalone", "ring_standalone.c")
+  args <- c("-I", path, "-std=c99",  "-o", "ring_standalone", "ring_standalone.c")
   code <- system2(gcc, args)
   expect_equal(code, 0)
-  code <- system2(normalizePath("ring_standalone"))
-  expect_equal(code, 0)
-  file.remove("ring_standalone")
+  if (file.exists("ring_standalone")) {
+    code <- system2(normalizePath("ring_standalone"))
+    expect_equal(code, 0)
+    file.remove("ring_standalone")
+  }
 })
 
 test_that("standalone (c++)", {
@@ -39,7 +41,9 @@ test_that("standalone (c++)", {
   args <- c("-I", path, "-o", "ring_standalone", "ring_standalone.cpp")
   code <- system2(gpp, args)
   expect_equal(code, 0)
-  code <- system2(normalizePath("ring_standalone"))
-  expect_equal(code, 0)
-  file.remove("ring_standalone")
+  if (file.exists("ring_standalone")) {
+    code <- system2(normalizePath("ring_standalone"))
+    expect_equal(code, 0)
+    file.remove("ring_standalone")
+  }
 })
