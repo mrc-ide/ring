@@ -5,26 +5,43 @@ data_t * ring_buffer_end(ring_buffer *buffer);
 data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p);
 int imin(int a, int b);
 
-// only used for the Calloc and Free -- could drop back to use plain C?
-//
-// using plain C only would make this nicer to include in arbitrary
-// projects without having to worry about it being an R project but
-// that's a pretty minor gain at this point.
+#ifdef RING_USE_STDLIB_ALLOC
+#include <stdlib.h>
+#include <string.h>
+#else
 #include <R.h>
+#endif
 
 ring_buffer * ring_buffer_create(size_t size, size_t stride) {
-  ring_buffer * buffer = Calloc(1, ring_buffer);
+  size_t bytes_data = (size + 1) * stride;
+#ifdef RING_USE_STDLIB_ALLOC
+  ring_buffer * buffer = (ring_buffer*) calloc(1, sizeof(ring_buffer));
+  if (buffer == NULL) {
+    return NULL;
+  }
+  buffer->data = (data_t*) calloc(bytes_data, sizeof(data_t));
+  if (buffer->data == NULL) {
+    free(buffer);
+    return NULL;
+  }
+#else
+  ring_buffer * buffer = (ring_buffer*) Calloc(1, ring_buffer);
+  buffer->data = (data_t*) Calloc(bytes_data, data_t);
+#endif
   buffer->size = size;
   buffer->stride = stride;
-  buffer->bytes_data = (size + 1) * stride;
-
-  buffer->data = Calloc(buffer->bytes_data, data_t);
+  buffer->bytes_data = bytes_data;
   ring_buffer_reset(buffer);
   return buffer;
 }
 
 ring_buffer * ring_buffer_clone(const ring_buffer *buffer) {
   ring_buffer *ret = ring_buffer_create(buffer->size, buffer->stride);
+#ifdef RING_USE_STDLIB_ALLOC
+  if (ret == NULL) {
+    return NULL;
+  }
+#endif
   memcpy(ret->data, buffer->data, ret->bytes_data);
   ret->head += ring_buffer_head_pos(buffer, true);
   ret->tail += ring_buffer_tail_pos(buffer, true);
@@ -32,8 +49,13 @@ ring_buffer * ring_buffer_clone(const ring_buffer *buffer) {
 }
 
 void ring_buffer_destroy(ring_buffer *buffer) {
+#ifdef RING_USE_STDLIB_ALLOC
+  free(buffer->data);
+  free(buffer);
+#else
   Free(buffer->data);
   Free(buffer);
+#endif
 }
 
 size_t ring_buffer_bytes_data(const ring_buffer *buffer) {

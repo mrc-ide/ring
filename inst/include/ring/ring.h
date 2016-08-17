@@ -42,15 +42,27 @@ typedef struct ring_buffer {
 //// Creation, deletion, etc: ////
 
 // Create a ring buffer.  After creating, be sure to free the memory
-// with `ring_buffer_destroy`.  If the buffer cannot be allocated
-// (e.g., too big a buffer is requested) then an R error will be
-// thrown as this uses `Calloc`.
+// with `ring_buffer_destroy`.
 //
 //   size: (maximum) number of elements that the ring buffer may contain
 //
 //   stride: number of *bytes* per ring buffer element
 //
 // See the note above the struct for details on size/stride.
+//
+// If the buffer cannot be allocated (e.g., too big a buffer is
+// requested) then an R error will be thrown as this uses `Calloc`.
+//
+// This may not always be desirable (e.g., if using from within C++,
+// or in a project that does not actually use R).  To use plain C
+// stdlib calloc/free, in the ring.c use:
+//
+//     #define RING_USE_STDLIB_ALLOC 1
+//     #include <ring/ring.c>
+//
+// which will not depend on *any* R code and use stdlib calloc/free.
+// If allocation fails, then ring_buffer_create will return NULL.  So
+// if using this approach be sure to check the return value!
 ring_buffer * ring_buffer_create(size_t size, size_t stride);
 
 // Destroy a ring buffer.  Frees the memory

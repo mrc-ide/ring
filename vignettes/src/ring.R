@@ -445,7 +445,8 @@ matplot(h, type="l", lty=1, las=1)
 ##   only for the package build).
 ##
 ## * In your `src/` directory, add a file `ring.c` containing just the
-##   line `#include <ring/ring.c>`
+##   line `#include <ring/ring.c>` (but see the note in the
+##   documentation for `ring_buffer_create` below).
 ##
 ## * Anywhere in your code you want to use the ring buffer, include
 ##   the line `#include <dde/dde.h>` to include the prototypes and use
