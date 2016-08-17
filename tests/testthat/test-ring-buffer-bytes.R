@@ -89,7 +89,7 @@ test_that("reset", {
   }
 })
 
-test_that("memset with zero count", {
+test_that("set with zero count", {
   size <- 24L
   buf <- ring_buffer_bytes(size)
 
@@ -102,7 +102,7 @@ test_that("memset with zero count", {
   expect_equal(buf$tail_pos(), buf$head_pos())
 })
 
-test_that("memset a few bytes", {
+test_that("set a few bytes", {
   size <- 4096L
 
   buf <- ring_buffer_bytes(size)
@@ -118,7 +118,7 @@ test_that("memset a few bytes", {
                pad(rep(as.raw(57), 7), size + 1))
 })
 
-test_that("memset full capacity", {
+test_that("set full capacity", {
   size <- 4096L
   buf <- ring_buffer_bytes(size)
 
@@ -131,7 +131,7 @@ test_that("memset full capacity", {
   expect_equal(buf$buffer_data(), pad(as.raw(rep(57, size)), size + 1))
 })
 
-test_that("memset, twice", {
+test_that("set, twice", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
 
@@ -149,7 +149,7 @@ test_that("memset, twice", {
                pad(rep(as.raw(57), 7 + 15), size + 1))
 })
 
-test_that("memset, twice, to full capacity", {
+test_that("set, twice, to full capacity", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
 
@@ -164,7 +164,7 @@ test_that("memset, twice, to full capacity", {
   expect_equal(rb1$buffer_data(), pad(rep(as.raw(57), size), size + 1))
 })
 
-test_that("ring_buffer_memset, overflow by 1 byte", {
+test_that("ring_buffer_set, overflow by 1 byte", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
@@ -183,7 +183,7 @@ test_that("ring_buffer_memset, overflow by 1 byte", {
   expect_equal(rb1$buffer_data(), repr(57, size + 1))
 })
 
-test_that("ring_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
+test_that("ring_buffer_set, twice (overflow by 1 byte on 2nd copy)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
@@ -203,10 +203,10 @@ test_that("ring_buffer_memset, twice (overflow by 1 byte on 2nd copy)", {
   expect_equal(rb1$buffer_data(), repr(57, size + 1))
 })
 
-test_that("ring_buffer_memset, twice with oveflow", {
-  ## ring_buffer_memset, attempt to overflow by 2 bytes, but
-  ## ring_buffer_memset will stop at 1 byte overflow (length
-  ## clamping, see ring_buffer_memset documentation).
+test_that("ring_buffer_set, twice with oveflow", {
+  ## ring_buffer_set, attempt to overflow by 2 bytes, but
+  ## ring_buffer_set will stop at 1 byte overflow (length
+  ## clamping, see ring_buffer_set documentation).
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
@@ -222,7 +222,7 @@ test_that("ring_buffer_memset, twice with oveflow", {
   expect_equal(rb1$buffer_data(), repr(57, size + 1))
 })
 
-test_that("ring_buffer_memset, twice, overflowing both times", {
+test_that("ring_buffer_set, twice, overflowing both times", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
@@ -239,7 +239,7 @@ test_that("ring_buffer_memset, twice, overflowing both times", {
   expect_equal(rb1$buffer_data(), repr(58, size + 1))
 })
 
-test_that("ring_buffer_memcpy_into with zero count", {
+test_that("ring_buffer_push with zero count", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(as.raw(1), rb1$bytes_data())
@@ -257,7 +257,7 @@ test_that("ring_buffer_memcpy_into with zero count", {
   expect_equal(rb1$buffer_data(), repr(1, size + 1))
 })
 
-test_that("ring_buffer_memcpy_into a few bytes of data", {
+test_that("ring_buffer_push a few bytes of data", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -278,7 +278,7 @@ test_that("ring_buffer_memcpy_into a few bytes of data", {
   expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
 })
 
-test_that("ring_buffer_memcpy_into full capacity", {
+test_that("ring_buffer_push full capacity", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -306,7 +306,7 @@ test_that("ring_buffer_memcpy_into full capacity", {
   ##              rb1$read(size))
 })
 
-test_that("ring_buffer_memcpy_into, twice", {
+test_that("ring_buffer_push, twice", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -331,7 +331,7 @@ test_that("ring_buffer_memcpy_into, twice", {
   expect_equal(rb1$head_data(), as.raw(1))
 })
 
-test_that("ring_buffer_memcpy_into, twice (to full capacity)", {
+test_that("ring_buffer_push, twice (to full capacity)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -354,7 +354,7 @@ test_that("ring_buffer_memcpy_into, twice (to full capacity)", {
   expect_equal(head(rb1$buffer_data(), size), bytes)
 })
 
-test_that("ring_buffer_memcpy_into, overflow by 1 byte", {
+test_that("ring_buffer_push, overflow by 1 byte", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -379,7 +379,7 @@ test_that("ring_buffer_memcpy_into, overflow by 1 byte", {
   expect_equal(rb1$read(size), bytes[-1L])
 })
 
-test_that("ring_buffer_memcpy_into, twice (overflow by 1 byte on 2nd copy)", {
+test_that("ring_buffer_push, twice (overflow by 1 byte on 2nd copy)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -409,7 +409,7 @@ test_that("ring_buffer_memcpy_into, twice (overflow by 1 byte on 2nd copy)", {
   expect_equal(rb1$read(size), bytes[-1L])
 })
 
-test_that("ring_buffer_memcpy_into, overflow by 2 bytes (will wrap)", {
+test_that("ring_buffer_push, overflow by 2 bytes (will wrap)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -431,7 +431,7 @@ test_that("ring_buffer_memcpy_into, overflow by 2 bytes (will wrap)", {
   expect_equal(rb1$read(size), bytes[-(1:2)])
 })
 
-test_that("ring_buffer_memcpy_from with zero count, empty ring buffer", {
+test_that("ring_buffer_take with zero count, empty ring buffer", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -448,7 +448,7 @@ test_that("ring_buffer_memcpy_from with zero count, empty ring buffer", {
   expect_equal(rb1$tail_pos(), 0L)
 })
 
-test_that("ring_buffer_memcpy_from with zero count, non-empty ring buffer", {
+test_that("ring_buffer_take with zero count, non-empty ring buffer", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -469,7 +469,7 @@ test_that("ring_buffer_memcpy_from with zero count, non-empty ring buffer", {
   expect_equal(rb1$tail_pos(), 0L)
 })
 
-test_that("ring_buffer_memcpy_from a few bytes of data", {
+test_that("ring_buffer_take a few bytes of data", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -497,7 +497,7 @@ test_that("ring_buffer_memcpy_from a few bytes of data", {
   expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
 })
 
-test_that("ring_buffer_memcpy_from full capacity", {
+test_that("ring_buffer_take full capacity", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -519,7 +519,7 @@ test_that("ring_buffer_memcpy_from full capacity", {
   expect_equal(rb1$head_pos(), size)
 })
 
-test_that("ring_buffer_memcpy_from, twice", {
+test_that("ring_buffer_take, twice", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -539,7 +539,7 @@ test_that("ring_buffer_memcpy_from, twice", {
   expect_equal(rb1$tail_pos(), 13)
 })
 
-test_that("ring_buffer_memcpy_from, twice (full capacity)", {
+test_that("ring_buffer_take, twice (full capacity)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -562,7 +562,7 @@ test_that("ring_buffer_memcpy_from, twice (full capacity)", {
   expect_equal(rb1$tail_pos(), size)
 })
 
-test_that("ring_buffer_memcpy_from, attempt to underflow", {
+test_that("ring_buffer_take, attempt to underflow", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -584,7 +584,7 @@ test_that("ring_buffer_memcpy_from, attempt to underflow", {
   expect_equal(rb1$head_pos(), 15)
 })
 
-test_that("ring_buffer_memcpy_from, attempt to underflow on 2nd call", {
+test_that("ring_buffer_take, attempt to underflow on 2nd call", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -607,7 +607,7 @@ test_that("ring_buffer_memcpy_from, attempt to underflow on 2nd call", {
   expect_equal(rb1$head_pos(), 15)
 })
 
-test_that("ring_buffer_memcpy_into followed by ring_buffer_memcpy_from", {
+test_that("ring_buffer_push followed by ring_buffer_take", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -628,7 +628,7 @@ test_that("ring_buffer_memcpy_into followed by ring_buffer_memcpy_from", {
   expect_equal(rb1$tail_pos(), rb1$head_pos())
 })
 
-test_that("ring_buffer_memcpy_into, partial ring_buffer_memcpy_from", {
+test_that("ring_buffer_push, partial ring_buffer_take", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -650,7 +650,7 @@ test_that("ring_buffer_memcpy_into, partial ring_buffer_memcpy_from", {
   expect_equal(rb1$head_pos(), 11)
 })
 
-test_that("ring_buffer_memcpy_into, from, into, no wrap", {
+test_that("ring_buffer_push, from, into, no wrap", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
   rb1$set(1, rb1$bytes_data())
@@ -675,9 +675,9 @@ test_that("ring_buffer_memcpy_into, from, into, no wrap", {
   expect_equal(rb1$head_pos(), size)
 })
 
-test_that("ring_buffer_memcpy_into, from, into, no wrap", {
-  ## ring_buffer_memcpy_into, ring_buffer_memcpy_from, then
-  ## ring_buffer_memcpy_into to the end of the contiguous buffer,
+test_that("ring_buffer_push, from, into, no wrap", {
+  ## ring_buffer_push, ring_buffer_take, then
+  ## ring_buffer_push to the end of the contiguous buffer,
   ## which should cause the head pointer to wrap.
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
@@ -702,8 +702,8 @@ test_that("ring_buffer_memcpy_into, from, into, no wrap", {
 })
 
 ## TODO: This one might need work (see ringbuf-test.c, l. 1441)
-test_that("ring_buffer_memcpy_into, overflow when tail > head", {
-  ## Overflow with ring_buffer_memcpy_into when tail pointer is > head
+test_that("ring_buffer_push, overflow when tail > head", {
+  ## Overflow with ring_buffer_push when tail pointer is > head
   ## pointer. Should bump tail pointer to head + 1.
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
@@ -735,8 +735,8 @@ test_that("ring_buffer_memcpy_into, overflow when tail > head", {
   expect_equal(rb1$tail_pos(), 12)
 })
 
-test_that("ring_buffer_memcpy_into, overflow with tail at end", {
-  ## Overflow with ring_buffer_memcpy_into when tail pointer is > head
+test_that("ring_buffer_push, overflow with tail at end", {
+  ## Overflow with ring_buffer_push when tail pointer is > head
   ## pointer, and tail pointer is at the end of the contiguous
   ## buffer. Should wrap tail pointer to beginning of contiguous
   ## buffer.

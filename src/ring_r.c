@@ -109,21 +109,21 @@ SEXP R_ring_buffer_reset(SEXP extPtr) {
   return R_NilValue;
 }
 
-SEXP R_ring_buffer_memset(SEXP extPtr, SEXP c, SEXP len) {
+SEXP R_ring_buffer_set(SEXP extPtr, SEXP c, SEXP len) {
   ring_buffer *buffer = ring_buffer_get(extPtr, 1);
   size_t n = scalar_size(len);
   data_t *data = RAW(c);
   if (length(c) == 1) {
-    return ScalarInteger(ring_buffer_memset(buffer, data[0], n));
+    return ScalarInteger(ring_buffer_set(buffer, data[0], n));
   } else if ((size_t)length(c) == buffer->stride) {
-    return ScalarInteger(ring_buffer_memset_stride(buffer, data, n));
+    return ScalarInteger(ring_buffer_set_stride(buffer, data, n));
   } else {
     Rf_error("Invalid length input");
     return R_NilValue;
   }
 }
 
-SEXP R_ring_buffer_memcpy_into(SEXP extPtr, SEXP src) {
+SEXP R_ring_buffer_push(SEXP extPtr, SEXP src) {
   ring_buffer *buffer = ring_buffer_get(extPtr, 1);
   size_t len = LENGTH(src), stride = buffer->stride;
   if (len % stride != 0) {
@@ -131,15 +131,15 @@ SEXP R_ring_buffer_memcpy_into(SEXP extPtr, SEXP src) {
              len, stride);
   }
   size_t count = len / stride;
-  data_t * head = (data_t *) ring_buffer_memcpy_into(buffer, RAW(src), count);
+  data_t * head = (data_t *) ring_buffer_push(buffer, RAW(src), count);
   return ScalarInteger(head - buffer->data);
 }
 
-SEXP R_ring_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
+SEXP R_ring_buffer_take(SEXP extPtr, SEXP r_count) {
   size_t count = scalar_size(r_count);
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, count * buffer->stride));
-  if (ring_buffer_memcpy_from(RAW(ret), buffer, count) == NULL) {
+  if (ring_buffer_take(buffer, RAW(ret), count) == NULL) {
     Rf_error("Buffer underflow (requested %d elements but %d available)",
              count, ring_buffer_used(buffer, 0));
   }
@@ -149,11 +149,11 @@ SEXP R_ring_buffer_memcpy_from(SEXP extPtr, SEXP r_count) {
   return ret;
 }
 
-SEXP R_ring_buffer_tail_read(SEXP extPtr, SEXP r_count) {
+SEXP R_ring_buffer_read(SEXP extPtr, SEXP r_count) {
   size_t count = scalar_size(r_count);
   ring_buffer * buffer = ring_buffer_get(extPtr, 1);
   SEXP ret = PROTECT(allocVector(RAWSXP, count * buffer->stride));
-  if (ring_buffer_tail_read(buffer, RAW(ret), count) == NULL) {
+  if (ring_buffer_read(buffer, RAW(ret), count) == NULL) {
     Rf_error("Buffer underflow");
   }
   UNPROTECT(1);
@@ -181,10 +181,10 @@ SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_count) {
   size_t count = scalar_size(r_count);
   ring_buffer *src = ring_buffer_get(srcPtr, 1),
     *dest = ring_buffer_get(destPtr, 1);
-  data_t * head = (data_t *) ring_buffer_copy(dest, src, count);
+  data_t * head = (data_t *) ring_buffer_copy(src, dest, count);
   if (head == NULL) {
     // TODO: better reporting here; make this a general thing I think.
-    // See memcpy_from and tail_read for other places this is needed.
+    // See _take() and _read() for other places this is needed.
     Rf_error("Buffer underflow");
   }
   return ScalarInteger(head - dest->data);
@@ -258,10 +258,10 @@ static const R_CallMethodDef callMethods[] = {
   {"Cring_buffer_free",        (DL_FUNC) &R_ring_buffer_free,        2},
   {"Cring_buffer_used",        (DL_FUNC) &R_ring_buffer_used,        2},
   {"Cring_buffer_reset",       (DL_FUNC) &R_ring_buffer_reset,       1},
-  {"Cring_buffer_memset",      (DL_FUNC) &R_ring_buffer_memset,      3},
-  {"Cring_buffer_memcpy_into", (DL_FUNC) &R_ring_buffer_memcpy_into, 2},
-  {"Cring_buffer_memcpy_from", (DL_FUNC) &R_ring_buffer_memcpy_from, 2},
-  {"Cring_buffer_tail_read",   (DL_FUNC) &R_ring_buffer_tail_read,   2},
+  {"Cring_buffer_set",         (DL_FUNC) &R_ring_buffer_set,         3},
+  {"Cring_buffer_push",        (DL_FUNC) &R_ring_buffer_push,        2},
+  {"Cring_buffer_take",        (DL_FUNC) &R_ring_buffer_take,        2},
+  {"Cring_buffer_read",        (DL_FUNC) &R_ring_buffer_read,        2},
   {"Cring_buffer_copy",        (DL_FUNC) &R_ring_buffer_copy,        3},
   {"Cring_buffer_tail_offset", (DL_FUNC) &R_ring_buffer_tail_offset, 2},
   // conversion code

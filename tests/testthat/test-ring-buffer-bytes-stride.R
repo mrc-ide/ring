@@ -32,7 +32,7 @@ test_that("empty", {
   expect_false(buf$full())
 })
 
-test_that("memset", {
+test_that("set", {
   size <- 100L
   stride <- 5L
   buf <- ring_buffer_bytes(100, 5)
@@ -161,7 +161,7 @@ test_that("set with vector", {
   expect_equal(buf$read(100), rep(as.raw(1), s * 100))
 })
 
-test_that("overflow works (memcpy)", {
+test_that("overflow works (push)", {
   size <- 10
   stride <- 2
 
@@ -193,7 +193,7 @@ test_that("overflow works (memcpy)", {
   expect_equal(buf$tail_pos(TRUE), stride)
 })
 
-test_that("overflow works (memset)", {
+test_that("overflow works (set)", {
   size <- 10
   stride <- 2
 

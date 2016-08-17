@@ -134,10 +134,10 @@ const void * ring_buffer_tail(ring_buffer *buffer);
 // This starts adding data at `head`.  If the buffer will overflow, at
 // most `bytes_data` bytes will be written (i.e., each element will be
 // written to once).
-size_t ring_buffer_memset(ring_buffer *buffer, data_t c, size_t len);
+size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t len);
 
 // Set a number of the elements of the buffer to a particular byte
-// pattern.  In contrast with `ring_buffer_memset`, this does not set
+// pattern.  In contrast with `ring_buffer_set`, this does not set
 // individual bytes, but instead complete elements.
 //
 //    buffer: the ring buffer to set data into
@@ -150,7 +150,7 @@ size_t ring_buffer_memset(ring_buffer *buffer, data_t c, size_t len);
 // This starts adding data at `head`.  If the buffer will overflow, at
 // most `bytes_data` bytes will be written (i.e., each element will be
 // written to once).
-size_t ring_buffer_memset_stride(ring_buffer *buffer, void *x, size_t len);
+size_t ring_buffer_set_stride(ring_buffer *buffer, void *x, size_t len);
 
 //// Read and write ////
 
@@ -167,8 +167,7 @@ size_t ring_buffer_memset_stride(ring_buffer *buffer, void *x, size_t len);
 //
 //   count: the number of entries to copy from `src` into `buffer`
 //           (each of which is `stride` bytes long).
-void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
-                              size_t count);
+void *ring_buffer_push(ring_buffer *buffer, const void *src, size_t count);
 
 // Destructively copy `count` entries (each of which is `stride`
 // bytes) from a ring buffer `buffer` into contiguous memory region
@@ -176,15 +175,12 @@ void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
 // returns the new tail pointer.
 //
 // The `count` entries will no longer be available in the ring buffer.
-// To do a nondestructive read, use `ring_buffer_tail_read()`.
+// To do a nondestructive read, use `ring_buffer_read()`.
 //
-// The slightly odd argument naming here is meant to reflect usage of
-// `memcpy()`
+//   buffer: the ring buffer to copy data from
 //
 //   dest: the destination memory to copy into (make sure this is big enough
 //           or you will get crashes and other terrible things).
-//
-//   buffer: the ring buffer to copy data from
 //
 //   count: the number of entries to copy from `src` into `buffer`
 //           (each of which is `stride` bytes long).
@@ -193,21 +189,21 @@ void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
 // `count` is greater than the number of available entries, then
 // nothing is copied (and the ring buffer remains unmodified) and NULL
 // is returned.
-void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer, size_t count);
+void *ring_buffer_take(ring_buffer *buffer, void *dest, size_t count);
 
 // Nondestructively read from a ring buffer.  This function is
-// essentially identical to `ring_buffer_memcpy_from` but does not
-// alter the tail pointer.
-void * ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count);
+// essentially identical to `ring_buffer_take` but does not alter the
+// tail pointer.
+void * ring_buffer_read(ring_buffer *buffer, void *dest, size_t count);
 
 // TODO: I think there is ring_buffer_head_read here needed too.
 
 // Copy `count` entries (each of `stride` bytes) from one ring buffer
 // `src` into another `dest`.
 //
-//   dest: A ring buffer to copy data into
-//
 //   src: A ring buffer to copy data from
+
+//   dest: A ring buffer to copy data into
 //
 //   count: the number of entries to copy (each of which is `stride` bytes)
 //
@@ -221,7 +217,7 @@ void * ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count);
 //
 // It is possible to overflow `dest` and the tail pointer will be
 // updated appropriately if so.
-void * ring_buffer_copy(ring_buffer *dest, ring_buffer *src, size_t count);
+void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t count);
 
 // Returns a pointer to the tail (reading end) of the buffer, offset
 // by `offset` entries.  When used as `ring_buffer_tail_offset(x, 0)`
@@ -247,7 +243,7 @@ const void * ring_buffer_tail_offset(ring_buffer *buffer, size_t offset);
 //
 // This is (roughly) equivalent to:
 //
-//    ring_buffer_memset(buffer, 0, 1);
+//    ring_buffer_set(buffer, 0, 1);
 //    return buffer->head;
 //
 // but does not actually copy any data.

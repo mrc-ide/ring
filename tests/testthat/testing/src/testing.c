@@ -16,7 +16,7 @@ SEXP test(SEXP r_n, SEXP r_p) {
   while (true) {
     R_CheckUserInterrupt();
     double x = unif_rand();
-    ring_buffer_memcpy_into(r, &x, 1);
+    ring_buffer_push(r, &x, 1);
     if (x < p) {
       break;
     }
@@ -26,7 +26,7 @@ SEXP test(SEXP r_n, SEXP r_p) {
   // Then we'll copy these bits back to R
   size_t used = ring_buffer_used(r, 0);
   SEXP ret = PROTECT(allocVector(REALSXP, used));
-  ring_buffer_memcpy_from(REAL(ret), r, used);
+  ring_buffer_take(r, REAL(ret), used);
 
   // destroy the buffer on exit (note: if anything above throws, this
   // will leak).

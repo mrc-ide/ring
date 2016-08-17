@@ -112,7 +112,7 @@ size_t ring_buffer_used(const ring_buffer *buffer, bool bytes) {
 // It's not really clear what this should do with stride?  Probably if
 // len does not divide neatly through by stride we should error.  For
 // now, leave it be though.
-size_t ring_buffer_memset(ring_buffer *buffer, data_t c, size_t count) {
+size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t count) {
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;
   size_t len = imin(count * buffer->stride, ring_buffer_bytes_data(buffer));
@@ -140,10 +140,10 @@ size_t ring_buffer_memset(ring_buffer *buffer, data_t c, size_t count) {
   return nwritten;
 }
 
-size_t ring_buffer_memset_stride(ring_buffer *buffer, void *x, size_t len) {
+size_t ring_buffer_set_stride(ring_buffer *buffer, void *x, size_t len) {
   size_t count = imin(len, ring_buffer_size(buffer, 0));
   for (size_t i = 0; i < count; ++i) {
-    ring_buffer_memcpy_into(buffer, x, 1);
+    ring_buffer_push(buffer, x, 1);
   }
   return count;
 }
@@ -162,8 +162,7 @@ size_t ring_buffer_memset_stride(ring_buffer *buffer, void *x, size_t len) {
  * overflow, the value of the ring buffer's tail pointer may be
  * different than it was before the function was called.
  */
-void *ring_buffer_memcpy_into(ring_buffer *buffer, const void *src,
-                              size_t count) {
+void *ring_buffer_push(ring_buffer *buffer, const void *src, size_t count) {
   const size_t len = count * buffer->stride;
   const data_t *source = src;
   const data_t *bufend = ring_buffer_end(buffer);
@@ -213,7 +212,7 @@ void* ring_buffer_head_advance(ring_buffer* buffer) {
 }
 
 /*
- * Copy n bytes from the ring buffer src, starting from its tail
+ * Copy n bytes from the ring buffer "buffer", starting from its tail
  * pointer, into a contiguous memory area dest. Returns the value of
  * src's tail pointer after the copy is finished.
  *
@@ -227,9 +226,8 @@ void* ring_buffer_head_advance(ring_buffer* buffer) {
  * count is greater than the number of bytes used in the ring buffer,
  * no bytes are copied, and the function will return NULL.
  */
-void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer,
-                              size_t count) {
-  void * tail = ring_buffer_tail_read(buffer, dest, count);
+void *ring_buffer_take(ring_buffer *buffer, void *dest, size_t count) {
+  void * tail = ring_buffer_read(buffer, dest, count);
   if (tail != 0) {
     buffer->tail = tail;
   }
@@ -239,7 +237,7 @@ void *ring_buffer_memcpy_from(void *dest, ring_buffer *buffer,
 // This is like the function above, but it is not destructive to the
 // buffer.  I need to write a similar one that reads relative to the
 // head too (i.e. that will pull the most recently added data).
-void *ring_buffer_tail_read(ring_buffer *buffer, void *dest, size_t count) {
+void *ring_buffer_read(ring_buffer *buffer, void *dest, size_t count) {
   size_t bytes_used = ring_buffer_used(buffer, 1);
   size_t len = count * buffer->stride;
   if (len > bytes_used) {
@@ -323,8 +321,7 @@ const void *ring_buffer_tail_offset(ring_buffer *buffer, size_t offset) {
  * number of bytes used in src, no bytes are copied, and the function
  * returns 0.
  */
-void * ring_buffer_copy(ring_buffer *dest, ring_buffer *src,
-                          size_t count) {
+void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t count) {
   // TODO: Not clear what should be done (if anything other than an
   // error) if the two buffers differ in their stride.
   size_t src_bytes_used = ring_buffer_used(src, 1);

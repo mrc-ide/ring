@@ -1,6 +1,6 @@
 Package: ring
 Title: Ring Buffers
-Version: 0.0.1
+Version: 0.0.2
 Author: Rich FitzJohn
 Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
 Description: Ring buffers in R and C.  There are a couple of different

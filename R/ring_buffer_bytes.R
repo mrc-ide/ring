@@ -62,13 +62,13 @@ ring_buffer_bytes <- function(size, stride=1L) {
     buffer_data=function() .Call(Cring_buffer_buffer_data, self$ptr),
 
     set=function(data, n) {
-      invisible(.Call(Cring_buffer_memset, self$ptr, as.raw(data), n))
+      invisible(.Call(Cring_buffer_set, self$ptr, as.raw(data), n))
     },
     push=function(data) {
-      invisible(.Call(Cring_buffer_memcpy_into, self$ptr, as.raw(data)))
+      invisible(.Call(Cring_buffer_push, self$ptr, as.raw(data)))
     },
-    take=function(n) .Call(Cring_buffer_memcpy_from, self$ptr, n),
-    read=function(n) .Call(Cring_buffer_tail_read, self$ptr, n),
+    take=function(n) .Call(Cring_buffer_take, self$ptr, n),
+    read=function(n) .Call(Cring_buffer_read, self$ptr, n),
 
     copy=function(dest, n) {
       if (!inherits(dest, "ring_buffer_bytes")) {
