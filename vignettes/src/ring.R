@@ -13,7 +13,11 @@
 ## ---
 
 ##+ echo=FALSE, results="hide"
-knitr::opts_chunk$set(error=FALSE)
+knitr::opts_chunk$set(
+  error=FALSE,
+  fig.width=7,
+  fig.height=5)
+set.seed(1)
 
 ## This package implements ring buffers.  A ring buffer can be used as
 ## a first-in-first-out (FIFO) buffer where the maximum size is known
@@ -429,7 +433,7 @@ for (i in seq_len(nrow(h) - 1L)) {
 }
 
 par(mar=c(4, 4, .5, .5))
-matplot(h, type="l", lty=1)
+matplot(h, type="l", lty=1, las=1)
 
 ## # The C API
 
