@@ -39,7 +39,7 @@ test_that("set", {
 
   ## First, set a few entries to something nonzero:
   n <- 3L
-  expect_equal(buf$set(as.raw(1), n), n * stride)
+  expect_equal(buf$set(as.raw(1), n), n)
 
   ## Lots of checking of the state of the buffer:
   expect_false(buf$empty())
@@ -207,11 +207,11 @@ test_that("overflow works (set)", {
   x1 <- buf$set(d1, 1)
   expect_equal(buf$free(), size - 1)
   expect_equal(buf$free(TRUE), (size - 1) * stride)
-  expect_equal(x1, stride)
+  expect_equal(x1, 1)
 
   ## Overflow, just:
   x2 <- buf$set(d2, size)
-  expect_equal(x2, stride * size)
+  expect_equal(x2, size)
 
   expect_equal(buf$free(), 0)
   expect_equal(buf$free(TRUE), 0)

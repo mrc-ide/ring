@@ -131,9 +131,6 @@ size_t ring_buffer_used(const ring_buffer *buffer, bool bytes) {
  * ring_buffer_bytes_data(buffer), else
  * ring_buffer_bytes_data(buffer).
  */
-// It's not really clear what this should do with stride?  Probably if
-// len does not divide neatly through by stride we should error.  For
-// now, leave it be though.
 size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t count) {
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;

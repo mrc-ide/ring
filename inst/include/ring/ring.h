@@ -151,6 +151,9 @@ const void * ring_buffer_tail(const ring_buffer *buffer);
 // This starts adding data at `head`.  If the buffer will overflow, at
 // most `bytes_data` bytes will be written (i.e., each element will be
 // written to once).
+//
+// Returns the number of bytes actually written to the buffer (so if
+// the buffer overflows this may be less than `len`).
 size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t len);
 
 // Set a number of the elements of the buffer to a particular byte

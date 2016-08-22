@@ -114,7 +114,7 @@ SEXP R_ring_buffer_set(SEXP extPtr, SEXP c, SEXP len) {
   size_t n = scalar_size(len);
   data_t *data = RAW(c);
   if (length(c) == 1) {
-    return ScalarInteger(ring_buffer_set(buffer, data[0], n));
+    return ScalarInteger(ring_buffer_set(buffer, data[0], n) / buffer->stride);
   } else if ((size_t)length(c) == buffer->stride) {
     return ScalarInteger(ring_buffer_set_stride(buffer, data, n));
   } else {
