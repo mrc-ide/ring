@@ -20,4 +20,284 @@ fall into chunks of exactly the same size.  It is implemented in C
 and will be fast, with the limitation that any data transfer
 always involves copies.
 }
+\section{Methods}{
+
+
+Note that this methods reference section is repeated verbatim between
+the three main ring buffer classes; \code{ring_buffer_env}
+("env"), \code{ring_buffer_bytes} ("bytes") and
+\code{ring_buffer_typed} ("typed").  Almost all methods have
+the same arguments and behaviour, but hopefully in one place the
+differences between implementations will be a bit more apparent.
+
+\describe{
+\item{\code{reset}}{
+  Reset the state of the buffer.  This "zeros" the head and tail pointer (and may or may not actually reset the data) so that the buffer can be used as if fresh.  All data are deleted, but not necessarily written to.
+
+  \emph{Usage:}
+  \code{reset()}
+}
+\item{\code{duplicate}}{
+  Clone the ring buffer, creating a copy.  Copies both the underlying data and the position of the head and tail.
+
+  \emph{Usage:}
+  \code{duplicate()}
+}
+\item{\code{size}}{
+  Return the maximum size of the ring buffer
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: \code{size()}}
+    \item{bytes, typed: \code{size(bytes = FALSE)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
+    }
+  }
+}
+\item{\code{bytes_data}}{
+  Return the total size of the data storage used in this object.
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: (not supported)}
+    \item{bytes, typed: \code{bytes_data()}}
+  }
+}
+\item{\code{stride}}{
+  Length of each element in the ring buffer, in bytes.  Only implemented (and meaningful) for the bytes buffer; the environment buffer does not support this function as it makes no sense there.
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: (not supported)}
+    \item{bytes, typed: \code{stride()}}
+  }
+}
+\item{\code{used}}{
+  Return the amount of space used in the ring buffer.
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: \code{used()}}
+    \item{bytes, typed: \code{used(bytes = FALSE)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
+    }
+  }
+}
+\item{\code{free}}{
+  Return the amount of space free in the ring buffer.
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: \code{free()}}
+    \item{bytes, typed: \code{free(bytes = FALSE)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
+    }
+  }
+}
+\item{\code{empty}}{
+  Test if the ring buffer is empty
+
+  \emph{Usage:}
+  \code{empty()}
+}
+\item{\code{full}}{
+  Test if the ring buffer is full
+
+  \emph{Usage:}
+  \code{full()}
+}
+\item{\code{head_pos}}{
+  Return the number of entries from the "start" of the ring buffer the head is.  This is mostly useful for debugging.
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: \code{head_pos()}}
+    \item{bytes, typed: \code{head_pos(bytes = FALSE)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
+    }
+  }
+}
+\item{\code{tail_pos}}{
+  Return the number of entries from the "start" of the ring buffer the tail is.  This is mostly useful for debugging.
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: \code{tail_pos()}}
+    \item{bytes, typed: \code{tail_pos(bytes = FALSE)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
+    }
+  }
+}
+\item{\code{head_data}}{
+  Return the contents of the head (the most recently written element in the ring buffer).
+
+  \emph{Usage:}
+  \code{head_data()}
+
+  \emph{Value}:
+  It depends a little here.  For \code{ring_buffer_env} this is a single R object.  For \code{ring_buffer_bytes} it is a raw vector, the same length as the stride of the ring buffer.  For \code{ring_buffer_bytes_typed}, a single R object that has been translated from raw.
+}
+\item{\code{tail_data}}{
+  Return the contents of the tail (the least recently written element in the ring buffer).
+
+  \emph{Usage:}
+  \code{tail_data()}
+
+  \emph{Value}:
+  As for \code{head_data}
+}
+\item{\code{set}}{
+  Set a number of ring entries to the same value.  The exact behaviour here varies depending on the type of ring buffer.  This function may overflow the ring buffer; in this case the tail will be moved.
+
+  \emph{Usage:}
+  \itemize{
+    \item{env, bytes: \code{set(data, n)}}
+    \item{typed: \code{set(data)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{data}:   The data to set each ring element to.  For an environment buffer, this may be any R object.  For a bytes buffer it may be either a single byte (in which case each ring element will be set to that byte, repeated \code{stride} times), or a raw vector of length \code{stride}.
+    }
+
+    \item{\code{n}:   The number of entries to set to \code{data}
+    }
+  }
+
+  \emph{Value}:
+  Returns the number of elements actually written (which may be less than \code{n} if the buffer overflows).
+}
+\item{\code{push}}{
+  Push elements onto the ring buffer head.  This may overflow the ring buffer, destroying the oldest elememnts in the buffer (and moving the position of the tail).
+
+  \emph{Usage:}
+  \itemize{
+    \item{env: \code{push(data, iterate = TRUE)}}
+    \item{bytes, typed: \code{push(data)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{data}:   Data to push onto the ring buffer.  For \code{ring_buffer_bytes}, this must be a raw vector with a length that is a multiple of the buffer stride.  For \code{ring_buffer_typed} it must be a vector of the appropriate type.  For \code{ring_buffer_env} it may be an arbitrary R object (but see \code{iterate} .
+    }
+
+    \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate=FALSE}, then the entire object is pushed at once, so always updating only by a single element.
+    }
+  }
+}
+\item{\code{take}}{
+  Destructively take elements from the ring buffer.  This consumes from the tail (the least recently added elements).  It is not possibly to underflow the buffer; if more elements are requested than can be supplied then an error will be thrown and the state of the buffer unmodified.
+
+  \emph{Usage:}
+  \code{take(n)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{n}:   The number of elements to take.
+    }
+  }
+
+  \emph{Value}:
+  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_typed}, an vector of \code{n} elements of the storage mode of the ring.
+}
+\item{\code{read}}{
+  Nondestructively read elements from the ring buffer.  This is identical to \code{take} except that the state of the buffer is not modified.
+
+  \emph{Usage:}
+  \code{read(n)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{n}:   The number of elements to read.
+    }
+  }
+
+  \emph{Value}:
+  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_typed}, an vector of \code{n} elements of the storage mode of the ring.
+}
+\item{\code{copy}}{
+  Copy from into another ring buffer.  This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.
+
+  \emph{Usage:}
+  \code{copy(dest, n)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{dest}:   The destination ring buffer
+    }
+
+    \item{\code{n}:   The number of elements to copy
+    }
+  }
+}
+\item{\code{head_offset_data}}{
+  Nondestructively read the contents of the \code{head} of the buffer, offset by \code{n} entries.
+
+  \emph{Usage:}
+  \code{head_offset_data(n)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{n}:   Head offset.  This moves away from the most recently added item. An offset of 0 reads the most recently added element, 1 reads the element added before that.
+    }
+  }
+}
+\item{\code{tail_offset_data}}{
+  Nondestructively read the contents of the \code{tail} of the buffer, offset by \code{n} entries.
+
+  \emph{Usage:}
+  \code{tail_offset_data(n)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{n}:   Tail offset.  This moves away from the oldest item.  An offset of 0 reads the oldest element, 1 reads the element added after that.
+    }
+  }
+}
+\item{\code{take_head}}{
+  As for \code{take}, but operating on the head rather than the tail.  This is destructive with respect to the head.
+
+  \emph{Usage:}
+  \code{take_head(n)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{n}:   Number of elements to take.
+    }
+  }
+}
+\item{\code{read_head}}{
+  As for \code{read}, but operating on the head rather than the tail.  This is not destructive with respect to the tail.
+
+  \emph{Usage:}
+  \code{read_head(n)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{n}:   Number of elements to read.
+    }
+  }
+}
+}
+}
 

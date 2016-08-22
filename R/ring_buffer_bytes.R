@@ -4,6 +4,8 @@
 ##' and will be fast, with the limitation that any data transfer
 ##' always involves copies.
 ##'
+##' @template ring_ref
+##'
 ##' @title Byte array based ring buffer
 ##' @param size Size of the buffer, each entry of which will be
 ##'   \code{stride} bytes long.

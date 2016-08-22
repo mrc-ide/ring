@@ -17,3 +17,5 @@
 ^notes\.md$
 ^tests/testthat/ring_standalone$
 ^src/ring.so.dSYM$
+^man-roxygen$
+^autodoc\.R$

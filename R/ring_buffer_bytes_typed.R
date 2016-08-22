@@ -5,6 +5,9 @@
 ##' Note that a logical ring buffer and an integer ring buffer take
 ##' the same number of bytes because a logical vector is stored as an
 ##' integer (4 bytes per element) to deal with missing values.
+##'
+##' @template ring_ref
+##'
 ##' @title Typed bytes buffer
 ##' @param size The maximum number of elements the buffer can hold.
 ##'   Each element will be multiple bytes long.

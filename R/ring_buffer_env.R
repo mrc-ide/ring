@@ -9,6 +9,9 @@
 ##'   overflow silently (that is, the oldest data will be
 ##'   overwritten).  If \code{TRUE}, then on overflow an error will be
 ##'   raised.
+##'
+##' @template ring_ref
+##'
 ##' @export
 ##' @author Rich FitzJohn
 ##' @examples
