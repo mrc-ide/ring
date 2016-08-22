@@ -207,11 +207,6 @@ ring_buffer_env_duplicate <- function(buffer) {
 
     read_head=function(n) {
       ring_buffer_env_read_from_head(self, n)[[1L]]
-    },
-
-    ## This might come out as simply a free S3 method/function
-    to_list=function() {
-      ring_buffer_env_read_from_tail(self, self$used())[[1L]]
     }
   ))
 
@@ -300,4 +295,9 @@ ring_buffer_env_move_backward <- function(x, n) {
     x <- x$.prev
   }
   x
+}
+
+##' @export
+as.list.ring_buffer_env <- function(x, ...) {
+  ring_buffer_env_read_from_tail(x, x$used())[[1L]]
 }

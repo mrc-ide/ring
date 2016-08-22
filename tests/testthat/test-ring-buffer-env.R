@@ -228,5 +228,5 @@ test_that("no overflow", {
   buf$push(1:5)
   expect_error(buf$push(6:11), "Buffer overflow")
   expect_equal(buf$used(), 5)
-  expect_equal(buf$to_list(), as.list(1:5))
+  expect_equal(as.list(buf), as.list(1:5))
 })
