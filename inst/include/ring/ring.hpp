@@ -25,10 +25,10 @@ public:
   size_t tail_pos(bool bytes) const;
   size_t set(data_t c, size_t len);
   size_t set_stride(const void *x, size_t len);
-  const void * push(const void *src, size_t count);
-  const void * take(void *dest, size_t count);
-  const void * read(void *dest, size_t count) const;
-  const void * copy(RingBuffer& dest, size_t count);
+  const void * push(const void *src, size_t n);
+  const void * take(void *dest, size_t n);
+  const void * read(void *dest, size_t n) const;
+  const void * copy(RingBuffer& dest, size_t n);
   const void * tail_offset(size_t offset) const;
   const void * head_offset(size_t offset) const;
 };

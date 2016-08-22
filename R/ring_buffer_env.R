@@ -1,9 +1,21 @@
-##' An environment based ring buffer.  In contrast with the bytes
-##' buffer, this one is truely circular, implemented as a pair of
-##' doubly linked lists.
+##' An environment based ring buffer.  In contrast with
+##' \code{\link{ring_buffer_bytes}}, this ring buffer is truely
+##' circular, implemented as a doubly linked list that loops back on
+##' itself.  Each element of the ring buffer can hold an arbitrary R
+##' object, and no checking is done to make sure that objects are
+##' similar types; in this way they are most similar to a circular
+##' version of an R \code{\link{list}}.  In contrast with
+##' \code{\link{ring_buffer_bytes}}, this ring buffer can optionally
+##' prevent overflows (in addition to preventing underflows).
+##'
+##' For more information and usage examples, see the vignette
+##' (\code{vignette{"ring"}}).
 ##'
 ##' @title Environment-based ring buffer
-##' @param size The number of entries the buffer can contain.
+##'
+##' @param size The (maximum) number of entries the buffer can
+##'   contain.
+##'
 ##' @param prevent_overflow Logial indicating if buffer overflow is
 ##'   not allowed.  If \code{FALSE} (the default) then the buffer will
 ##'   overflow silently (that is, the oldest data will be

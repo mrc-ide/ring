@@ -174,9 +174,9 @@ size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t len);
 
 //// Read and write ////
 
-// Copy `count` entries, each of `stride` bytes from a contiguous
-// memory area src into the ring `buffer`. Returns the ring buffer's
-// new head pointer.
+// Copy `n` entries, each of `stride` bytes from a contiguous memory
+// area src into the ring `buffer`. Returns the ring buffer's new head
+// pointer.
 //
 // It is possible to overflow the buffer with this function
 //
@@ -185,17 +185,16 @@ size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t len);
 //   src: the source memory to copy from (make sure this is big enough
 //           or you will get crashes and other terrible things).
 //
-//   count: the number of entries to copy from `src` into `buffer`
-//           (each of which is `stride` bytes long).
-const void * ring_buffer_push(ring_buffer *buffer, const void *src,
-                              size_t count);
+//   n: the number of entries to copy from `src` into `buffer` (each
+//           of which is `stride` bytes long).
+const void * ring_buffer_push(ring_buffer *buffer, const void *src, size_t n);
 
-// Destructively copy `count` entries (each of which is `stride`
-// bytes) from a ring buffer `buffer` into contiguous memory region
-// `dest`.  This updates the `tail` pointers in the ring buffer and
-// returns the new tail pointer.
+// Destructively copy `n` entries (each of which is `stride` bytes)
+// from a ring buffer `buffer` into contiguous memory region `dest`.
+// This updates the `tail` pointers in the ring buffer and returns the
+// new tail pointer.
 //
-// The `count` entries will no longer be available in the ring buffer.
+// The `n` entries will no longer be available in the ring buffer.
 // To do a nondestructive read, use `ring_buffer_read()`.
 //
 //   buffer: the ring buffer to copy data from
@@ -203,21 +202,19 @@ const void * ring_buffer_push(ring_buffer *buffer, const void *src,
 //   dest: the destination memory to copy into (make sure this is big enough
 //           or you will get crashes and other terrible things).
 //
-//   count: the number of entries to copy from `src` into `buffer`
-//           (each of which is `stride` bytes long).
+//   n: the number of entries to copy from `src` into `buffer` (each
+//           of which is `stride` bytes long).
 //
 // This function will not allow the ring buffer to underflow.  If
-// `count` is greater than the number of available entries, then
+// `n` is greater than the number of available entries, then
 // nothing is copied (and the ring buffer remains unmodified) and NULL
 // is returned.
-const void * ring_buffer_take(ring_buffer *buffer, void *dest,
-                              size_t count);
+const void * ring_buffer_take(ring_buffer *buffer, void *dest, size_t n);
 
 // Nondestructively read from a ring buffer.  This function is
 // essentially identical to `ring_buffer_take` but does not alter the
 // tail pointer.
-const void * ring_buffer_read(const ring_buffer *buffer, void *dest,
-                              size_t count);
+const void * ring_buffer_read(const ring_buffer *buffer, void *dest, size_t n);
 
 // ring_buffer_take_head and ring_buffer_read_head are like
 // ring_buffer_take and ring_buffer_read (respectively) but operate on
@@ -226,19 +223,18 @@ const void * ring_buffer_read(const ring_buffer *buffer, void *dest,
 //
 // Neither will underflow, returning NULL if there are not enough
 // elements, and without copying anything.
-const void * ring_buffer_take_head(ring_buffer *buffer, void *dest,
-                                   size_t count);
+const void * ring_buffer_take_head(ring_buffer *buffer, void *dest, size_t n);
 const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
-                                   size_t count);
+                                   size_t n);
 
-// Copy `count` entries (each of `stride` bytes) from one ring buffer
+// Copy `n` entries (each of `stride` bytes) from one ring buffer
 // `src` into another `dest`.
 //
 //   src: A ring buffer to copy data from
 
 //   dest: A ring buffer to copy data into
 //
-//   count: the number of entries to copy (each of which is `stride` bytes)
+//   n: the number of entries to copy (each of which is `stride` bytes)
 //
 // This is destructive to the data in ring buffer `src`; the tail
 // pointer will be updated.  The function returns the new tail
@@ -250,8 +246,7 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
 //
 // It is possible to overflow `dest` and the tail pointer will be
 // updated appropriately if so.
-const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest,
-                              size_t count);
+const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n);
 
 // Returns a pointer to the tail (reading end) of the buffer, offset
 // by `offset` entries.  When used as `ring_buffer_tail_offset(x, 0)`

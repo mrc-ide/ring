@@ -72,17 +72,17 @@ size_t RingBuffer::set(data_t c, size_t len) {
 size_t RingBuffer::set_stride(const void *x, size_t len) {
   return ring_buffer_set_stride(buffer, x, len);
 }
-const void * RingBuffer::push(const void *src, size_t count) {
-  return ring_buffer_push(buffer, src, count);
+const void * RingBuffer::push(const void *src, size_t n) {
+  return ring_buffer_push(buffer, src, n);
 }
-const void * RingBuffer::take(void *dest, size_t count) {
-  return ring_buffer_take(buffer, dest, count);
+const void * RingBuffer::take(void *dest, size_t n) {
+  return ring_buffer_take(buffer, dest, n);
 }
-const void * RingBuffer::read(void *dest, size_t count) const {
-  return ring_buffer_read(buffer, dest, count);
+const void * RingBuffer::read(void *dest, size_t n) const {
+  return ring_buffer_read(buffer, dest, n);
 }
-const void * RingBuffer::copy(RingBuffer& dest, size_t count) {
-  return ring_buffer_copy(buffer, dest.buffer, count);
+const void * RingBuffer::copy(RingBuffer& dest, size_t n) {
+  return ring_buffer_copy(buffer, dest.buffer, n);
 }
 const void * RingBuffer::tail_offset(size_t offset) const {
   return ring_buffer_tail_offset(buffer, offset);
