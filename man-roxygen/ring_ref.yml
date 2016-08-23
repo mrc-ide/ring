@@ -104,7 +104,7 @@ tail_pos:
       which is the default).
   return: A scalar integer
 
-head_data:
+head:
   short: >-
     Return the contents of the head (the most recently written element
     in the ring buffer).
@@ -115,11 +115,11 @@ head_data:
     \code{ring_buffer_bytes_typed}, a single R object that has been
     translated from raw.
 
-tail_data:
+tail:
   short: >-
     Return the contents of the tail (the least recently written element
     in the ring buffer).
-  value: As for \code{head_data}
+  value: As for \code{head}
 
 set:
   short: >-

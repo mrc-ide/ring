@@ -27,8 +27,8 @@ test_that("push", {
   expect_equal(buf$head_pos(), m)
   expect_equal(buf$tail_pos(), 0L)
 
-  expect_equal(buf$tail_data(), 1)
-  expect_equal(buf$head_data(), m)
+  expect_equal(buf$tail(), 1)
+  expect_equal(buf$head(), m)
 })
 
 test_that("read", {
@@ -80,7 +80,7 @@ test_that("take", {
 
   expect_equal(buf$head_pos(), m)
   expect_equal(buf$tail_pos(), 1L)
-  expect_equal(buf$tail_data(), 2)
+  expect_equal(buf$tail(), 2)
 
   expect_equal(buf$take(m - 1), as.list(2:m))
   expect_equal(buf$head_pos(), m)
@@ -95,7 +95,7 @@ test_that("fill buffer, then overflow", {
   buf$push(1:n)
   expect_true(buf$full())
   expect_equal(buf$used(), n)
-  expect_identical(buf$head, buf$tail)
+  expect_identical(buf$.head, buf$.tail)
 
   expect_equal(buf$head_pos(), 0L) # wrapped...
   expect_equal(buf$tail_pos(), 0L) # hasn't moved yet
@@ -107,7 +107,7 @@ test_that("fill buffer, then overflow", {
   buf$push(n + 1)
   expect_true(buf$full())
   expect_equal(buf$used(), n)
-  expect_identical(buf$head, buf$tail)
+  expect_identical(buf$.head, buf$.tail)
 
   expect_equal(buf$head_pos(), 1L)
   expect_equal(buf$tail_pos(), 1L)
@@ -200,7 +200,7 @@ test_that("destruction", {
     deleted <<- c(deleted, obj$data)
   }
   local({
-    head <- buf$head
+    head <- buf$.head
     for (i in seq_len(buf$size())) {
       reg.finalizer(head, finaliser)
       head <- head$.next

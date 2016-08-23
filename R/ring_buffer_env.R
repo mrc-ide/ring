@@ -81,13 +81,13 @@ ring_buffer_env_duplicate <- function(buffer) {
 
   ## To *truely* duplicate the buffer, we need to advance the pointers
   ## a little.
-  tail <- ret$tail
+  tail <- ret$.tail
   for (i in seq_len(buffer$tail_pos())) {
     tail <- tail$.prev
   }
-  ret$head <- ret$tail <- tail
+  ret$.head <- ret$.tail <- tail
 
-  tail <- buffer$tail
+  tail <- buffer$.tail
   for (i in seq_len(buffer$used())) {
     ret$push(tail$data, FALSE)
     tail <- tail$.next
@@ -105,32 +105,35 @@ ring_buffer_env_duplicate <- function(buffer) {
   cloneable=FALSE,
 
   public=list(
-    buffer=NULL,
-    head=NULL,
-    tail=NULL,
-    prevent_overflow=NULL,
+    ## Making all data members begin with a period; while these still
+    ## print with current R6 print semantics, they hopefully will be
+    ## treated as private by users.
+    .buffer=NULL,
+    .head=NULL,
+    .tail=NULL,
+    .prevent_overflow=NULL,
 
     initialize=function(size, prevent_overflow) {
       assert_scalar_logical(prevent_overflow)
-      self$buffer <- ring_buffer_env_create(size)
-      self$prevent_overflow <- prevent_overflow
+      self$.buffer <- ring_buffer_env_create(size)
+      self$.prevent_overflow <- prevent_overflow
       self$reset()
     },
 
     reset=function() {
-      self$head <- self$buffer
-      self$tail <- self$buffer
-      self$buffer$.used <- 0L
+      self$.head <- self$.buffer
+      self$.tail <- self$.buffer
+      self$.buffer$.used <- 0L
     },
 
     duplicate=function() {
       ring_buffer_env_duplicate(self)
     },
 
-    size=function() self$buffer$.size,
+    size=function() self$.buffer$.size,
     ## bytes_data
     ## stride
-    used=function() self$buffer$.used,
+    used=function() self$.buffer$.used,
     free=function() self$size() - self$used(),
 
     empty=function() self$used() == 0L,
@@ -138,19 +141,19 @@ ring_buffer_env_duplicate <- function(buffer) {
 
     ## Mostly debugging:
     head_pos=function() {
-      ring_buffer_env_distance_forward(self$buffer, self$head)
+      ring_buffer_env_distance_forward(self$.buffer, self$.head)
     },
     tail_pos=function() {
-      ring_buffer_env_distance_forward(self$buffer, self$tail)
+      ring_buffer_env_distance_forward(self$.buffer, self$.tail)
     },
 
-    head_data=function() {
+    head=function() {
       ring_buffer_env_check_underflow(self, 1L)
-      self$head$.prev$data
+      self$.head$.prev$data
     },
-    tail_data=function() {
+    tail=function() {
       ring_buffer_env_check_underflow(self, 1L)
-      self$tail$data
+      self$.tail$data
     },
 
     ## Start getting strong divergence here:
@@ -182,8 +185,8 @@ ring_buffer_env_duplicate <- function(buffer) {
 
     take=function(n) {
       dat <- ring_buffer_env_read_from_tail(self, n)
-      self$tail <- dat[[2L]]
-      self$buffer$.used <- self$buffer$.used - as.integer(n)
+      self$.tail <- dat[[2L]]
+      self$.buffer$.used <- self$.buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
@@ -193,30 +196,30 @@ ring_buffer_env_duplicate <- function(buffer) {
       ring_buffer_env_check_underflow(self, n)
       ring_buffer_env_check_overflow(dest, n)
 
-      tail <- self$tail
+      tail <- self$.tail
       for (i in seq_len(n)) {
         dest$push(tail$data)
         tail <- tail$.next
       }
 
-      self$tail <- tail
-      self$buffer$.used <- self$buffer$.used - as.integer(n)
+      self$.tail <- tail
+      self$.buffer$.used <- self$.buffer$.used - as.integer(n)
     },
 
     head_offset=function(n) {
       ring_buffer_env_check_underflow(self, n + 1L)
-      ring_buffer_env_move_backward(self$head$.prev, n)$data
+      ring_buffer_env_move_backward(self$.head$.prev, n)$data
     },
     tail_offset=function(n) {
       ring_buffer_env_check_underflow(self, n + 1L)
-      ring_buffer_env_move_forward(self$tail, n)$data
+      ring_buffer_env_move_forward(self$.tail, n)$data
     },
 
     ## This is the unusual direction...
     take_head=function(n) {
       dat <- ring_buffer_env_read_from_head(self, n)
-      self$head <- dat[[2L]]
-      self$buffer$.used <- self$buffer$.used - as.integer(n)
+      self$.head <- dat[[2L]]
+      self$.buffer$.used <- self$.buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
@@ -227,7 +230,7 @@ ring_buffer_env_duplicate <- function(buffer) {
 
 ring_buffer_env_read_from_tail <- function(buf, n) {
   ring_buffer_env_check_underflow(buf, n)
-  tail <- buf$tail
+  tail <- buf$.tail
   ret <- vector("list", n)
   for (i in seq_len(n)) {
     ret[[i]] <- tail$data
@@ -238,7 +241,7 @@ ring_buffer_env_read_from_tail <- function(buf, n) {
 
 ring_buffer_env_read_from_head <- function(buf, n) {
   ring_buffer_env_check_underflow(buf, n)
-  head <- buf$head
+  head <- buf$.head
 
   ret <- vector("list", n)
   for (i in seq_len(n)) {
@@ -249,18 +252,18 @@ ring_buffer_env_read_from_head <- function(buf, n) {
 }
 
 ring_buffer_env_write_to_head <- function(buf, data) {
-  n <- buf$buffer$.used
+  n <- buf$.buffer$.used
   full <- n == buf$size()
-  if (full && buf$prevent_overflow) {
+  if (full && buf$.prevent_overflow) {
     stop("Buffer overflow")
   }
 
-  buf$head$data <- data
-  buf$head <- buf$head$.next
+  buf$.head$data <- data
+  buf$.head <- buf$.head$.next
   if (full) {
-    buf$tail <- buf$tail$.next
+    buf$.tail <- buf$.tail$.next
   } else {
-    buf$buffer$.used <- n + 1L
+    buf$.buffer$.used <- n + 1L
   }
 }
 
@@ -274,7 +277,7 @@ ring_buffer_env_check_underflow <- function(obj, requested) {
 
 ring_buffer_env_check_overflow <- function(obj, requested) {
   ## TODO: Perhaps an S3 condition?
-  if (obj$prevent_overflow && requested > obj$free()) {
+  if (obj$.prevent_overflow && requested > obj$free()) {
     stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
                  requested, obj$free()))
   }

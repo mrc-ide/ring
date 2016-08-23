@@ -17,7 +17,7 @@ test_that("empty", {
   expect_equal(buf$free(FALSE), 100L)
   expect_equal(buf$free(), 100L)
 
-  expect_equal(buf$buffer_data(), raw(505))
+  expect_equal(buf$data(), raw(505))
   expect_equal(buf$bytes_data(), 505L)
 
   expect_equal(buf$head_pos(TRUE), 0L)
@@ -57,7 +57,7 @@ test_that("set", {
   expect_equal(buf$free(FALSE), size - n)
   expect_equal(buf$free(), size - n)
 
-  expect_equal(buf$buffer_data(),
+  expect_equal(buf$data(),
                pad(as.raw(rep(1, n * stride)), (size + 1) * stride))
   expect_equal(buf$bytes_data(), (size + 1) * stride)
 
@@ -128,28 +128,28 @@ test_that("set", {
 test_that("incorrect push", {
   buf <- ring_buffer_bytes(100, 5)
   expect_error(buf$push(as.raw(rep(1, 3))), "Incorrect size data")
-  expect_true(all(buf$buffer_data() == as.raw(0L)))
+  expect_true(all(buf$data() == as.raw(0L)))
 })
 
 test_that("set with vector", {
   s <- 5L
   buf <- ring_buffer_bytes(100, s)
-  expect_true(all(buf$buffer_data() == as.raw(0)))
+  expect_true(all(buf$data() == as.raw(0)))
   pat <- random_bytes(s)
   expect_equal(buf$set(pat, 1), 1)
 
-  expect_equal(buf$buffer_data(), pad(pat, buf$size(TRUE) + s))
+  expect_equal(buf$data(), pad(pat, buf$size(TRUE) + s))
 
   pat2 <- random_bytes(s)
   expect_equal(buf$set(pat2, 20), 20)
 
-  expect_equal(buf$buffer_data(),
+  expect_equal(buf$data(),
                pad(c(pat, rep(pat2, 20)), buf$size(TRUE) + s))
 
   pat3 <- random_bytes(s)
   expect_equal(buf$set(pat3, 85), 85)
 
-  buf$buffer_data()
+  buf$data()
 
   expect_equal(buf$read(100), c(rep(pat2, 15), rep(pat3, 85)))
 
@@ -185,7 +185,7 @@ test_that("overflow works (push)", {
   expect_equal(buf$free(TRUE), 0)
 
   ## All the data is still in here :)
-  expect_equal(buf$buffer_data(), c(d1, d2))
+  expect_equal(buf$data(), c(d1, d2))
 
   expect_equal(buf$head_pos(), 0) # ready to write to the beginning
   expect_equal(buf$tail_pos(), 1) # ready to read from position 1
@@ -217,7 +217,7 @@ test_that("overflow works (set)", {
   expect_equal(buf$free(TRUE), 0)
 
   ## All the data is still in here :)
-  expect_equal(buf$buffer_data(), rep(c(d1, d2), c(1, size) * stride))
+  expect_equal(buf$data(), rep(c(d1, d2), c(1, size) * stride))
 
   expect_equal(buf$head_pos(), 0) # ready to write to the beginning
   expect_equal(buf$tail_pos(), 1) # ready to read from position 1

@@ -23,7 +23,7 @@ test_that("basic", {
     expect_equal(buf$used(), 1)
     expect_equal(buf$used(TRUE), n * sizes[[type]])
 
-    expect_identical(buf$tail_data(), x1)
+    expect_identical(buf$tail(), x1)
     expect_identical(buf$tail_offset(0), x1)
 
     expect_equal(buf$head_pos(), 1)

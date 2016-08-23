@@ -148,23 +148,23 @@ differences between implementations will be a bit more apparent.
     }
   }
 }
-\item{\code{head_data}}{
+\item{\code{head}}{
   Return the contents of the head (the most recently written element in the ring buffer).
 
   \emph{Usage:}
-  \code{head_data()}
+  \code{head()}
 
   \emph{Value}:
   It depends a little here.  For \code{ring_buffer_env} this is a single R object.  For \code{ring_buffer_bytes} it is a raw vector, the same length as the stride of the ring buffer.  For \code{ring_buffer_bytes_typed}, a single R object that has been translated from raw.
 }
-\item{\code{tail_data}}{
+\item{\code{tail}}{
   Return the contents of the tail (the least recently written element in the ring buffer).
 
   \emph{Usage:}
-  \code{tail_data()}
+  \code{tail()}
 
   \emph{Value}:
-  As for \code{head_data}
+  As for \code{head}
 }
 \item{\code{set}}{
   Set a number of ring entries to the same value.  The exact behaviour here varies depending on the type of ring buffer.  This function may overflow the ring buffer; in this case the tail will be moved.

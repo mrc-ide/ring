@@ -116,17 +116,17 @@ will get an error:
 buf$read(20)
 ```
 
-If you just want the the first element, use `tail_data()`
+If you just want the the first element, use `tail()`
 ``` {r }
-buf$tail_data()
+buf$tail()
 ```
 
 The tail returns the first element in (so the buffer naturally
 operates as a first-in-first-out queue).
 
-You can also read the most recently added element with `head_data()`
+You can also read the most recently added element with `head()`
 ``` {r }
-buf$head_data()
+buf$head()
 ```
 
 And you can offset these by an integer number of steps.  So moving
@@ -152,10 +152,10 @@ buf$take(1)
 buf$free()
 ```
 
-Now we have consumed an element the tail has moved along, so
-`tail_data` contains "b" and "a" is removed from the buffer:
+Now we have consumed an element the tail has moved along, so `tail`
+contains "b" and "a" is removed from the buffer:
 ``` {r }
-buf$tail_data()
+buf$tail()
 ```
 
 To reset the buffer, use `reset()`.  This empies the buffer of all data:

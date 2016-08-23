@@ -94,14 +94,14 @@ buf$read(2)
 ##+ error=TRUE
 buf$read(20)
 
-## If you just want the the first element, use `tail_data()`
-buf$tail_data()
+## If you just want the the first element, use `tail()`
+buf$tail()
 
 ## The tail returns the first element in (so the buffer naturally
 ## operates as a first-in-first-out queue).
 
-## You can also read the most recently added element with `head_data()`
-buf$head_data()
+## You can also read the most recently added element with `head()`
+buf$head()
 
 ## And you can offset these by an integer number of steps.  So moving
 ## one position into the buffer from the tail gets the second element
@@ -120,9 +120,9 @@ buf$free()
 buf$take(1)
 buf$free()
 
-## Now we have consumed an element the tail has moved along, so
-## `tail_data` contains "b" and "a" is removed from the buffer:
-buf$tail_data()
+## Now we have consumed an element the tail has moved along, so `tail`
+## contains "b" and "a" is removed from the buffer:
+buf$tail()
 
 ## To reset the buffer, use `reset()`.  This empies the buffer of all data:
 buf$reset()

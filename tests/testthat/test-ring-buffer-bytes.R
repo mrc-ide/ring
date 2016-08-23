@@ -55,8 +55,8 @@ test_that("initial conditions", {
   expect_equal(buf$head_pos(), 0L)
   expect_equal(buf$tail_pos(), 0L)
 
-  expect_error(buf$head_data(), "Buffer is empty")
-  expect_error(buf$tail_data(), "Buffer is empty")
+  expect_error(buf$head(), "Buffer is empty")
+  expect_error(buf$tail(), "Buffer is empty")
   expect_null(buf$reset())
 
   expect_error(buf$take(10L), "Buffer underflow")
@@ -114,7 +114,7 @@ test_that("set a few bytes", {
   expect_false(buf$full())
   expect_false(buf$empty())
 
-  expect_equal(buf$buffer_data(),
+  expect_equal(buf$data(),
                pad(rep(as.raw(57), 7), size + 1))
 })
 
@@ -128,7 +128,7 @@ test_that("set full capacity", {
   expect_equal(buf$used(), buf$size())
   expect_true(buf$full())
   expect_false(buf$empty())
-  expect_equal(buf$buffer_data(), pad(as.raw(rep(57, size)), size + 1))
+  expect_equal(buf$data(), pad(as.raw(rep(57, size)), size + 1))
 })
 
 test_that("set, twice", {
@@ -145,7 +145,7 @@ test_that("set, twice", {
   expect_false(rb1$full())
   expect_false(rb1$empty())
 
-  expect_equal(rb1$buffer_data(),
+  expect_equal(rb1$data(),
                pad(rep(as.raw(57), 7 + 15), size + 1))
 })
 
@@ -161,7 +161,7 @@ test_that("set, twice, to full capacity", {
   expect_equal(rb1$used(), size)
   expect_true(rb1$full())
   expect_false(rb1$empty())
-  expect_equal(rb1$buffer_data(), pad(rep(as.raw(57), size), size + 1))
+  expect_equal(rb1$data(), pad(rep(as.raw(57), size), size + 1))
 })
 
 test_that("ring_buffer_set, overflow by 1 byte", {
@@ -180,7 +180,7 @@ test_that("ring_buffer_set, overflow by 1 byte", {
   expect_equal(rb1$head_pos(), 0)
   ## tail should have bumped forward by 1 byte
   expect_equal(rb1$tail_pos(), 1L)
-  expect_equal(rb1$buffer_data(), repr(57, size + 1))
+  expect_equal(rb1$data(), repr(57, size + 1))
 })
 
 test_that("ring_buffer_set, twice (overflow by 1 byte on 2nd copy)", {
@@ -200,7 +200,7 @@ test_that("ring_buffer_set, twice (overflow by 1 byte on 2nd copy)", {
   ## tail should have bumped forward by 1 byte
   expect_equal(rb1$tail_pos(), 1L)
 
-  expect_equal(rb1$buffer_data(), repr(57, size + 1))
+  expect_equal(rb1$data(), repr(57, size + 1))
 })
 
 test_that("ring_buffer_set, twice with oveflow", {
@@ -219,7 +219,7 @@ test_that("ring_buffer_set, twice with oveflow", {
   expect_false(rb1$empty())
   expect_equal(rb1$head_pos(), 0L)
   expect_equal(rb1$tail_pos(), 1L)
-  expect_equal(rb1$buffer_data(), repr(57, size + 1))
+  expect_equal(rb1$data(), repr(57, size + 1))
 })
 
 test_that("ring_buffer_set, twice, overflowing both times", {
@@ -236,7 +236,7 @@ test_that("ring_buffer_set, twice, overflowing both times", {
   expect_false(rb1$empty())
   expect_equal(rb1$head_pos(), 0L)
   expect_equal(rb1$tail_pos(), 1L)
-  expect_equal(rb1$buffer_data(), repr(58, size + 1))
+  expect_equal(rb1$data(), repr(58, size + 1))
 })
 
 test_that("ring_buffer_push with zero count", {
@@ -254,7 +254,7 @@ test_that("ring_buffer_push with zero count", {
   expect_true(rb1$empty())
   expect_equal(rb1$tail_pos(), rb1$head_pos())
 
-  expect_equal(rb1$buffer_data(), repr(1, size + 1))
+  expect_equal(rb1$data(), repr(1, size + 1))
 })
 
 test_that("ring_buffer_push a few bytes of data", {
@@ -275,7 +275,7 @@ test_that("ring_buffer_push a few bytes of data", {
   expect_false(rb1$full())
   expect_false(rb1$empty())
 
-  expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
+  expect_equal(rb1$data(), pad(bytes, size + 1, 1))
 })
 
 test_that("ring_buffer_push full capacity", {
@@ -298,7 +298,7 @@ test_that("ring_buffer_push full capacity", {
 
   ## NOTE: I'm a bit confused about this, though, the data doesn't
   ## seem quite what I'd expect for the buffer to hold.
-  res <- rb1$buffer_data()
+  res <- rb1$data()
   i <- rb1$tail_pos()
   expect_equal(i, 1L)
   j <- seq_len(i)
@@ -326,9 +326,9 @@ test_that("ring_buffer_push, twice", {
 
   expect_equal(rb1$read(length(bytes) * 2),
                rep(bytes, 2))
-  expect_equal(rb1$buffer_data(),
+  expect_equal(rb1$data(),
                pad(rep(bytes, 2), size + 1, 1))
-  expect_equal(rb1$head_data(), as.raw(1))
+  expect_equal(rb1$head(), as.raw(1))
 })
 
 test_that("ring_buffer_push, twice (to full capacity)", {
@@ -351,7 +351,7 @@ test_that("ring_buffer_push, twice (to full capacity)", {
   expect_true(rb1$full())
   expect_false(rb1$empty())
 
-  expect_equal(head(rb1$buffer_data(), size), bytes)
+  expect_equal(head(rb1$data(), size), bytes)
 })
 
 test_that("ring_buffer_push, overflow by 1 byte", {
@@ -494,7 +494,7 @@ test_that("ring_buffer_take a few bytes of data", {
   expect_equal(rb1$head_pos(),
                rb1$tail_pos() + (length(bytes) - 3L))
   expect_equal(rb1$read(length(bytes) - 3L), bytes[-(1:3)])
-  expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
+  expect_equal(rb1$data(), pad(bytes, size + 1, 1))
 })
 
 test_that("ring_buffer_take full capacity", {
@@ -623,7 +623,7 @@ test_that("ring_buffer_push followed by ring_buffer_take", {
   expect_false(rb1$full())
   expect_true(rb1$empty())
 
-  expect_equal(rb1$buffer_data(), pad(bytes, size + 1, 1))
+  expect_equal(rb1$data(), pad(bytes, size + 1, 1))
   expect_equal(rb1$tail_pos(), length(bytes))
   expect_equal(rb1$tail_pos(), rb1$head_pos())
 })

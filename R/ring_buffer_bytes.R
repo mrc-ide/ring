@@ -22,70 +22,70 @@ ring_buffer_bytes <- function(size, stride=1L) {
   cloneable=FALSE,
 
   public=list(
-    ptr=NULL,
+    .ptr=NULL,
 
     initialize=function(size, stride, ptr=NULL) {
       if (is.null(ptr)) {
-        self$ptr <- .Call(Cring_buffer_create, size, stride)
+        self$.ptr <- .Call(Cring_buffer_create, size, stride)
       } else {
-        self$ptr <- ptr
+        self$.ptr <- ptr
       }
     },
 
-    reset=function() .Call(Cring_buffer_reset, self$ptr),
+    reset=function() .Call(Cring_buffer_reset, self$.ptr),
 
     ## NOTE: duplicate is not implemented like the typical R6 clone
     ## method because we need a deep clone here but I don't want a
     ## private set of methods.  Instead we create a clone of the
     ## data and return a brand new instance of the class.
     duplicate=function() {
-      .R6_ring_buffer_bytes$new(ptr=.Call(Cring_buffer_clone, self$ptr))
+      .R6_ring_buffer_bytes$new(ptr=.Call(Cring_buffer_clone, self$.ptr))
     },
 
-    size=function(bytes=FALSE) .Call(Cring_buffer_size, self$ptr, bytes),
-    bytes_data=function() .Call(Cring_buffer_bytes_data, self$ptr),
-    stride=function() .Call(Cring_buffer_stride, self$ptr),
+    size=function(bytes=FALSE) .Call(Cring_buffer_size, self$.ptr, bytes),
+    bytes_data=function() .Call(Cring_buffer_bytes_data, self$.ptr),
+    stride=function() .Call(Cring_buffer_stride, self$.ptr),
 
-    used=function(bytes=FALSE) .Call(Cring_buffer_used, self$ptr, bytes),
-    free=function(bytes=FALSE) .Call(Cring_buffer_free, self$ptr, bytes),
+    used=function(bytes=FALSE) .Call(Cring_buffer_used, self$.ptr, bytes),
+    free=function(bytes=FALSE) .Call(Cring_buffer_free, self$.ptr, bytes),
 
-    empty=function() .Call(Cring_buffer_empty, self$ptr),
-    full=function() .Call(Cring_buffer_full, self$ptr),
+    empty=function() .Call(Cring_buffer_empty, self$.ptr),
+    full=function() .Call(Cring_buffer_full, self$.ptr),
 
     head_pos=function(bytes=FALSE) {
-      .Call(Cring_buffer_head_pos, self$ptr, bytes)
+      .Call(Cring_buffer_head_pos, self$.ptr, bytes)
     },
     tail_pos=function(bytes=FALSE) {
-      .Call(Cring_buffer_tail_pos, self$ptr, bytes)
+      .Call(Cring_buffer_tail_pos, self$.ptr, bytes)
     },
 
-    head_data=function() .Call(Cring_buffer_head, self$ptr),
-    tail_data=function() .Call(Cring_buffer_tail, self$ptr),
-    buffer_data=function() .Call(Cring_buffer_data, self$ptr),
+    head=function() .Call(Cring_buffer_head, self$.ptr),
+    tail=function() .Call(Cring_buffer_tail, self$.ptr),
+    data=function() .Call(Cring_buffer_data, self$.ptr),
 
     set=function(data, n) {
-      invisible(.Call(Cring_buffer_set, self$ptr, as.raw(data), n))
+      invisible(.Call(Cring_buffer_set, self$.ptr, as.raw(data), n))
     },
     push=function(data) {
-      invisible(.Call(Cring_buffer_push, self$ptr, as.raw(data)))
+      invisible(.Call(Cring_buffer_push, self$.ptr, as.raw(data)))
     },
-    take=function(n) .Call(Cring_buffer_take, self$ptr, n),
-    read=function(n) .Call(Cring_buffer_read, self$ptr, n),
+    take=function(n) .Call(Cring_buffer_take, self$.ptr, n),
+    read=function(n) .Call(Cring_buffer_read, self$.ptr, n),
 
     copy=function(dest, n) {
       if (!inherits(dest, "ring_buffer_bytes")) {
         stop("'dest' must be a 'ring_buffer_bytes'")
       }
-      .Call(Cring_buffer_copy, self$ptr, dest$ptr, n)
+      .Call(Cring_buffer_copy, self$.ptr, dest$.ptr, n)
     },
 
     ## Nondestructive:
-    head_offset=function(n) .Call(Cring_buffer_head_offset, self$ptr, n),
-    tail_offset=function(n) .Call(Cring_buffer_tail_offset, self$ptr, n),
+    head_offset=function(n) .Call(Cring_buffer_head_offset, self$.ptr, n),
+    tail_offset=function(n) .Call(Cring_buffer_tail_offset, self$.ptr, n),
 
     ## Unusual direction:
-    take_head=function(n) .Call(Cring_buffer_take_head, self$ptr, n),
-    read_head=function(n) .Call(Cring_buffer_read_head, self$ptr, n)
+    take_head=function(n) .Call(Cring_buffer_take_head, self$.ptr, n),
+    read_head=function(n) .Call(Cring_buffer_read_head, self$.ptr, n)
   ))
 
 ## This is used in ring_buffer_typed but is not itself exported yet.
@@ -114,11 +114,11 @@ ring_buffer_bytes <- function(size, stride=1L) {
 
     duplicate=function() {
       .R6_ring_buffer_bytes_typed$new(
-        NULL, self$stride(), self$to, self$from, self$type, self$ptr)
+        NULL, self$stride(), self$to, self$from, self$type, self$.ptr)
     },
 
-    head_data=function() self$from(super$head_data()),
-    tail_data=function() self$from(super$tail_data()),
+    head=function() self$from(super$head()),
+    tail=function() self$from(super$tail()),
     set=function(data) super$push(self$to(data)),
     push=function(data) super$push(self$to(data)),
     take=function(n) self$from(super$take(n)),
