@@ -1,20 +1,13 @@
-#include <ring/ring.h>
-#include <R.h>
-#include <Rinternals.h>
-#include "convert.h"
+#include "ring_r.h"
 
+// Internal prototypes:
+SEXP R_ring_buffer_alloc(ring_buffer *buffer);
 static void ring_buffer_finalize(SEXP extPtr);
 ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error);
 bool scalar_logical(SEXP x);
 size_t scalar_size(SEXP x);
 
-SEXP R_ring_buffer_build(ring_buffer *buffer) {
-  SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));
-  R_RegisterCFinalizer(extPtr, ring_buffer_finalize);
-  UNPROTECT(1);
-  return extPtr;
-}
-
+// Definitions:
 SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride) {
   size_t size = (size_t)scalar_size(r_size),
     stride = scalar_size(r_stride);
@@ -24,12 +17,12 @@ SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride) {
   if (stride == 0) {
     Rf_error("Can't create ring buffer with stride 0");
   }
-  return R_ring_buffer_build(ring_buffer_create(size, stride));
+  return R_ring_buffer_alloc(ring_buffer_create(size, stride));
 }
 
 SEXP R_ring_buffer_clone(SEXP extPtr) {
   ring_buffer *prev = ring_buffer_get(extPtr, true);
-  return R_ring_buffer_build(ring_buffer_clone(prev));
+  return R_ring_buffer_alloc(ring_buffer_clone(prev));
 }
 
 SEXP R_ring_buffer_size(SEXP extPtr, SEXP bytes) {
@@ -53,7 +46,7 @@ SEXP R_ring_buffer_empty(SEXP extPtr) {
   return ScalarLogical(ring_buffer_empty(ring_buffer_get(extPtr, true)));
 }
 
-SEXP R_ring_buffer_head_data(SEXP extPtr) {
+SEXP R_ring_buffer_head(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   if (ring_buffer_empty(buffer)) {
     Rf_error("Buffer is empty");
@@ -64,7 +57,7 @@ SEXP R_ring_buffer_head_data(SEXP extPtr) {
   return ret;
 }
 
-SEXP R_ring_buffer_tail_data(SEXP extPtr) {
+SEXP R_ring_buffer_tail(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   if (ring_buffer_empty(buffer)) {
     Rf_error("Buffer is empty");
@@ -75,7 +68,7 @@ SEXP R_ring_buffer_tail_data(SEXP extPtr) {
   return ret;
 }
 
-SEXP R_ring_buffer_buffer_data(SEXP extPtr) {
+SEXP R_ring_buffer_data(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   size_t len = buffer->bytes_data;
   SEXP ret = PROTECT(allocVector(RAWSXP, len));
@@ -232,6 +225,14 @@ SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_n) {
   return ScalarInteger(head - dest->data);
 }
 
+// Allocation and finalisation:
+SEXP R_ring_buffer_alloc(ring_buffer *buffer) {
+  SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));
+  R_RegisterCFinalizer(extPtr, ring_buffer_finalize);
+  UNPROTECT(1);
+  return extPtr;
+}
+
 void ring_buffer_finalize(SEXP extPtr) {
   ring_buffer *buffer = ring_buffer_get(extPtr, false);
   if (buffer) {
@@ -240,7 +241,7 @@ void ring_buffer_finalize(SEXP extPtr) {
   }
 }
 
-// Some utilities
+// Some utilities:
 ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error) {
   ring_buffer *buffer = NULL;
   if (TYPEOF(extPtr) != EXTPTRSXP) {
@@ -279,46 +280,4 @@ size_t scalar_size(SEXP x) {
     Rf_error("Expected a nonnegative scalar integer");
     return 0;
   }
-}
-
-// Registration
-
-#include <R_ext/Rdynload.h>
-static const R_CallMethodDef callMethods[] = {
-  {"Cring_buffer_create",      (DL_FUNC) &R_ring_buffer_create,      2},
-  {"Cring_buffer_clone",       (DL_FUNC) &R_ring_buffer_clone,       1},
-  {"Cring_buffer_bytes_data",  (DL_FUNC) &R_ring_buffer_bytes_data,  1},
-  {"Cring_buffer_size",        (DL_FUNC) &R_ring_buffer_size,        2},
-  {"Cring_buffer_stride",      (DL_FUNC) &R_ring_buffer_stride,      1},
-  {"Cring_buffer_full",        (DL_FUNC) &R_ring_buffer_full,        1},
-  {"Cring_buffer_empty",       (DL_FUNC) &R_ring_buffer_empty,       1},
-  {"Cring_buffer_head_data",   (DL_FUNC) &R_ring_buffer_head_data,   1},
-  {"Cring_buffer_tail_data",   (DL_FUNC) &R_ring_buffer_tail_data,   1},
-  {"Cring_buffer_buffer_data", (DL_FUNC) &R_ring_buffer_buffer_data, 1},
-  {"Cring_buffer_head_pos",    (DL_FUNC) &R_ring_buffer_head_pos,    2},
-  {"Cring_buffer_tail_pos",    (DL_FUNC) &R_ring_buffer_tail_pos,    2},
-  {"Cring_buffer_free",        (DL_FUNC) &R_ring_buffer_free,        2},
-  {"Cring_buffer_used",        (DL_FUNC) &R_ring_buffer_used,        2},
-  {"Cring_buffer_reset",       (DL_FUNC) &R_ring_buffer_reset,       1},
-  {"Cring_buffer_set",         (DL_FUNC) &R_ring_buffer_set,         3},
-  {"Cring_buffer_push",        (DL_FUNC) &R_ring_buffer_push,        2},
-  {"Cring_buffer_take",        (DL_FUNC) &R_ring_buffer_take,        2},
-  {"Cring_buffer_read",        (DL_FUNC) &R_ring_buffer_read,        2},
-  {"Cring_buffer_take_head",   (DL_FUNC) &R_ring_buffer_take_head,   2},
-  {"Cring_buffer_read_head",   (DL_FUNC) &R_ring_buffer_read_head,   2},
-  {"Cring_buffer_copy",        (DL_FUNC) &R_ring_buffer_copy,        3},
-  {"Cring_buffer_tail_offset", (DL_FUNC) &R_ring_buffer_tail_offset, 2},
-  {"Cring_buffer_head_offset", (DL_FUNC) &R_ring_buffer_head_offset, 2},
-  // conversion code
-  {"Cint_to_bytes",              (DL_FUNC) &int_to_bytes,            1},
-  {"Cbytes_to_int",              (DL_FUNC) &bytes_to_int,            1},
-  {"Cdouble_to_bytes",           (DL_FUNC) &double_to_bytes,         1},
-  {"Cbytes_to_double",           (DL_FUNC) &bytes_to_double,         1},
-  {"Ccomplex_to_bytes",          (DL_FUNC) &complex_to_bytes,        1},
-  {"Cbytes_to_complex",          (DL_FUNC) &bytes_to_complex,        1},
-  {NULL,                         NULL,                               0}
-};
-
-void R_init_ring(DllInfo *info) {
-  R_registerRoutines(info, NULL, callMethods, NULL, NULL);
 }

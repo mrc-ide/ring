@@ -59,9 +59,9 @@ ring_buffer_bytes <- function(size, stride=1L) {
       .Call(Cring_buffer_tail_pos, self$ptr, bytes)
     },
 
-    head_data=function() .Call(Cring_buffer_head_data, self$ptr),
-    tail_data=function() .Call(Cring_buffer_tail_data, self$ptr),
-    buffer_data=function() .Call(Cring_buffer_buffer_data, self$ptr),
+    head_data=function() .Call(Cring_buffer_head, self$ptr),
+    tail_data=function() .Call(Cring_buffer_tail, self$ptr),
+    buffer_data=function() .Call(Cring_buffer_data, self$ptr),
 
     set=function(data, n) {
       invisible(.Call(Cring_buffer_set, self$ptr, as.raw(data), n))
