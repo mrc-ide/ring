@@ -228,7 +228,8 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
                                    size_t n);
 
 // Copy `n` entries (each of `stride` bytes) from one ring buffer
-// `src` into another `dest`.
+// `src` into another `dest`.  The copy starts at the tail of this
+// ring buffer, pushing onto the head of the destination buffer.
 //
 //   src: A ring buffer to copy data from
 
@@ -236,9 +237,10 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
 //
 //   n: the number of entries to copy (each of which is `stride` bytes)
 //
-// This is destructive to the data in ring buffer `src`; the tail
-// pointer will be updated.  The function returns the new tail
-// pointer.
+// This is destructive to both buffers as pointers will be updated in
+// both.
+//
+// This function returns the new head pointer of the destination buffer.
 //
 // It is not possible to underflow `src`; if too few entries are
 // available, then nothing is copied, `src` and `dest` are not
@@ -246,6 +248,9 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
 //
 // It is possible to overflow `dest` and the tail pointer will be
 // updated appropriately if so.
+//
+// Warning: the two buffers must have the same stride, but this is not
+// checked.
 const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n);
 
 // Returns a pointer to the tail (reading end) of the buffer, offset
