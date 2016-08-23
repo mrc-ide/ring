@@ -7,7 +7,8 @@
 ring_buffer_env(size, prevent_overflow = FALSE)
 }
 \arguments{
-\item{size}{The number of entries the buffer can contain.}
+\item{size}{The (maximum) number of entries the buffer can
+contain.}
 
 \item{prevent_overflow}{Logial indicating if buffer overflow is
 not allowed.  If \code{FALSE} (the default) then the buffer will
@@ -16,9 +17,19 @@ overwritten).  If \code{TRUE}, then on overflow an error will be
 raised.}
 }
 \description{
-An environment based ring buffer.  In contrast with the bytes
-buffer, this one is truely circular, implemented as a pair of
-doubly linked lists.
+An environment based ring buffer.  In contrast with
+\code{\link{ring_buffer_bytes}}, this ring buffer is truely
+circular, implemented as a doubly linked list that loops back on
+itself.  Each element of the ring buffer can hold an arbitrary R
+object, and no checking is done to make sure that objects are
+similar types; in this way they are most similar to a circular
+version of an R \code{\link{list}}.  In contrast with
+\code{\link{ring_buffer_bytes}}, this ring buffer can optionally
+prevent overflows (in addition to preventing underflows).
+}
+\details{
+For more information and usage examples, see the vignette
+(\code{vignette{"ring"}}).
 }
 \section{Methods}{
 
@@ -250,11 +261,11 @@ differences between implementations will be a bit more apparent.
     }
   }
 }
-\item{\code{head_offset_data}}{
+\item{\code{head_offset}}{
   Nondestructively read the contents of the \code{head} of the buffer, offset by \code{n} entries.
 
   \emph{Usage:}
-  \code{head_offset_data(n)}
+  \code{head_offset(n)}
 
   \emph{Arguments:}
   \itemize{
@@ -262,11 +273,11 @@ differences between implementations will be a bit more apparent.
     }
   }
 }
-\item{\code{tail_offset_data}}{
+\item{\code{tail_offset}}{
   Nondestructively read the contents of the \code{tail} of the buffer, offset by \code{n} entries.
 
   \emph{Usage:}
-  \code{tail_offset_data(n)}
+  \code{tail_offset(n)}
 
   \emph{Arguments:}
   \itemize{

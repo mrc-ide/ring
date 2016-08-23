@@ -105,7 +105,7 @@ ring_matrix_get <- function(x, i=NULL) {
     ## version.  But probably also worth doing this over unique values
     ## of i?
     for (j in seq_along(i)) {
-      ret[j, ] <- x$buf$tail_offset_data(i[[j]] - 1L)
+      ret[j, ] <- x$buf$tail_offset(i[[j]] - 1L)
     }
   }
 

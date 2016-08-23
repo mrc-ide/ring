@@ -77,9 +77,9 @@ test_that("set", {
                "Buffer underflow")
 
   ## And check the tail offset works as expected
-  expect_equal(buf$tail_offset_data(0), as.raw(rep(1, stride)))
-  expect_equal(buf$tail_offset_data(n - 1), as.raw(rep(1, stride)))
-  expect_error(buf$tail_offset_data(n),
+  expect_equal(buf$tail_offset(0), as.raw(rep(1, stride)))
+  expect_equal(buf$tail_offset(n - 1), as.raw(rep(1, stride)))
+  expect_error(buf$tail_offset(n),
                "Buffer underflow")
 
   ## Then, destructive modification: read a set of bytes:
@@ -103,9 +103,9 @@ test_that("set", {
   expect_equal(buf$free(TRUE), (size - n + 1) * stride)
   expect_equal(buf$free(FALSE), size - n + 1)
 
-  expect_equal(buf$tail_offset_data(0), as.raw(rep(1, stride)))
-  expect_equal(buf$tail_offset_data(n - 2), as.raw(rep(1, stride)))
-  expect_error(buf$tail_offset_data(n - 1),
+  expect_equal(buf$tail_offset(0), as.raw(rep(1, stride)))
+  expect_equal(buf$tail_offset(n - 2), as.raw(rep(1, stride)))
+  expect_error(buf$tail_offset(n - 1),
                "Buffer underflow")
 
   ## Read the rest:

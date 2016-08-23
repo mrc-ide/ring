@@ -209,7 +209,7 @@ copy:
     dest: The destination ring buffer
     n: The number of elements to copy
 
-head_offset_data:
+head_offset:
   short: >-
     Nondestructively read the contents of the \code{head} of the
     buffer, offset by \code{n} entries.
@@ -219,7 +219,7 @@ head_offset_data:
       An offset of 0 reads the most recently added element, 1 reads
       the element added before that.
 
-tail_offset_data:
+tail_offset:
   short: >-
     Nondestructively read the contents of the \code{tail} of the
     buffer, offset by \code{n} entries.

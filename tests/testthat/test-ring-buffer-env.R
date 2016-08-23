@@ -42,28 +42,28 @@ test_that("read", {
   expect_error(buf$read(m + 1), "Buffer underflow")
 })
 
-test_that("tail_offset_data", {
+test_that("tail_offset", {
   n <- 10
   buf <- ring_buffer_env(10)
   m <- 4
   buf$push(1:m)
 
-  expect_equal(buf$tail_offset_data(0), 1L)
-  expect_equal(buf$tail_offset_data(1), 2L)
-  expect_equal(buf$tail_offset_data(m - 1), m)
-  expect_error(buf$tail_offset_data(m), "Buffer underflow")
+  expect_equal(buf$tail_offset(0), 1L)
+  expect_equal(buf$tail_offset(1), 2L)
+  expect_equal(buf$tail_offset(m - 1), m)
+  expect_error(buf$tail_offset(m), "Buffer underflow")
 })
 
-test_that("head_offset_data", {
+test_that("head_offset", {
   n <- 10
   buf <- ring_buffer_env(n)
   m <- 4
   buf$push(1:m)
 
-  expect_equal(buf$head_offset_data(0), m)
-  expect_equal(buf$head_offset_data(1), m - 1)
-  expect_equal(buf$head_offset_data(m - 1), 1)
-  expect_error(buf$head_offset_data(m), "Buffer underflow")
+  expect_equal(buf$head_offset(0), m)
+  expect_equal(buf$head_offset(1), m - 1)
+  expect_equal(buf$head_offset(m - 1), 1)
+  expect_error(buf$head_offset(m), "Buffer underflow")
 })
 
 test_that("take", {

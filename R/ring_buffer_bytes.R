@@ -80,8 +80,8 @@ ring_buffer_bytes <- function(size, stride=1L) {
     },
 
     ## Nondestructive:
-    head_offset_data=function(n) .Call(Cring_buffer_head_offset, self$ptr, n),
-    tail_offset_data=function(n) .Call(Cring_buffer_tail_offset, self$ptr, n),
+    head_offset=function(n) .Call(Cring_buffer_head_offset, self$ptr, n),
+    tail_offset=function(n) .Call(Cring_buffer_tail_offset, self$ptr, n),
 
     ## Unusual direction:
     take_head=function(n) .Call(Cring_buffer_take_head, self$ptr, n),
@@ -123,8 +123,8 @@ ring_buffer_bytes <- function(size, stride=1L) {
     push=function(data) super$push(self$to(data)),
     take=function(n) self$from(super$take(n)),
     read=function(n) self$from(super$read(n)),
-    head_offset_data=function(n) self$from(super$head_offset_data(n)),
-    tail_offset_data=function(n) self$from(super$tail_offset_data(n)),
+    head_offset=function(n) self$from(super$head_offset(n)),
+    tail_offset=function(n) self$from(super$tail_offset(n)),
     take_head=function(n) self$from(super$take_head(n)),
     read_head=function(n) self$from(super$read_head(n))
   ))

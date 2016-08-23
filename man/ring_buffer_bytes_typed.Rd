@@ -261,11 +261,11 @@ differences between implementations will be a bit more apparent.
     }
   }
 }
-\item{\code{head_offset_data}}{
+\item{\code{head_offset}}{
   Nondestructively read the contents of the \code{head} of the buffer, offset by \code{n} entries.
 
   \emph{Usage:}
-  \code{head_offset_data(n)}
+  \code{head_offset(n)}
 
   \emph{Arguments:}
   \itemize{
@@ -273,11 +273,11 @@ differences between implementations will be a bit more apparent.
     }
   }
 }
-\item{\code{tail_offset_data}}{
+\item{\code{tail_offset}}{
   Nondestructively read the contents of the \code{tail} of the buffer, offset by \code{n} entries.
 
   \emph{Usage:}
-  \code{tail_offset_data(n)}
+  \code{tail_offset(n)}
 
   \emph{Arguments:}
   \itemize{

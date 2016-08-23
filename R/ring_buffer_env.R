@@ -203,11 +203,11 @@ ring_buffer_env_duplicate <- function(buffer) {
       self$buffer$.used <- self$buffer$.used - as.integer(n)
     },
 
-    head_offset_data=function(n) {
+    head_offset=function(n) {
       ring_buffer_env_check_underflow(self, n + 1L)
       ring_buffer_env_move_backward(self$head$.prev, n)$data
     },
-    tail_offset_data=function(n) {
+    tail_offset=function(n) {
       ring_buffer_env_check_underflow(self, n + 1L)
       ring_buffer_env_move_forward(self$tail, n)$data
     },

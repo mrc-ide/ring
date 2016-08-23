@@ -106,11 +106,11 @@ buf$head_data()
 ## And you can offset these by an integer number of steps.  So moving
 ## one position into the buffer from the tail gets the second element
 ## added:
-buf$tail_offset_data(1)
+buf$tail_offset(1)
 
 ## or moving three elements into the buffer from the head (most
 ## recently added elemnt) gets the same bit of data
-buf$head_offset_data(3)
+buf$head_offset(3)
 
 ## The above operations are all nondestructive -- they leave the
 ## buffer unchanged.  To consume elements, use `take(n)` which
