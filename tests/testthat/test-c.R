@@ -91,11 +91,11 @@ test_that("example", {
   dll <- paste0("example", .Platform$dynlib.ext)
   dyn.load(dll)
 
-  on.exit({
-    dyn.unload(dll)
-    file.remove(dll)
-    file.remove("example.o")
-  }, add=TRUE)
+  ## on.exit({
+  ##   dyn.unload(dll)
+  ##   file.remove(dll)
+  ##   file.remove("example.o")
+  ## }, add=TRUE)
 
   set.seed(1)
   res_r <- example(20)
