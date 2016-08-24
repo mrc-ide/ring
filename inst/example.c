@@ -3,8 +3,9 @@
 #include <R.h>
 #include <Rinternals.h>
 
-// Definition used below
-int step(ring_buffer *r, int x);
+// Definition used below (can't be called step() because that may
+// conflict with regexp.h on some platforms).
+int step_x(ring_buffer *r, int x);
 
 void example(size_t nstep, double *ret) {
   // Construct a ring buffer of (max) size 5, each element of which is
@@ -19,7 +20,7 @@ void example(size_t nstep, double *ret) {
   ret[0] = x;
 
   for (size_t i = 1; i < nstep; ++i) {
-    x = step(r, x);
+    x = step_x(r, x);
     ring_buffer_push(r, &x, 1);
     ret[i] = x;
   }
@@ -28,7 +29,7 @@ void example(size_t nstep, double *ret) {
   ring_buffer_destroy(r);
 }
 
-int step(ring_buffer *r, int x) {
+int step_x(ring_buffer *r, int x) {
   size_t n = ring_buffer_used(r, false);
   double p;
   if (n < 2) {
