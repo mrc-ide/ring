@@ -94,6 +94,7 @@ test_that("example", {
   on.exit({
     dyn.unload(dll)
     file.remove(dll)
+    file.remove("example.o")
   }, add=TRUE)
 
   set.seed(1)

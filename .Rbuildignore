@@ -8,6 +8,9 @@
 ^ignore$
 ^ring_.*\.tar.gz$
 ^update_web\.sh$
+^inst/example\.o$
+^inst/example\.so$
+^inst/example\.dll$
 ^tests/testthat/testing\.Rcheck$
 ^tests/testthat/testing_.*\.tar\.gz$
 ^tests/testthat/testing/\.Rbuildignore$
@@ -15,6 +18,9 @@
 ^tests/testthat/testing/src/.*\.o$
 ^tests/testthat/testing/src/.*\.so$
 ^tests/testthat/testing/src/.*\.dll$
+^tests/testthat/.*\.o$
+^tests/testthat/.*\.so$
+^tests/testthat/.*\.dll$
 ^notes\.md$
 ^tests/testthat/ring_standalone$
 ^src/ring.so.dSYM$

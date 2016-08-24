@@ -29,6 +29,7 @@ check_all: build
 
 clean:
 	rm -f src/*.o src/*.so src/*.dll
+	rm -rf src/ring.so.dSYM
 
 autodoc:
 	${RSCRIPT} autodoc.R process
