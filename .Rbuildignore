@@ -11,6 +11,7 @@
 ^inst/example\.o$
 ^inst/example\.so$
 ^inst/example\.dll$
+^inst/web$
 ^tests/testthat/testing\.Rcheck$
 ^tests/testthat/testing_.*\.tar\.gz$
 ^tests/testthat/testing/\.Rbuildignore$
