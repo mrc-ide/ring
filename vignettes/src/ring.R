@@ -462,6 +462,26 @@ writeLines(c("```c",
              readLines(system.file("include/ring/ring.h", package="ring")),
              "```"))
 
+## For a complete real-world example of use, see
+## [dde](https://github.com/richfitz/dde), which uses a ring buffer to
+## hold the history of a set of differential equations, and uses that
+## to implement delay equations.  Here, the ring buffer means that the
+## memory requirements don't grow with the length of running the
+## simulation (as it only cares about fairly recent history, the
+## natural overflow from the ring buffer is well suited).  The memory
+## is only allocated at the beginning of the simulation so there is no
+## additional memory allocations.  And because `ring` returns (const)
+## pointers to the appropriate place in memory there is little
+## copying.
+
+## A simple application that implements the same mean-reverting
+## simulation from above:
+
+##+ echo=FALSE, results="asis"
+writeLines(c("```c",
+             readLines(system.file("example.c", package="ring")),
+             "```"))
+
 ## # The C++ API
 
 ## If you're using C++ you may find the [Boost circular

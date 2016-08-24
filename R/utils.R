@@ -12,3 +12,13 @@ assert_scalar <- function(x, name=deparse(substitute(x))) {
     stop(sprintf("%s must be a scalar", name), call.=FALSE)
   }
 }
+
+## Like with older Rcpp:
+include_flags <- function(stdout=TRUE) {
+  value <- paste0("-I", system.file("include", package=.packageName))
+  if (stdout) {
+    cat(value)
+  } else {
+    value
+  }
+}
