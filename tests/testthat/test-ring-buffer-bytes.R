@@ -328,7 +328,7 @@ test_that("ring_buffer_push, twice", {
                rep(bytes, 2))
   expect_equal(rb1$data(),
                pad(rep(bytes, 2), size + 1, 1))
-  expect_equal(rb1$head(), as.raw(1))
+  expect_equal(rb1$head(), tail(bytes, 1))
 })
 
 test_that("ring_buffer_push, twice (to full capacity)", {

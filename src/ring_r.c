@@ -46,13 +46,17 @@ SEXP R_ring_buffer_empty(SEXP extPtr) {
   return ScalarLogical(ring_buffer_empty(ring_buffer_get(extPtr, true)));
 }
 
+// NOTE: this is slightly different behaviour than the C API because
+// it is not useful to return the memory location; instead we return
+// the head contents.
 SEXP R_ring_buffer_head(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   if (ring_buffer_empty(buffer)) {
     Rf_error("Buffer is empty");
   }
   SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
-  memcpy(RAW(ret), ring_buffer_head(buffer), buffer->stride);
+  data_t *data = (data_t*) ring_buffer_head_offset(buffer, 0);
+  memcpy(RAW(ret), data, buffer->stride);
   UNPROTECT(1);
   return ret;
 }
@@ -192,8 +196,6 @@ SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
   }
   memcpy(RAW(ret), data, buffer->stride);
   UNPROTECT(1);
-  // NOTE: In C we return the tail position here but that is not done
-  // for the R version.
   return ret;
 }
 
@@ -207,8 +209,6 @@ SEXP R_ring_buffer_head_offset(SEXP extPtr, SEXP r_offset) {
   }
   memcpy(RAW(ret), data, buffer->stride);
   UNPROTECT(1);
-  // NOTE: In C we return the tail position here but that is not done
-  // for the R version.
   return ret;
 }
 

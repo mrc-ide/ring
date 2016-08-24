@@ -132,6 +132,15 @@ size_t ring_buffer_tail_pos(const ring_buffer *buffer, bool bytes);
 // "head" and "tail" elements of the ring buffer structure itself
 // because with these the compiler will enforce read-only access for
 // you.
+//
+// WARNING: the head buffer is *not* the most recently added element,
+// but instead the bit of memory that will be written to next; it's
+// generally not terribly useful and a better way of getting the last
+// written element is to use:
+//
+//   ring_buffer_head_offset(buffer, 0);
+//
+// which will look after wrapping the ring buffer appropriately.
 const void * ring_buffer_data(const ring_buffer *buffer);
 const void * ring_buffer_head(const ring_buffer *buffer);
 const void * ring_buffer_tail(const ring_buffer *buffer);

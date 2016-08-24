@@ -143,3 +143,16 @@ test_that("take_head", {
   expect_equal(buf$take_head(m - 1), cmp[2:m])
   expect_equal(buf$read_head(n - m), cmp[-seq_len(m)])
 })
+
+test_that("head() behaviour", {
+  b <- ring_buffer_bytes(10)
+  expect_error(b$head(), "empty")
+  expect_error(b$tail(), "empty")
+  b$push(as.raw(1:4))
+  expect_equal(b$tail(), as.raw(1))
+  expect_equal(b$tail_offset(0), as.raw(1))
+  ## In contrast with the C API this returns the *most recently added
+  ## element*, not the memory that will be written to next.
+  expect_equal(b$head(), as.raw(4))
+  expect_equal(b$head_offset(0), as.raw(4))
+})
