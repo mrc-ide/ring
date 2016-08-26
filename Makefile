@@ -6,8 +6,12 @@ all: install
 test:
 	${RSCRIPT} -e 'library(methods); devtools::test()'
 
-test_leaks:
-	R -d 'valgrind --leak-check=full' -e 'devtools::test()'
+test_leaks: .valgrind_ignore
+	R -d 'valgrind --leak-check=full --suppressions=.valgrind_ignore' -e 'devtools::test()'
+
+.valgrind_ignore:
+	R -d 'valgrind --leak-check=full --gen-suppressions=all --log-file=$@' -e 'library(testthat)'
+	sed -i '/^=/ d' $@
 
 roxygen:
 	@mkdir -p man

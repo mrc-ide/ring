@@ -27,3 +27,4 @@
 ^src/ring.so.dSYM$
 ^man-roxygen$
 ^autodoc\.R$
+^.valgrind_ignore'

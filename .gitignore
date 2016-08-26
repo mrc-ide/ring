@@ -12,3 +12,4 @@ tests/testthat/testing.Rcheck
 tests/testthat/testing_*.tar.gz
 tests/testthat/ring_standalone
 src/ring.so.dSYM
+.valgrind_ignore
