@@ -22,14 +22,19 @@ interpreted as the \emph{name} of the storage mode (one of
 "logical", "integer", "double" or "complex".}
 }
 \description{
-Create a ring buffer, backed by a byte array, where each element
-corresponds to a vector of one of R's atomic numeric types
-(logical, integer, double, and complex).
+Create a ring buffer, backed by a \code{\link{ring_buffer_bytes}},
+where each element corresponds to a fixed-size vector of one of
+R's atomic numeric types (logical, integer, double, and complex).
 }
 \details{
 Note that a logical ring buffer and an integer ring buffer take
 the same number of bytes because a logical vector is stored as an
-integer (4 bytes per element) to deal with missing values.
+integer (4 bytes per element) to deal with missing values; see
+"writing R extensions".
+
+Note that it is not possible to store character vectors in a ring
+buffer of this type because each element of a character vector can
+be any number of bytes.
 }
 \section{Methods}{
 
@@ -310,6 +315,53 @@ differences between implementations will be a bit more apparent.
   }
 }
 }
+}
+\examples{
+
+# Create a ring buffer of 30 integers:
+b <- ring_buffer_bytes_typed(30, integer(1))
+
+# Alternatively you can create the same buffer this way:
+b <- ring_buffer_bytes_typed(30, "integer", 1)
+
+# The buffer is empty to start with
+b$empty()
+
+# Note that the buffer has a stride of 4 (see ?ring_buffer_bytes)
+b$stride()
+
+# Push some numbers into the buffer:
+b$push(as.integer(1:10))
+
+# Report the number of elements used:
+b$used()
+
+# Get the first added element:
+b$tail()
+
+# The buffer behaves basically the same way now as
+# "ring_buffer_env" but will typecheck all inputs:
+\dontrun{
+  b$push(pi) # error because not an integer
+  b$push(1)  # error because not an integer (you must convert to int)
+}
+
+# Recycling: the typed buffer operates by converting the input
+# vector to a set of bytes and then pushing them onto the buffer;
+# this works so long as the vector of bytes has the correct
+# length.
+b <- ring_buffer_bytes_typed(30, integer(3))
+
+# These both fail because 2 and 4 do not end up as multiples of 3:
+\dontrun{
+  b$push(c(1L, 2L))
+  b$push(c(1L, 2L, 3L, 4L))
+}
+
+# But this is fine:
+b$push(seq_len(6))
+b$tail()
+b$tail_offset(1)
 }
 \author{
 Rich FitzJohn

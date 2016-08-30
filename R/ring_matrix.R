@@ -1,28 +1,8 @@
-##' Simulate a matrix with a ring buffer.  This exists mostly as an
-##' example of use of a ring buffer designed to work with R functions
-##' that do not know (or care) that the object is implemented with a
-##' ring buffer behind the scenes.  Rows will be added at the bottom
-##' of the matrix.
-##'
-##' Note that because the matrix is stored row-wise but R stores
-##' matrices column wise, there is a lot of data transposing going on
-##' here.  If something like this was needed for performance then
-##' you'd want to redo this with column storage.
-##
-##' @title Ring matrix
-##'
 ##' @param nr_max The maximum number of rows
 ##'
 ##' @param nc The number of columns in the matrix
-##'
-##' @param type The type of storage.  Can be "logical", "integer",
-##'   "double", or "complex"
-##'
-##' @param environment Logical indicating if we should use an
-##'   environment buffer (\code{\link{ring_buffer_env}}) or
-##'   a bytes buffer (\code{\link{ring_buffer_bytes}}).
-##
 ##' @export
+##' @rdname ring_vector
 ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
   assert_scalar_logical(environment)
   type <- match.arg(type, names(sizes))
@@ -37,23 +17,23 @@ ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
   ret
 }
 
-ring_matrix_push <- function(x, data, check=TRUE, ...) {
+ring_matrix_push <- function(buffer, data, check=TRUE, ...) {
   if (check) {
-    ring_matrix_compatible(x, data)
+    ring_matrix_compatible(buffer, data)
   }
   ## NOTE: This is the only place outside of construction where we
   ## need to care about the different types of buffer.  So they're not
   ## totally substitutable but not too bad either.
-  if (x$environment) {
+  if (buffer$environment) {
     if (is.matrix(data)) {
       for (i in seq_len(nrow(data))) {
-        x$buf$push(data[i, ], FALSE)
+        buffer$buf$push(data[i, ], FALSE)
       }
     } else {
-      x$buf$push(data, FALSE)
+      buffer$buf$push(data, FALSE)
     }
   } else {
-    x$buf$push(if (is.matrix(data)) t(data) else data)
+    buffer$buf$push(if (is.matrix(data)) t(data) else data)
   }
 }
 
@@ -115,6 +95,8 @@ ring_matrix_get <- function(x, i=NULL) {
 
   ret
 }
+
+## S3 support
 
 ##' @export
 dim.ring_matrix <- function(x, ...) {

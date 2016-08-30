@@ -1,10 +1,19 @@
-##' Simulate an atomic vector with a ring buffer.  This exists mostly
-##' as an example of use of a ring buffer designed to work with R
-##' functions that do not know (or care) that the object is
-##' implemented with a ring buffer behind the scenes.  Elements will
-##' be added at the end of the vector and taken from the beginning.
+##' Simulate an atomic vector or matrix with a ring buffer.  These
+##' functions exist mostly as an example of use of a ring buffer
+##' designed to work with R functions that do not know (or care) that
+##' the object is implemented with a ring buffer behind the scenes.
+##' Elements will be added at the end of the vector and taken from the
+##' beginning.
 ##'
-##' @title Ring vector
+##' Note that because the matrix is stored row-wise but R stores
+##' matrices column wise, there is a lot of data transposing going on
+##' here.  If something like this was needed for performance then
+##' you'd want to redo this with column storage.
+##'
+##' The \code{push} function is generic and can be used to push
+##' elements onto either a \code{ring_vector} or a \code{ring_matrix}.
+##'
+##' @title Ring vectors and matrices
 ##'
 ##' @param length_max The maximum number of elements
 ##'
@@ -30,11 +39,22 @@ ring_vector <- function(length_max, type, environment=TRUE) {
   ret
 }
 
-ring_vector_push <- function(x, data, check=TRUE, ...) {
+##' @param buffer A ring buffer of some sort
+##'
+##' @param data Data to push into the ring
+##'
+##' @param ... Additional arguments passed through to methods
+##' @export
+##' @rdname ring_vector
+push <- function(buffer, data, ...) {
+  UseMethod("push")
+}
+
+ring_vector_push <- function(buffer, data, check=TRUE, ...) {
   if (check) {
-    ring_vector_compatible(x, data)
+    ring_vector_compatible(buffer, data)
   }
-  x$buf$push(data)
+  buffer$buf$push(data)
 }
 
 ##' @export
@@ -81,6 +101,8 @@ ring_vector_get <- function(x, i=NULL) {
 
   ret
 }
+
+## S3 support:
 
 ##' @export
 length.ring_vector <- function(x, ...) {
