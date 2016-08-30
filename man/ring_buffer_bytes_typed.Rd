@@ -42,7 +42,7 @@ be any number of bytes.
 Note that this methods reference section is repeated verbatim between
 the three main ring buffer classes; \code{ring_buffer_env}
 ("env"), \code{ring_buffer_bytes} ("bytes") and
-\code{ring_buffer_typed} ("typed").  Almost all methods have
+\code{ring_buffer_bytes_typed} ("typed").  Almost all methods have
 the same arguments and behaviour, but hopefully in one place the
 differences between implementations will be a bit more apparent.
 
@@ -214,7 +214,7 @@ differences between implementations will be a bit more apparent.
 
   \emph{Arguments:}
   \itemize{
-    \item{\code{data}:   Data to push onto the ring buffer.  For \code{ring_buffer_bytes}, this must be a raw vector with a length that is a multiple of the buffer stride.  For \code{ring_buffer_typed} it must be a vector of the appropriate type.  For \code{ring_buffer_env} it may be an arbitrary R object (but see \code{iterate} .
+    \item{\code{data}:   Data to push onto the ring buffer.  For \code{ring_buffer_bytes}, this must be a raw vector with a length that is a multiple of the buffer stride.  For \code{ring_buffer_bytes_typed} it must be a vector of the appropriate type.  For \code{ring_buffer_env} it may be an arbitrary R object (but see \code{iterate} .
     }
 
     \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate=FALSE}, then the entire object is pushed at once, so always updating only by a single element.
@@ -234,7 +234,7 @@ differences between implementations will be a bit more apparent.
   }
 
   \emph{Value}:
-  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_typed}, an vector of \code{n} elements of the storage mode of the ring.
+  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
 }
 \item{\code{read}}{
   Nondestructively read elements from the ring buffer.  This is identical to \code{take} except that the state of the buffer is not modified.
@@ -249,7 +249,7 @@ differences between implementations will be a bit more apparent.
   }
 
   \emph{Value}:
-  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_typed}, an vector of \code{n} elements of the storage mode of the ring.
+  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
 }
 \item{\code{copy}}{
   Copy from into another ring buffer.  This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.

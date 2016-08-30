@@ -149,7 +149,7 @@ push:
       Data to push onto the ring buffer.  For
       \code{ring_buffer_bytes}, this must be a raw vector with a
       length that is a multiple of the buffer stride.  For
-      \code{ring_buffer_typed} it must be a vector of the appropriate
+      \code{ring_buffer_bytes_typed} it must be a vector of the appropriate
       type.  For \code{ring_buffer_env} it may be an arbitrary R
       object (but see \code{iterate} .
     iterate: >-
@@ -167,7 +167,7 @@ push:
       single element.
   return: >-
     For \code{ring_buffer_bytes}, the data invisibly.  For
-    \code{ring_buffer_bytes} and \code{ring_buffer_typed}, the
+    \code{ring_buffer_bytes} and \code{ring_buffer_bytes_typed}, the
     position of the head pointer (relative to the beginning of the
     storage region).
 
@@ -183,7 +183,7 @@ take:
   value: >-
     For \code{ring_buffer_env} a \code{list} of \code{n} elements.
     For \code{ring_buffer_bytes}, a raw vector of \code{n * stride}
-    bytes.  For \code{ring_buffer_typed}, an vector of \code{n}
+    bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n}
     elements of the storage mode of the ring.
 
 read:
@@ -196,7 +196,7 @@ read:
   value: >-
     For \code{ring_buffer_env} a \code{list} of \code{n} elements.
     For \code{ring_buffer_bytes}, a raw vector of \code{n * stride}
-    bytes.  For \code{ring_buffer_typed}, an vector of \code{n}
+    bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n}
     elements of the storage mode of the ring.
 
 copy:

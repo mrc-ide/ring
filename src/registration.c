@@ -31,7 +31,7 @@ static const R_CallMethodDef call_methods[] = {
   {"Cring_buffer_copy",        (DL_FUNC) &R_ring_buffer_copy,        3},
   {"Cring_buffer_tail_offset", (DL_FUNC) &R_ring_buffer_tail_offset, 2},
   {"Cring_buffer_head_offset", (DL_FUNC) &R_ring_buffer_head_offset, 2},
-  // conversion code, used in ring_buffer_typed
+  // conversion code, used in ring_buffer_bytes_typed
   {"Cint_to_bytes",            (DL_FUNC) &int_to_bytes,              1},
   {"Cbytes_to_int",            (DL_FUNC) &bytes_to_int,              1},
   {"Cdouble_to_bytes",         (DL_FUNC) &double_to_bytes,           1},

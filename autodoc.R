@@ -112,7 +112,7 @@ format_class <- function(x) {
   'Note that this methods reference section is repeated verbatim between
 the three main ring buffer classes; \\code{ring_buffer_env}
 ("env"), \\code{ring_buffer_bytes} ("bytes") and
-\\code{ring_buffer_typed} ("typed").  Almost all methods have
+\\code{ring_buffer_bytes_typed} ("typed").  Almost all methods have
 the same arguments and behaviour, but hopefully in one place the
 differences between implementations will be a bit more apparent.' -> header
   ret <- sprintf("@section Methods:\n\n%s\n\n\\describe{\n%s\n}",
