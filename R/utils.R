@@ -13,6 +13,12 @@ assert_scalar <- function(x, name=deparse(substitute(x))) {
   }
 }
 
+assert_function <- function(x, name=deparse(substitute(x))) {
+  if (!is.function(x)) {
+    stop(sprintf("%s must be a function", name), call.=FALSE)
+  }
+}
+
 ## Like with older Rcpp:
 include_flags <- function(stdout=TRUE) {
   value <- paste0("-I", system.file("include", package=.packageName))

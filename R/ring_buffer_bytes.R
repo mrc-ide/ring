@@ -152,10 +152,35 @@ ring_buffer_bytes <- function(size, stride=1L) {
     read_head=function(n) .Call(Cring_buffer_read_head, self$.ptr, n)
   ))
 
-## This is used in ring_buffer_typed but is not itself exported yet.
-## The definition must follow .R6_ring_buffer_bytes, so either we use
-## roxygen @import to set the collation or we have to leave it in this
-## file.
+
+##' This ring buffer is based on \code{\link{ring_buffer_bytes}} but
+##' performs conversion to/from bytes to something useful as data is
+##' stored/retrieved from the buffer.  This is the interface through
+##' which \code{ring_buffer_bytes_typed} is implemented.
+##'
+##' The idea here is that manually working with raw vectors is
+##' annoying, and if you are planning on using a bytes-based buffer
+##' while working in R you may have a way of doing converstion from
+##' and to R objects.  This interface lets you specify the functions
+##' once and then will apply your conversion function in every case
+##' where they are needed.
+##'
+##' @template ring_ref
+##' @title Typed bytes ring buffer
+##' @inheritParams ring_buffer_bytes
+##' @param to Function to convert an R object to a set of exactly
+##'   \code{stride} bytes.
+##' @param from Function to convert a set of bytes to an R object.
+##' @export
+##' @author Rich FitzJohn
+ring_buffer_bytes_translate <- function(size, stride, to, from) {
+  .R6$ring_buffer_bytes_translate$new(size, stride, to, from)
+}
+
+## The definition below must follow .R6_ring_buffer_bytes, so either
+## we use roxygen @import to set the collation or we have to leave it
+## in this file (or jiggle the files around so they collate correctly
+## in every language).
 .R6_ring_buffer_bytes_translate <- R6::R6Class(
   "ring_buffer_bytes_translate",
   cloneable=FALSE,
@@ -167,6 +192,8 @@ ring_buffer_bytes <- function(size, stride=1L) {
     type=NULL,
 
     initialize=function(size, stride, to, from, type=NULL, ptr=NULL) {
+      assert_function(to)
+      assert_function(from)
       super$initialize(size, stride, ptr)
       self$to <- to
       self$from <- from
