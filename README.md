@@ -2,6 +2,7 @@
 
 [![Linux Build Status](https://travis-ci.org/richfitz/ring.svg?branch=master)](https://travis-ci.org/richfitz/ring)
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/github/richfitz/ring?svg=true)](https://ci.appveyor.com/project/richfitz/ring)
+[![codecov.io](https://codecov.io/github/richfitz/ring/coverage.svg?branch=master)](https://codecov.io/github/richfitz/ring?branch=master)
 
 > Ring buffers in R and C
 
