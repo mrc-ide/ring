@@ -1,5 +1,21 @@
 context("ring_buffer_bytes_typed (typed)")
 
+test_that("conversion functions are transitive", {
+  vec <- list(logical=c(TRUE, FALSE, NA),
+              integer=c(NA, as.integer(sample(10))),
+              double=c(NA, NaN, runif(10)),
+              complex=c(NA, NaN, complex(real=runif(10), imaginary=runif(10))))
+  expect_equal(sort(names(vec)), sort(names(sizes)))
+
+  for (nm in names(vec)) {
+    x_r <- vec[[nm]]
+    x_b <- convert_to[[nm]](x_r)
+    expect_is(x_b, "raw")
+    expect_equal(length(x_b), sizes[[nm]] * length(x_r))
+    expect_identical(convert_from[[nm]](x_b), x_r)
+  }
+})
+
 test_that("basic", {
   for (type in names(sizes)) {
     size <- 100
