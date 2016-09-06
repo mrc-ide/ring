@@ -12,3 +12,10 @@ test_that("assertions work", {
   expect_error(assert_function(1.5), "must be a function")
   expect_error(assert_function(list()), "must be a function")
 })
+
+test_that("compiler flags", {
+  flags <- include_flags(FALSE)
+  cmp <- paste0("-I", system.file("include", package="ring"))
+  expect_equal(flags, cmp)
+  expect_equal(capture.output(include_flags()), cmp)
+})
