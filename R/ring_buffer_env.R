@@ -254,10 +254,6 @@ ring_buffer_env_read_from_head <- function(buf, n) {
 ring_buffer_env_write_to_head <- function(buf, data) {
   n <- buf$.buffer$.used
   full <- n == buf$size()
-  if (full && buf$.prevent_overflow) {
-    stop("Buffer overflow")
-  }
-
   buf$.head$data <- data
   buf$.head <- buf$.head$.next
   if (full) {
@@ -288,15 +284,6 @@ ring_buffer_env_distance_forward <- function(head, target) {
   while (!identical(target, head)) {
     i <- i + 1L
     head <- head$.next
-  }
-  i
-}
-
-ring_buffer_env_distance_backward <- function(tail, target) {
-  i <- 0L
-  while (!identical(target, tail)) {
-    i <- i + 1L
-    tail <- tail$.prev
   }
   i
 }
