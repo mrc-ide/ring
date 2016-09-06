@@ -256,7 +256,11 @@ ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error) {
 
 bool scalar_logical(SEXP x) {
   if (TYPEOF(x) == LGLSXP && LENGTH(x) == 1) {
-    return (bool)(INTEGER(x)[0]);
+    int ret = INTEGER(x)[0];
+    if (ret == NA_LOGICAL) {
+      Rf_error("Expected a non-missing logical scalar");
+    }
+    return (bool)(ret);
   } else {
     Rf_error("Expected a logical scalar");
     return 0;
@@ -274,6 +278,9 @@ size_t scalar_size(SEXP x) {
     double val = REAL(x)[0];
     if (!R_FINITE(val) || val < 0) {
       Rf_error("Expected a nonnegative value");
+    }
+    if (val - (size_t)val > sqrt(DBL_EPSILON)) {
+      Rf_error("Expected an integer value");
     }
     return (size_t) val;
   } else {

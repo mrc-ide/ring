@@ -94,10 +94,8 @@ test_that("impossible sizes", {
 })
 
 test_that("input validation", {
-  ## Truncation:
-  expect_identical(ring_buffer_bytes(pi)$size(), 3L)
-  expect_identical(ring_buffer_bytes(10, pi)$stride(), 3L)
-
+  expect_error(ring_buffer_bytes(pi)$size(),
+               "Expected an integer value")
   expect_error(ring_buffer_bytes(-1),
                "Expected a nonnegative value")
   expect_error(ring_buffer_bytes(-1L),

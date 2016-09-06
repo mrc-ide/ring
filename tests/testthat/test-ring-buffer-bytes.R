@@ -72,6 +72,31 @@ test_that("null pointer safe", {
   expect_error(readRDS(path)$full(), "ring_buffer already freed")
 })
 
+test_that("non-pointer safe", {
+  expect_error(.Call(Cring_buffer_size, NULL, TRUE),
+               "Expected an external pointer")
+})
+
+test_that("bad arguments are caught", {
+  b <- ring_buffer_bytes(100)
+  expect_error(b$size(1), "Expected a logical scalar")
+  expect_error(b$size(logical(0)), "Expected a logical scalar")
+  expect_error(b$size(NULL), "Expected a logical scalar")
+  expect_error(b$size(pi), "Expected a logical scalar")
+  expect_error(b$size(c(TRUE, FALSE)), "Expected a logical scalar")
+  expect_error(b$size(NA), "Expected a non-missing logical scalar")
+
+  b$push(1:10)
+  expect_error(b$read("a"), "Expected a nonnegative scalar integer")
+  expect_error(b$read(-1), "Expected a nonnegative value")
+  expect_error(b$read(NULL), "Expected a nonnegative scalar integer")
+  expect_error(b$read(NA), "Expected a nonnegative scalar integer")
+  expect_error(b$read(NA_integer_), "Expected a nonnegative value")
+  expect_error(b$read(NA_real_), "Expected a nonnegative value")
+  expect_error(b$read(1.5), "Expected an integer value")
+})
+
+
 test_that("reset", {
   size <- 24L
   for (write in c(8L, size + 1L)) {
