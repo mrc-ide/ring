@@ -142,6 +142,9 @@ test_that("take_head", {
 
   expect_equal(buf$take_head(m - 1), cmp[2:m])
   expect_equal(buf$read_head(n - m), cmp[-seq_len(m)])
+
+  expect_error(buf$take_head(buf$used() + 1),
+               "Buffer underflow")
 })
 
 test_that("head() behaviour", {
