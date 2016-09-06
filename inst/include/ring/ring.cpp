@@ -18,7 +18,7 @@ RingBuffer::~RingBuffer() {
 }
 
 RingBuffer::RingBuffer(const RingBuffer& other) :
-  buffer(ring_buffer_clone(other.buffer)) {
+  buffer(ring_buffer_duplicate(other.buffer)) {
   if (buffer == NULL) {
     throw std::bad_alloc();
   }

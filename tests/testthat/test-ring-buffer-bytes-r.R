@@ -156,3 +156,43 @@ test_that("head() behaviour", {
   expect_equal(b$head(), as.raw(4))
   expect_equal(b$head_offset(0), as.raw(4))
 })
+
+test_that("duplicate", {
+  n <- 10
+  buf <- ring_buffer_bytes(10)
+  buf$push(1:12)
+  buf$take(3)
+
+  expect_equal(buf$head_pos(), 1) # NOTE: different to env!
+  expect_equal(buf$tail_pos(), 5)
+  expect_equal(buf$used(), 7)
+  expect_equal(buf$size(), n)
+  expect_equal(buf$read(buf$used()), as.raw(6:12))
+
+  cpy <- buf$duplicate()
+
+  ## Source unchanged:
+  for (x in list(buf, cpy)) {
+    expect_equal(x$head_pos(), 1)
+    expect_equal(x$tail_pos(), 5)
+    expect_equal(x$used(), 7)
+    expect_equal(x$size(), n)
+    expect_equal(x$read(x$used()), as.raw(6:12))
+  }
+
+  ## But we can move the two buffers independently.
+  expect_equal(cpy$take(2), as.raw(6:7))
+  cpy$push(13)
+
+  expect_equal(buf$head_pos(), 1)
+  expect_equal(buf$tail_pos(), 5)
+  expect_equal(buf$used(), 7)
+  expect_equal(buf$size(), n)
+  expect_equal(buf$read(buf$used()), as.raw(6:12))
+
+  expect_equal(cpy$head_pos(), 2)
+  expect_equal(cpy$tail_pos(), 7)
+  expect_equal(cpy$used(), 6)
+  expect_equal(cpy$size(), n)
+  expect_equal(cpy$read(cpy$used()), as.raw(8:13))
+})

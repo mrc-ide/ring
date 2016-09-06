@@ -3,7 +3,7 @@
 #include <Rinternals.h>
 
 SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride);
-SEXP R_ring_buffer_clone(SEXP extPtr);
+SEXP R_ring_buffer_duplicate(SEXP extPtr);
 SEXP R_ring_buffer_size(SEXP extPtr, SEXP bytes);
 SEXP R_ring_buffer_stride(SEXP extPtr);
 SEXP R_ring_buffer_bytes_data(SEXP extPtr);

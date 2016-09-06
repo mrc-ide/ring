@@ -8,7 +8,7 @@
 #include <R_ext/Rdynload.h>
 static const R_CallMethodDef call_methods[] = {
   {"Cring_buffer_create",      (DL_FUNC) &R_ring_buffer_create,      2},
-  {"Cring_buffer_clone",       (DL_FUNC) &R_ring_buffer_clone,       1},
+  {"Cring_buffer_duplicate",   (DL_FUNC) &R_ring_buffer_duplicate,   1},
   {"Cring_buffer_bytes_data",  (DL_FUNC) &R_ring_buffer_bytes_data,  1},
   {"Cring_buffer_size",        (DL_FUNC) &R_ring_buffer_size,        2},
   {"Cring_buffer_stride",      (DL_FUNC) &R_ring_buffer_stride,      1},

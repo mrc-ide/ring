@@ -76,12 +76,12 @@ ring_buffer * ring_buffer_create(size_t size, size_t stride);
 //           memory associated with the buffer is freed.
 void ring_buffer_destroy(ring_buffer *buffer);
 
-// Clone (copy) a ring buffer.  Copies both the underlying data and
+// Duplicate (copy) a ring buffer.  Copies both the underlying data and
 // the position of the head and tail.  A new buffer will be allocated
 // and must be freed when finished with, using `ring_buffer_destroy`
 //
 //   buffer: a ring buffer to copy from; will not be modified
-ring_buffer * ring_buffer_clone(const ring_buffer *buffer);
+ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer);
 
 // Reset the state of the buffer.  This "zeros" the head and tail
 // pointer (and may or may not actually reset the data) so that the

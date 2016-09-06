@@ -20,9 +20,9 @@ SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride) {
   return R_ring_buffer_alloc(ring_buffer_create(size, stride));
 }
 
-SEXP R_ring_buffer_clone(SEXP extPtr) {
+SEXP R_ring_buffer_duplicate(SEXP extPtr) {
   ring_buffer *prev = ring_buffer_get(extPtr, true);
-  return R_ring_buffer_alloc(ring_buffer_clone(prev));
+  return R_ring_buffer_alloc(ring_buffer_duplicate(prev));
 }
 
 SEXP R_ring_buffer_size(SEXP extPtr, SEXP bytes) {

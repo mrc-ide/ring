@@ -45,7 +45,7 @@ void ring_buffer_destroy(ring_buffer *buffer) {
 #endif
 }
 
-ring_buffer * ring_buffer_clone(const ring_buffer *buffer) {
+ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
   ring_buffer *ret = ring_buffer_create(buffer->size, buffer->stride);
 #ifdef RING_USE_STDLIB_ALLOC
   if (ret == NULL) {

@@ -103,7 +103,7 @@ ring_buffer_bytes <- function(size, stride=1L) {
     ## private set of methods.  Instead we create a clone of the
     ## data and return a brand new instance of the class.
     duplicate=function() {
-      .R6_ring_buffer_bytes$new(ptr=.Call(Cring_buffer_clone, self$.ptr))
+      .R6_ring_buffer_bytes$new(ptr=.Call(Cring_buffer_duplicate, self$.ptr))
     },
 
     size=function(bytes=FALSE) .Call(Cring_buffer_size, self$.ptr, bytes),
