@@ -1,6 +1,8 @@
 #include <R.h>
 #include <Rinternals.h>
 
+SEXP logical_to_bytes(SEXP x);
+SEXP bytes_to_logical(SEXP x);
 SEXP int_to_bytes(SEXP x);
 SEXP bytes_to_int(SEXP x);
 SEXP double_to_bytes(SEXP x);

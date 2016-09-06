@@ -1,5 +1,24 @@
 #include "convert.h"
 
+SEXP logical_to_bytes(SEXP x) {
+  int * data = INTEGER(x);
+  size_t len = LENGTH(x) * sizeof(int);
+  SEXP ret = PROTECT(allocVector(RAWSXP, len));
+  memcpy(RAW(ret), data, len);
+  UNPROTECT(1);
+  return ret;
+}
+
+SEXP bytes_to_logical(SEXP x) {
+  void * data = RAW(x);
+  size_t len = LENGTH(x);
+  size_t n = len / sizeof(int);
+  SEXP ret = PROTECT(allocVector(LGLSXP, n));
+  memcpy(INTEGER(ret), data, len);
+  UNPROTECT(1);
+  return ret;
+}
+
 SEXP int_to_bytes(SEXP x) {
   int * data = INTEGER(x);
   size_t len = LENGTH(x) * sizeof(int);
