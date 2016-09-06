@@ -34,3 +34,7 @@ include_flags <- function(stdout=TRUE) {
     value
   }
 }
+
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}

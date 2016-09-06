@@ -57,3 +57,32 @@ test_that("basic", {
     expect_identical(buf$head_pos(TRUE), p)
   }
 })
+
+test_that("initialisation", {
+  b <- ring_buffer_bytes_typed(5, numeric(), 4L)
+  expect_equal(b$size(), 5L)
+  expect_equal(b$stride(), sizes[["double"]] * 4L)
+  expect_equal(b$type, "typed:double")
+
+  b <- ring_buffer_bytes_typed(5, "numeric", 4L)
+  expect_equal(b$size(), 5L)
+  expect_equal(b$stride(), sizes[["double"]] * 4L)
+  expect_equal(b$type, "typed:double")
+
+  expect_error(ring_buffer_bytes_typed(5, numeric()),
+               "'len' must be greater than zero")
+  expect_error(ring_buffer_bytes_typed(5, "double"),
+               "'len' must be greater than zero")
+  expect_error(ring_buffer_bytes_typed(5, 2, 5),
+               "Invalid value for 'what'")
+  expect_error(ring_buffer_bytes_typed(5, 2, "double"),
+               "Invalid value for 'what'")
+
+  expect_error(ring_buffer_bytes_typed(5, "numbers", 10),
+               "'what' must be one of")
+  expect_error(ring_buffer_bytes_typed(5, "character", 10),
+               "'what' must be one of")
+  expect_error(ring_buffer_bytes_typed(5, character(10)),
+               "storage.mode(what) must be one of", fixed=TRUE)
+
+})

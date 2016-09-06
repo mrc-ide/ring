@@ -74,20 +74,29 @@
 ##' b$tail()
 ##' b$tail_offset(1)
 ring_buffer_bytes_typed <- function(size, what, len = NULL) {
-  if (is.null(len)) {
-    type <- storage.mode(what)
-    len <- length(what)
-  } else if (length(what) == 0L) {
-    type <- storage.mode(what)
-  } else if (length(what) == 1L && is.character(what)) {
+  if (is.character(what) && length(what) == 1L) {
     type <- what
+    len <- len %||% 0L # keeps error messages constant
+    if (type %in% names(sizes)) {
+    } else if (type == "numeric") {
+      type <- "double"
+    } else {
+      stop("'what' must be one of ",
+           paste(c(names(sizes), "numeric"), collapse=", "))
+    }
   } else {
-    stop("Invalid value for 'what' given 'len' is provided")
-  }
-
-  if (!(type %in% names(sizes))) {
-    stop("storage.mode(what) must be one of ",
-         paste(names(sizes), collapse=", "))
+    if (is.null(len)) {
+      type <- storage.mode(what)
+      len <- length(what)
+    } else if (length(what) == 0L) {
+      type <- storage.mode(what)
+    } else {
+      stop("Invalid value for 'what' given 'len' is provided")
+    }
+    if (!(type %in% names(sizes))) {
+      stop("storage.mode(what) must be one of ",
+           paste(names(sizes), collapse=", "))
+    }
   }
   if (len <= 0L) {
     stop("'len' must be greater than zero")
