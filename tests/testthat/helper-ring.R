@@ -34,16 +34,22 @@ last <- function(x) {
   tail(x, 1L)
 }
 
-search_types <- c("linear", "bisect")
-test_search_linear <- function(buffer, value) {
+SEARCH_TYPES <- c("linear", "bisect")
+test_search_linear <- function(buffer, value, i) {
   .Call("test_search_linear", buffer, as.double(value), PACKAGE="ring")
 }
-test_search_bisect <- function(buffer, value, i=0L) {
+test_search_bisect <- function(buffer, value, i = 0L) {
   .Call("test_search_bisect", buffer, as.double(value), as.integer(i),
         PACKAGE="ring")
 }
-test_search <- function(buffer, value, type) {
-  search <- switch(type, linear=test_search_linear, bisect=test_search_bisect,
+test_search <- function(buffer, value, type, i = 0L) {
+  search <- switch(type,
+                   linear=test_search_linear,
+                   bisect=test_search_bisect,
                    stop("Invalid search type"))
-  search(buffer, value)
+  search(buffer, value, i)
+}
+
+viapply <- function(X, FUN, ...) {
+  vapply(X, FUN, integer(1), ...)
 }

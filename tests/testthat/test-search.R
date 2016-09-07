@@ -2,7 +2,7 @@ context("search")
 
 test_that("empty", {
   b <- ring_buffer_bytes_typed(10, double(1))
-  for (type in search_types) {
+  for (type in SEARCH_TYPES) {
     expect_equal(test_search(b$.ptr, 0, type), -1L)
   }
 })
@@ -11,7 +11,7 @@ test_that("trivial", {
   b <- ring_buffer_bytes_typed(10, double(1))
   b$push(0.5)
 
-  for (type in search_types) {
+  for (type in SEARCH_TYPES) {
     expect_equal(test_search(b$.ptr, 0.0, type), -1L)
     expect_equal(test_search(b$.ptr, 0.5, type), 0L) # check exact
     expect_equal(test_search(b$.ptr, 1.0, type), 0L)
@@ -24,7 +24,7 @@ test_that("two", {
   b <- ring_buffer_bytes_typed(10, double(1))
   b$push(c(.3, .6))
 
-  for (type in search_types) {
+  for (type in SEARCH_TYPES) {
     expect_equal(test_search(b$.ptr, 0.0, type), -1L)
     expect_equal(test_search(b$.ptr, 0.2, type), -1L)
     expect_equal(test_search(b$.ptr, 0.3, type),  0L)
@@ -39,7 +39,7 @@ test_that("three", {
   b <- ring_buffer_bytes_typed(10, double(1))
   b$push(c(.3, .6, .9))
 
-  for (type in search_types) {
+  for (type in SEARCH_TYPES) {
     expect_equal(test_search(b$.ptr, 0.0, type), -1L)
     expect_equal(test_search(b$.ptr, 0.2, type), -1L)
     expect_equal(test_search(b$.ptr, 0.3, type),  0L)
@@ -60,7 +60,7 @@ test_that("four", {
   b <- ring_buffer_bytes_typed(10, double(1))
   b$push(c(.2, .4, .6, .8))
 
-  for (type in search_types) {
+  for (type in SEARCH_TYPES) {
     expect_equal(test_search(b$.ptr, 0.0, type), -1L)
     expect_equal(test_search(b$.ptr, 0.1, type), -1L)
     expect_equal(test_search(b$.ptr, 0.2, type),  0L)
@@ -75,24 +75,30 @@ test_that("four", {
 })
 
 test_that("nontrivial, unwrapped", {
+  ## (wrapped here refers to the state of the buffer)
   b <- ring_buffer_bytes_typed(10, double(1))
   set.seed(1)
   x <- sort(runif(8))
   b$push(x)
 
-  for (type in search_types) {
-    expect_equal(test_search(b$.ptr, 0.0, type), -1L)
-    expect_equal(test_search(b$.ptr, 1.0, type), length(x) - 1L)
+  y <- runif(10)
+  z <- c(0, x) + diff(c(0, x, 1)) / 2
 
-    y <- runif(10)
-    i <- vapply(y, test_search, 0L, buffer=b$.ptr, type=type)
-    expect_equal(i, findInterval(y, x) - 1L)
+  for (type in SEARCH_TYPES) {
+    for (idx in if (type == "bisect") seq_len(b$used()) - 1L else NA) {
+      ## Confirm the ends can be found
+      expect_equal(test_search(b$.ptr, 0.0, type, idx), -1L)
+      expect_equal(test_search(b$.ptr, 1.0, type, idx), length(x) - 1L)
 
-    i <- vapply(y, test_search, 3L, buffer=b$.ptr, type=type)
-    expect_equal(i, findInterval(y, x) - 1L)
+      i <- viapply(y, test_search, i = idx, buffer = b$.ptr, type = type)
+      expect_equal(i, findInterval(y, x) - 1L)
 
-    i <- vapply(y, test_search, 7L, buffer=b$.ptr, type=type)
-    expect_equal(i, findInterval(y, x) - 1L)
+      i <- viapply(z, test_search, i = idx, buffer = b$.ptr, type = type)
+      expect_equal(i, findInterval(z, x) - 1L)
+
+      i <- viapply(x, test_search, i = idx, buffer = b$.ptr, type = type)
+      expect_equal(i, findInterval(x, x) - 1L)
+    }
   }
 })
 
@@ -107,21 +113,21 @@ test_that("nontrivial, wrapped", {
   y <- runif(10)
   z <- c(0, x) + diff(c(0, x, 1)) / 2
 
-  for (type in search_types) {
-    for (idx in c(0L, 2L, 5L)) {
-      i <- vapply(y, test_search, idx, buffer=b$.ptr, type=type)
-      j <- findInterval(y, x) - 1L
-      expect_equal(i, j)
+  for (type in SEARCH_TYPES) {
+    for (idx in if (type == "bisect") seq_len(b$used()) - 1L else NA) {
+      expect_equal(test_search(b$.ptr, 0.0, type, idx), -1L)
+      expect_equal(test_search(b$.ptr, 1.0, type, idx), length(x) - 1L)
+
+      i <- viapply(y, test_search, i = idx, buffer = b$.ptr, type = type)
+      expect_equal(i, findInterval(y, x) - 1L)
 
       ## Test all the intervals:
-      i <- vapply(z, test_search, idx, buffer=b$.ptr, type=type)
-      j <- findInterval(z, x) - 1L
-      expect_equal(i, j)
+      i <- viapply(z, test_search, i = idx, buffer = b$.ptr, type = type)
+      expect_equal(i, findInterval(z, x) - 1L)
 
       ## Test all the values:
-      i <- vapply(x, test_search, idx, buffer=b$.ptr, type=type)
-      j <- findInterval(x, x) - 1L
-      expect_equal(i, j)
+      i <- viapply(x, test_search, i = idx, buffer = b$.ptr, type = type)
+      expect_equal(i, findInterval(x, x) - 1L)
     }
   }
 })

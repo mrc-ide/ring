@@ -383,8 +383,8 @@ const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
   const void *x0 = ring_buffer_tail_offset(buffer, i0), *x1;
   int inc = 1;
 
-  // Predicate should return 1 if we should look further back, -1
-  // otherwise.
+  // Predicate should return true if we should look further back
+  // (increase the tail offset), false otherwise.
   if (pred((void*) x0, data)) { // advance up until we hit the top
     if (i0 == (int)n - 1) { // guess is already *at* the top.
       return x0;
@@ -399,17 +399,23 @@ const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
       if (i1 >= (int)n) { // off the end of the buffer
         i1 = n - 1;
         x1 = ring_buffer_tail_offset(buffer, i1);
+        if (pred((void*) x1, data)) {
+          return x1;
+        }
         break;
       }
       x1 = ring_buffer_tail_offset(buffer, i1);
     }
   } else { // advance down
+    // who else uses the bisect search?  they'll have the same issue
+    // that I see here; odin interpolation.
     if (i0 == 0) { // guess is already at the bottom
       return NULL;
     }
+    i1 = i0;
     x1 = x0;
     i0 = i0 - 1;
-    x0 = ring_buffer_tail_offset(buffer, i1);
+    x0 = ring_buffer_tail_offset(buffer, i0);
     while (!pred((void*) x0, data)) {
       i1 = i0;
       x1 = x0;
@@ -417,18 +423,14 @@ const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
       if (i0 < inc) {
         i0 = 0;
         x0 = ring_buffer_tail_offset(buffer, i0);
+        if (!pred((void*) x0, data)) {
+          return NULL;
+        }
         break;
       }
       i0 -= inc;
       x0 = ring_buffer_tail_offset(buffer, i0);
     }
-  }
-
-  // Need to deal specially with this case apparently, but not sure
-  // why.  It's possible that this only needs doing on one of the
-  // early exits from the above loops.
-  if (i1 - i0 == 1 && pred((void*) x1, data)) {
-    x0 = x1;
   }
 
   // TODO: Here, we'll do a bit of trickery because we'll want to
