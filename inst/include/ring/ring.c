@@ -367,7 +367,7 @@ const void * ring_buffer_search_linear(const ring_buffer *buffer,
     }
   } while (1);
 
-  return xl;
+  return NULL; // # nocov
 }
 
 // Do a search.  There a few possibilities of where to start from
