@@ -84,13 +84,14 @@ test_that("nontrivial, unwrapped", {
     expect_equal(test_search(b$.ptr, 0.0, type), -1L)
     expect_equal(test_search(b$.ptr, 1.0, type), length(x) - 1L)
 
-    ## This is rife with off-by-one issues here.  I think that the 4th
-    ## case here (somewhere between the first two values) should come
-    ## out with an offset of zero but I see an offset of one.  That's
-    ## not good and (probably) indicates that I have one of the early
-    ## offsets incorrect.  However, in general, I might be off by one.
     y <- runif(10)
-    i <- vapply(y, test_search, integer(1), buffer=b$.ptr, type=type)
+    i <- vapply(y, test_search, 0L, buffer=b$.ptr, type=type)
+    expect_equal(i, findInterval(y, x) - 1L)
+
+    i <- vapply(y, test_search, 3L, buffer=b$.ptr, type=type)
+    expect_equal(i, findInterval(y, x) - 1L)
+
+    i <- vapply(y, test_search, 7L, buffer=b$.ptr, type=type)
     expect_equal(i, findInterval(y, x) - 1L)
   }
 })
@@ -106,21 +107,21 @@ test_that("nontrivial, wrapped", {
   y <- runif(10)
   z <- c(0, x) + diff(c(0, x, 1)) / 2
 
-  type <- "bisect"
-
   for (type in search_types) {
-    i <- vapply(y, test_search, integer(1), buffer=b$.ptr, type=type)
-    j <- findInterval(y, x) - 1L
-    expect_equal(i, j)
+    for (idx in c(0L, 2L, 5L)) {
+      i <- vapply(y, test_search, idx, buffer=b$.ptr, type=type)
+      j <- findInterval(y, x) - 1L
+      expect_equal(i, j)
 
-    ## Test all the intervals:
-    i <- vapply(z, test_search, integer(1), buffer=b$.ptr, type=type)
-    j <- findInterval(z, x) - 1L
-    expect_equal(i, j)
+      ## Test all the intervals:
+      i <- vapply(z, test_search, idx, buffer=b$.ptr, type=type)
+      j <- findInterval(z, x) - 1L
+      expect_equal(i, j)
 
-    ## Test all the values:
-    i <- vapply(x, test_search, integer(1), buffer=b$.ptr, type=type)
-    j <- findInterval(x, x) - 1L
-    expect_equal(i, j)
+      ## Test all the values:
+      i <- vapply(x, test_search, idx, buffer=b$.ptr, type=type)
+      j <- findInterval(x, x) - 1L
+      expect_equal(i, j)
+    }
   }
 })
