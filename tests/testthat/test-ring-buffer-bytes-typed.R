@@ -84,5 +84,11 @@ test_that("initialisation", {
                "'what' must be one of")
   expect_error(ring_buffer_bytes_typed(5, character(10)),
                "storage.mode(what) must be one of", fixed=TRUE)
+})
 
+test_that("translate", {
+  b <- ring_buffer_bytes_translate(5, 8L, charToRaw, rawToChar)
+  b$push("12345678")
+  expect_equal(b$used(), 1L)
+  expect_equal(b$tail(), "12345678")
 })
