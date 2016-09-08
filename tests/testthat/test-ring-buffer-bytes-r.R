@@ -197,3 +197,20 @@ test_that("duplicate", {
   expect_equal(cpy$size(), n)
   expect_equal(cpy$read(cpy$used()), as.raw(8:13))
 })
+
+test_that("head_advance", {
+  n <- 5
+  s <- 16
+  b <- ring_buffer_bytes(n, s)
+
+  ## Some bytes to stuff into the buffer; enough to wrap the buffer
+  tmp <- lapply(seq_len(n + 2), function(...) random_bytes(s))
+
+  for (i in seq_along(tmp)) {
+    ok <- test_advance_head(b, tmp[[i]])
+    expect_true(ok)
+    expect_identical(b$read_head(1), tmp[[i]])
+    j <- max(1, i - b$used() + 1):i
+    expect_identical(b$read(b$used()), unlist(tmp[j]))
+  }
+})

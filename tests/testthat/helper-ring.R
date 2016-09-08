@@ -50,6 +50,10 @@ test_search <- function(buffer, value, type, i = 0L) {
   search(buffer, value, i)
 }
 
+test_advance_head <- function(b, v) {
+  .Call("test_advance_head", b$.ptr, v)
+}
+
 viapply <- function(X, FUN, ...) {
   vapply(X, FUN, integer(1), ...)
 }

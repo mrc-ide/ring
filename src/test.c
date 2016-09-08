@@ -58,3 +58,16 @@ SEXP test_search_bisect(SEXP r_buffer, SEXP r_value, SEXP r_i) {
     ring_buffer_search_bisect(buffer, i, test_find_double, &value);
   return ScalarInteger(ring_buffer_compute_offset(buffer, x));
 }
+
+// This is a totally stupid function that will copy some bytes onto
+// the head of the ring buffer and then advance the head.  This is how
+// head_advance is meant to be used, and is how I use it in dde.  On
+// exit I check a few conditions about the state of the head.
+SEXP test_advance_head(SEXP r_buffer, SEXP r_value) {
+  ring_buffer *buffer = ring_buffer_get(r_buffer, true);
+  data_t *h = buffer->head;
+  memcpy(h, RAW(r_value), buffer->stride);
+  data_t *h2 = (data_t*) ring_buffer_head_advance(buffer);
+  data_t *h3 = (data_t*) ring_buffer_head(buffer);
+  return ScalarLogical((h != h2) && (h2 == h3));
+}

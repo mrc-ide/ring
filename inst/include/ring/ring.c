@@ -318,8 +318,6 @@ const void * ring_buffer_head_offset(const ring_buffer *buffer, size_t offset) {
   return head;
 }
 
-// TODO: This needs solid testing, but that's actually pretty hard to
-// do because this one is designed only to be used in C code.
 void * ring_buffer_head_advance(ring_buffer *buffer) {
   bool overflow = ring_buffer_full(buffer);
   const data_t *bufend = ring_buffer_end(buffer);
