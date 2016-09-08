@@ -222,7 +222,7 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
   const data_t *bufend = ring_buffer_end(buffer);
   data_t *dest_data = (data_t*) dest; // cast so pointer arithmetic works
 
-  for (size_t nwritten = 0; nwritten < len; ++nwritten) {
+  for (size_t nwritten = 0; nwritten < n; ++nwritten) {
     if (head == buffer->data) {
       head = bufend;
     }
