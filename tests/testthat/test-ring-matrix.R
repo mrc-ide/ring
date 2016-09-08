@@ -77,3 +77,12 @@ test_that("basic use", {
     }
   }
 })
+
+test_that("S3", {
+  nc <- 5L
+  m <- ring_matrix(100, nc, "integer")
+  dat <- matrix(sample(as.integer(1:50), nc * 4), 4, nc)
+  push(m, dat)
+  expect_equal(length(m), length(dat))
+  expect_equal(nrow(m), nrow(dat))
+})

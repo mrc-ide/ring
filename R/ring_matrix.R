@@ -195,5 +195,5 @@ rbind.ring_matrix <- function(...) {
 
 ##' @export
 length.ring_matrix <- function(x) {
-  x$buf$size()
+  x$buf$used() * x$nc
 }
