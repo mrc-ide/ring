@@ -57,3 +57,12 @@ test_advance_head <- function(b, v) {
 viapply <- function(X, FUN, ...) {
   vapply(X, FUN, integer(1), ...)
 }
+
+pool <- function(type, n) {
+  pool <- switch(type,
+                 logical=c(TRUE, FALSE, NA),
+                 integer=as.integer(1:50),
+                 double=rnorm(50),
+                 complex=complex(real=rnorm(20), imaginary=rnorm(20)))
+  sample(pool, n, TRUE)
+}

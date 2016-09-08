@@ -13,6 +13,9 @@
 ##' The \code{push} function is generic and can be used to push
 ##' elements onto either a \code{ring_vector} or a \code{ring_matrix}.
 ##'
+##' Note that these are implemented more as proof-of-concepts rather
+##' than really robust data types.
+##'
 ##' @title Ring vectors and matrices
 ##'
 ##' @param length_max The maximum number of elements
@@ -78,14 +81,8 @@ ring_vector_get <- function(x, i=NULL) {
       }
     }
   } else {
-    if (is.logical(i)) {
-      i <- which(i)
-    } else if (!(is.integer(i) || is.numeric(i))) {
-      stop("Invalid type for index")
-    } else if (any(i < 0)) {
-      i <- seq_len(x$used())[i]
-    }
-
+    len <- x$buf$used()
+    i <- ring_vector_index(i, len)
     ret <- create[[x$type]](length(i))
     ## TODO: in theory this should be done by doing relative offsets
     ## against the last place we looked but that's complicated.  Doing
@@ -95,7 +92,8 @@ ring_vector_get <- function(x, i=NULL) {
     ## version.  But probably also worth doing this over unique values
     ## of i?
     for (j in seq_along(i)) {
-      ret[j] <- x$buf$tail_offset(i[[j]] - 1L)
+      k <- i[[j]]
+      ret[j] <- if (k <= len) x$buf$tail_offset(k - 1L) else NA
     }
   }
 
@@ -138,4 +136,19 @@ c.ring_vector <- function(..., recursive=TRUE) {
     }
     x
   }
+}
+
+ring_vector_index <- function(i, len) {
+  if (is.logical(i)) {
+    if (length(i) < len) {
+      i <- rep_len(i, len)
+    }
+    i <- which(i)
+  } else if (!is.numeric(i)) {
+    stop("Invalid type for index")
+  } else if (any(i < 0)) {
+    ## Negative indexing drops things
+    i <- seq_len(len)[i]
+  }
+  i
 }

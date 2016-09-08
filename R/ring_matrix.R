@@ -68,14 +68,8 @@ ring_matrix_get <- function(x, i=NULL) {
     }
     ret <- matrix(dat, ncol=x$nc, byrow=TRUE)
   } else {
-    if (is.logical(i)) {
-      i <- which(i)
-    } else if (!(is.integer(i) || is.numeric(i))) {
-      stop("Invalid type for index")
-    } else if (any(i < 0)) {
-      i <- seq_len(x$used())[i]
-    }
-
+    len <- x$buf$used()
+    i <- ring_vector_index(i, len)
     ret <- matrix(create[[x$type]](length(i) * x$nc), length(i), x$nc)
     ## TODO: in theory this should be done by doing relative offsets
     ## against the last place we looked but that's complicated.  Doing
@@ -85,7 +79,8 @@ ring_matrix_get <- function(x, i=NULL) {
     ## version.  But probably also worth doing this over unique values
     ## of i?
     for (j in seq_along(i)) {
-      ret[j, ] <- x$buf$tail_offset(i[[j]] - 1L)
+      k <- i[[j]]
+      ret[j, ] <- if (k <= len) x$buf$tail_offset(k - 1L) else NA
     }
   }
 

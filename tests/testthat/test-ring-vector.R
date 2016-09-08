@@ -63,3 +63,41 @@ test_that("S3", {
   push(v, seq_len(4))
   expect_equal(length(v), 4)
 })
+
+test_that("indexing", {
+  for (environment in c(TRUE, FALSE)) {
+    for (type in names(sizes)) {
+      n <- 100L
+      m <- 20L
+      v <- ring_vector(n, type, environment)
+      dat <- pool(type, m)
+      push(v, dat)
+
+      i <- runif(m) < 0.5
+      expect_equal(v[i], dat[i])
+
+      i <- runif(m / 2) < 0.5
+      expect_equal(v[i], dat[i])
+
+      i <- runif(m * 2) < 0.5
+      expect_equal(v[i], dat[i])
+
+      i <- runif(m - 1) < 0.5
+      expect_equal(v[i], dat[i])
+
+      i <- sample(m, m / 2)
+      expect_equal(v[i], dat[i])
+
+      j <- -i
+      expect_equal(v[j], dat[j])
+
+      ## Mixed:
+      expect_error(v[c(i, j)], "only 0's may be mixed with negative")
+
+      k <- c(0, j)
+      expect_equal(v[k], dat[k])
+
+      expect_error(v["one"], "Invalid type for index")
+    }
+  }
+})

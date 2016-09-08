@@ -86,3 +86,45 @@ test_that("S3", {
   expect_equal(length(m), length(dat))
   expect_equal(nrow(m), nrow(dat))
 })
+
+test_that("indexing", {
+  for (environment in c(TRUE, FALSE)) {
+    for (type in names(sizes)) {
+      n <- 100L
+      nc <- 6L
+      m <- 20
+      mat <- ring_matrix(n, nc, type, environment)
+      dat <- matrix(pool(type, m * nc), m, nc)
+      push(mat, dat)
+
+      i <- runif(m) < 0.5
+      expect_equal(mat[i, ], dat[i, ])
+
+      i <- runif(m / 2) < 0.5
+      expect_equal(mat[i, ], dat[i, ])
+
+      ## Interestingly, dat[i, ] throws an error here, being different
+      ## to behaviour for the vector case...
+      ##
+      ## i <- runif(m * 2) < 0.5
+      ## expect_equal(mat[i, ], dat[i, ])
+
+      i <- runif(m - 1) < 0.5
+      expect_equal(mat[i, ], dat[i, ])
+
+      i <- sample(m, m / 2)
+      expect_equal(mat[i, ], dat[i, ])
+
+      j <- -i
+      expect_equal(mat[j, ], dat[j, ])
+
+      ## matixed:
+      expect_error(mat[c(i, j)], "only 0's may be mixed with negative")
+
+      k <- c(0, j)
+      expect_equal(mat[k, ], dat[k, ])
+
+      expect_error(mat["one", ], "Invalid type for index")
+    }
+  }
+})

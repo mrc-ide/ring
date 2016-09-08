@@ -48,5 +48,8 @@ you'd want to redo this with column storage.
 
 The \code{push} function is generic and can be used to push
 elements onto either a \code{ring_vector} or a \code{ring_matrix}.
+
+Note that these are implemented more as proof-of-concepts rather
+than really robust data types.
 }
 
