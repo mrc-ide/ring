@@ -262,6 +262,19 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
 // checked.
 const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n);
 
+// Mirror the contents of ring buffer `src` into ring buffer `dest`.
+// This differs from `ring_buffer_copy` in that the `src` buffer is
+// not modified and that the *entire* state of the ring buffer is
+// duplicated.
+//
+// The function requires (and checks) that `src` and `dest` agree on
+// size and stride (and therefore total bytes).  It returns `true` if
+// the mirror was done, and `false` if the buffers are incompatible.
+//
+// This function will destroy all data in `dest`, but not allocate any
+// memory.
+bool ring_buffer_mirror(const ring_buffer *src, ring_buffer *dest);
+
 // Returns a pointer to the tail (reading end) of the buffer, offset
 // by `offset` entries.  When used as `ring_buffer_tail_offset(x, 0)`
 // this is equivalent to `ring_buffer_tail(x)` except that it will do

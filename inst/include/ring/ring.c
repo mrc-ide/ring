@@ -52,9 +52,7 @@ ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
     return NULL;
   }
 #endif
-  memcpy(ret->data, buffer->data, ret->bytes_data);
-  ret->head += ring_buffer_head_pos(buffer, true);
-  ret->tail += ring_buffer_tail_pos(buffer, true);
+  ring_buffer_mirror(buffer, ret);
   return ret;
 }
 
@@ -269,6 +267,16 @@ const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n) {
   }
 
   return dest->head;
+}
+
+bool ring_buffer_mirror(const ring_buffer *src, ring_buffer *dest) {
+  bool ok = src->size == dest->size && src->stride == dest->stride;
+  if (ok) {
+    memcpy(dest->data, src->data, dest->bytes_data);
+    dest->head = dest->data + ring_buffer_head_pos(src, true);
+    dest->tail = dest->data + ring_buffer_tail_pos(src, true);
+  }
+  return ok;
 }
 
 const void * ring_buffer_tail_offset(const ring_buffer *buffer, size_t offset) {
