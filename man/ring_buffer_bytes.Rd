@@ -119,17 +119,17 @@ differences between implementations will be a bit more apparent.
     }
   }
 }
-\item{\code{empty}}{
+\item{\code{is_empty}}{
   Test if the ring buffer is empty
 
   \emph{Usage:}
-  \code{empty()}
+  \code{is_empty()}
 }
-\item{\code{full}}{
+\item{\code{is_full}}{
   Test if the ring buffer is full
 
   \emph{Usage:}
-  \code{full()}
+  \code{is_full()}
 }
 \item{\code{head_pos}}{
   Return the number of entries from the "start" of the ring buffer the head is.  This is mostly useful for debugging.
@@ -324,7 +324,7 @@ b$used()
 b$free()
 
 # Nothing is used because we're empty:
-b$empty()
+b$is_empty()
 
 # To work with a bytes buffer you need to use R's raw vectors;
 # here are 30 random bytes:

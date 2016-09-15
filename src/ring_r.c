@@ -38,12 +38,12 @@ SEXP R_ring_buffer_bytes_data(SEXP extPtr) {
   return ScalarInteger(ring_buffer_bytes_data(ring_buffer_get(extPtr, true)));
 }
 
-SEXP R_ring_buffer_full(SEXP extPtr) {
-  return ScalarLogical(ring_buffer_full(ring_buffer_get(extPtr, true)));
+SEXP R_ring_buffer_is_full(SEXP extPtr) {
+  return ScalarLogical(ring_buffer_is_full(ring_buffer_get(extPtr, true)));
 }
 
-SEXP R_ring_buffer_empty(SEXP extPtr) {
-  return ScalarLogical(ring_buffer_empty(ring_buffer_get(extPtr, true)));
+SEXP R_ring_buffer_is_empty(SEXP extPtr) {
+  return ScalarLogical(ring_buffer_is_empty(ring_buffer_get(extPtr, true)));
 }
 
 // NOTE: this is slightly different behaviour than the C API because
@@ -51,7 +51,7 @@ SEXP R_ring_buffer_empty(SEXP extPtr) {
 // the head contents.
 SEXP R_ring_buffer_head(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  if (ring_buffer_empty(buffer)) {
+  if (ring_buffer_is_empty(buffer)) {
     Rf_error("Buffer is empty");
   }
   SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
@@ -63,7 +63,7 @@ SEXP R_ring_buffer_head(SEXP extPtr) {
 
 SEXP R_ring_buffer_tail(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  if (ring_buffer_empty(buffer)) {
+  if (ring_buffer_is_empty(buffer)) {
     Rf_error("Buffer is empty");
   }
   SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));

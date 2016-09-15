@@ -122,17 +122,17 @@ differences between implementations will be a bit more apparent.
     }
   }
 }
-\item{\code{empty}}{
+\item{\code{is_empty}}{
   Test if the ring buffer is empty
 
   \emph{Usage:}
-  \code{empty()}
+  \code{is_empty()}
 }
-\item{\code{full}}{
+\item{\code{is_full}}{
   Test if the ring buffer is full
 
   \emph{Usage:}
-  \code{full()}
+  \code{is_full()}
 }
 \item{\code{head_pos}}{
   Return the number of entries from the "start" of the ring buffer the head is.  This is mostly useful for debugging.
@@ -325,7 +325,7 @@ b <- ring_buffer_bytes_typed(30, integer(1))
 b <- ring_buffer_bytes_typed(30, "integer", 1)
 
 # The buffer is empty to start with
-b$empty()
+b$is_empty()
 
 # Note that the buffer has a stride of 4 (see ?ring_buffer_bytes)
 b$stride()

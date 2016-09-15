@@ -60,8 +60,8 @@ buf$free()
 buf$used()
 
 ## ...whether the buffer is empty or full:
-buf$empty()
-buf$full()
+buf$is_empty()
+buf$is_full()
 
 ## To start using the buffer we need to put some data in it.  There
 ## are two functions for adding data:
@@ -75,7 +75,7 @@ buf$full()
 buf$push(letters[1:5])
 
 ## The buffer is no longer empty
-buf$empty()
+buf$is_empty()
 
 ## ...having 5 elements:
 buf$used()
@@ -127,7 +127,7 @@ buf$tail()
 ## To reset the buffer, use `reset()`.  This empies the buffer of all data:
 buf$reset()
 buf$used()
-buf$empty()
+buf$is_empty()
 
 ## ## Application: simulation with recent history
 
@@ -224,8 +224,8 @@ buf <- ring::ring_buffer_bytes(1000)
 ## Most of the same methods apply directly:
 buf$free()
 buf$used()
-buf$full()
-buf$empty()
+buf$is_full()
+buf$is_empty()
 
 ## Generate a byte sequence:
 bytes <- as.raw(0:255)

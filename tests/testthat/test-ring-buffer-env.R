@@ -8,8 +8,8 @@ test_that("empty", {
 
   expect_equal(buf$used(), 0L)
   expect_equal(buf$free(), 10L)
-  expect_true(buf$empty())
-  expect_false(buf$full())
+  expect_true(buf$is_empty())
+  expect_false(buf$is_full())
   expect_equal(buf$head_pos(), 0L)
   expect_equal(buf$tail_pos(), 0L)
 })
@@ -22,8 +22,8 @@ test_that("push", {
   expect_equal(buf$used(), m)
   expect_equal(buf$free(), n - m)
 
-  expect_false(buf$empty())
-  expect_false(buf$full())
+  expect_false(buf$is_empty())
+  expect_false(buf$is_full())
   expect_equal(buf$head_pos(), m)
   expect_equal(buf$tail_pos(), 0L)
 
@@ -85,8 +85,8 @@ test_that("take", {
   expect_equal(buf$take(m - 1), as.list(2:m))
   expect_equal(buf$head_pos(), m)
   expect_equal(buf$tail_pos(), m)
-  expect_true(buf$empty())
-  expect_false(buf$full())
+  expect_true(buf$is_empty())
+  expect_false(buf$is_full())
 })
 
 test_that("take_head", {
@@ -109,15 +109,15 @@ test_that("take_head", {
   expect_equal(buf$take_head(m - 1), as.list(rev(seq_len(m - 1))))
   expect_equal(buf$head_pos(), 0L)
   expect_equal(buf$tail_pos(), 0L)
-  expect_true(buf$empty())
-  expect_false(buf$full())
+  expect_true(buf$is_empty())
+  expect_false(buf$is_full())
 })
 
 test_that("fill buffer, then overflow", {
   n <- 10
   buf <- ring_buffer_env(10)
   buf$push(1:n)
-  expect_true(buf$full())
+  expect_true(buf$is_full())
   expect_equal(buf$used(), n)
   expect_identical(buf$.head, buf$.tail)
 
@@ -129,7 +129,7 @@ test_that("fill buffer, then overflow", {
 
   ## Add one more, causing an overflow:
   buf$push(n + 1)
-  expect_true(buf$full())
+  expect_true(buf$is_full())
   expect_equal(buf$used(), n)
   expect_identical(buf$.head, buf$.tail)
 
@@ -240,7 +240,7 @@ test_that("destruction", {
 test_that("set", {
   buf <- ring_buffer_env(10)
   expect_null(buf$set(1, 10))
-  expect_true(buf$full())
+  expect_true(buf$is_full())
   expect_equal(buf$read(10), rep(list(1), 10))
 })
 

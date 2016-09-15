@@ -8,7 +8,7 @@ test_that("tail offset", {
   bytes <- as.raw(0:255)
   buf <- ring_buffer_bytes(length(bytes))
   expect_equal(buf$push(bytes), length(bytes))
-  expect_true(buf$full())
+  expect_true(buf$is_full())
 
   n <- 20
 
@@ -34,7 +34,7 @@ test_that("tail offset", {
   ## Add a bunch more bytes in so that we wrap the tail:
   cmp <- as.raw(rev(seq_len(n) - 1L))
   buf$push(cmp)
-  expect_true(buf$full())
+  expect_true(buf$is_full())
 })
 
 ## This one duplicates the simple checks used in the environment based
@@ -57,7 +57,7 @@ test_that("head offset", {
   bytes <- as.raw(0:255)
   buf <- ring_buffer_bytes(length(bytes))
   expect_equal(buf$push(bytes), length(bytes))
-  expect_true(buf$full())
+  expect_true(buf$is_full())
 
   n <- 20
 
@@ -77,7 +77,7 @@ test_that("head offset", {
   ## Add a bunch more bytes in so that we wrap the tail:
   cmp <- as.raw(rev(seq_len(n) - 1L))
   buf$push(cmp)
-  expect_true(buf$full())
+  expect_true(buf$is_full())
 
   tmp1 <- vapply(seq_len(256) - 1L,
                  function(x) buf$head_offset(x), raw(1))
@@ -114,7 +114,7 @@ test_that("take_head", {
   n <- length(bytes)
   buf <- ring_buffer_bytes(n)
   expect_equal(buf$push(bytes), n)
-  expect_true(buf$full())
+  expect_true(buf$is_full())
 
   expect_equal(buf$read_head(0), raw(0))
   expect_equal(buf$read_head(1), tail(bytes, 1))

@@ -36,7 +36,7 @@
 ##' b <- ring_buffer_bytes_typed(30, "integer", 1)
 ##'
 ##' # The buffer is empty to start with
-##' b$empty()
+##' b$is_empty()
 ##'
 ##' # Note that the buffer has a stride of 4 (see ?ring_buffer_bytes)
 ##' b$stride()

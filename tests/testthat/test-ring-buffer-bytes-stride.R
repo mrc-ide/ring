@@ -28,8 +28,8 @@ test_that("empty", {
   expect_equal(buf$tail_pos(FALSE), 0L)
   expect_equal(buf$tail_pos(), 0L)
 
-  expect_true(buf$empty())
-  expect_false(buf$full())
+  expect_true(buf$is_empty())
+  expect_false(buf$is_full())
 })
 
 test_that("set", {
@@ -42,8 +42,8 @@ test_that("set", {
   expect_equal(buf$set(as.raw(1), n), n)
 
   ## Lots of checking of the state of the buffer:
-  expect_false(buf$empty())
-  expect_false(buf$full())
+  expect_false(buf$is_empty())
+  expect_false(buf$is_full())
 
   expect_equal(buf$size(TRUE), size * stride)
   expect_equal(buf$size(FALSE), size)
@@ -86,8 +86,8 @@ test_that("set", {
   expect_equal(buf$take(0), raw())
   expect_equal(buf$take(1), as.raw(rep(1, stride)))
 
-  expect_false(buf$empty())
-  expect_false(buf$full())
+  expect_false(buf$is_empty())
+  expect_false(buf$is_full())
 
   expect_equal(buf$head_pos(TRUE), n * stride)
   expect_equal(buf$head_pos(FALSE), n)
@@ -112,8 +112,8 @@ test_that("set", {
   expect_equal(buf$take(n - 1),
                as.raw(rep(1, (n - 1) * stride)))
 
-  expect_true(buf$empty())
-  expect_false(buf$full())
+  expect_true(buf$is_empty())
+  expect_false(buf$is_full())
 
   expect_equal(buf$head_pos(TRUE), n * stride)
   expect_equal(buf$head_pos(FALSE), n)

@@ -83,17 +83,17 @@
 ##'     }
 ##'   }
 ##' }
-##' \item{\code{empty}}{
+##' \item{\code{is_empty}}{
 ##'   Test if the ring buffer is empty
 ##'
 ##'   \emph{Usage:}
-##'   \code{empty()}
+##'   \code{is_empty()}
 ##' }
-##' \item{\code{full}}{
+##' \item{\code{is_full}}{
 ##'   Test if the ring buffer is full
 ##'
 ##'   \emph{Usage:}
-##'   \code{full()}
+##'   \code{is_full()}
 ##' }
 ##' \item{\code{head_pos}}{
 ##'   Return the number of entries from the "start" of the ring buffer the head is.  This is mostly useful for debugging.

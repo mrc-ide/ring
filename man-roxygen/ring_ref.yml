@@ -74,11 +74,11 @@ free:
       which is the default).
   return: A scalar integer
 
-empty:
+is_empty:
   short: Test if the ring buffer is empty
   return: A scalar logical
 
-full:
+is_full:
   short: Test if the ring buffer is full
   return: A scalar logical
 

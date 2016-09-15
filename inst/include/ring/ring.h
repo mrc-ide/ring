@@ -114,8 +114,8 @@ size_t ring_buffer_used(const ring_buffer *buffer, bool bytes);
 size_t ring_buffer_bytes_data(const ring_buffer *buffer);
 
 // Report if the ring buffer is full or empty
-bool ring_buffer_full(const ring_buffer *buffer);
-bool ring_buffer_empty(const ring_buffer *buffer);
+bool ring_buffer_is_full(const ring_buffer *buffer);
+bool ring_buffer_is_empty(const ring_buffer *buffer);
 
 //// Additional querying: ////
 

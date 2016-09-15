@@ -84,11 +84,11 @@ size_t ring_buffer_bytes_data(const ring_buffer *buffer) {
   return buffer->bytes_data;
 }
 
-bool ring_buffer_full(const ring_buffer *buffer) {
+bool ring_buffer_is_full(const ring_buffer *buffer) {
   return ring_buffer_free(buffer, true) == 0;
 }
 
-bool ring_buffer_empty(const ring_buffer *buffer) {
+bool ring_buffer_is_empty(const ring_buffer *buffer) {
   return ring_buffer_free(buffer, true) == ring_buffer_size(buffer, true);
 }
 
@@ -327,7 +327,7 @@ const void * ring_buffer_head_offset(const ring_buffer *buffer, size_t offset) {
 }
 
 void * ring_buffer_head_advance(ring_buffer *buffer) {
-  bool overflow = ring_buffer_full(buffer);
+  bool overflow = ring_buffer_is_full(buffer);
   const data_t *bufend = ring_buffer_end(buffer);
 
   buffer->head += buffer->stride;

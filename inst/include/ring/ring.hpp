@@ -16,8 +16,8 @@ public:
   size_t free(bool bytes) const;
   size_t used(bool bytes) const;
   size_t bytes_data() const;
-  bool full() const;
-  bool empty() const;
+  bool is_full() const;
+  bool is_empty() const;
   const void * data() const;
   const void * head() const;
   const void * tail() const;

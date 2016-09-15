@@ -35,7 +35,7 @@
 ##' b$free()
 ##'
 ##' # Nothing is used because we're empty:
-##' b$empty()
+##' b$is_empty()
 ##'
 ##' # To work with a bytes buffer you need to use R's raw vectors;
 ##' # here are 30 random bytes:
@@ -113,8 +113,8 @@ ring_buffer_bytes <- function(size, stride=1L) {
     used=function(bytes=FALSE) .Call(Cring_buffer_used, self$.ptr, bytes),
     free=function(bytes=FALSE) .Call(Cring_buffer_free, self$.ptr, bytes),
 
-    empty=function() .Call(Cring_buffer_empty, self$.ptr),
-    full=function() .Call(Cring_buffer_full, self$.ptr),
+    is_empty=function() .Call(Cring_buffer_is_empty, self$.ptr),
+    is_full=function() .Call(Cring_buffer_is_full, self$.ptr),
 
     head_pos=function(bytes=FALSE) {
       .Call(Cring_buffer_head_pos, self$.ptr, bytes)

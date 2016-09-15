@@ -70,8 +70,8 @@ buf$used()
 
 ...whether the buffer is empty or full:
 ``` {r }
-buf$empty()
-buf$full()
+buf$is_empty()
+buf$is_full()
 ```
 
 To start using the buffer we need to put some data in it.  There
@@ -89,7 +89,7 @@ buf$push(letters[1:5])
 
 The buffer is no longer empty
 ``` {r }
-buf$empty()
+buf$is_empty()
 ```
 
 ...having 5 elements:
@@ -162,7 +162,7 @@ To reset the buffer, use `reset()`.  This empies the buffer of all data:
 ``` {r }
 buf$reset()
 buf$used()
-buf$empty()
+buf$is_empty()
 ```
 
 ## Application: simulation with recent history
@@ -272,8 +272,8 @@ Most of the same methods apply directly:
 ``` {r }
 buf$free()
 buf$used()
-buf$full()
-buf$empty()
+buf$is_full()
+buf$is_empty()
 ```
 
 Generate a byte sequence:

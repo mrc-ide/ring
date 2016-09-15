@@ -43,11 +43,11 @@ size_t RingBuffer::used(bool bytes) const {
 size_t RingBuffer::bytes_data() const {
   return ring_buffer_bytes_data(buffer);
 }
-bool RingBuffer::full() const {
-  return ring_buffer_full(buffer);
+bool RingBuffer::is_full() const {
+  return ring_buffer_is_full(buffer);
 }
-bool RingBuffer::empty() const {
-  return ring_buffer_empty(buffer);
+bool RingBuffer::is_empty() const {
+  return ring_buffer_is_empty(buffer);
 }
 const void * RingBuffer::data() const {
   return ring_buffer_data(buffer);

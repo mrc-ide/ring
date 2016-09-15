@@ -136,8 +136,8 @@ ring_buffer_env_duplicate <- function(buffer) {
     used=function() self$.buffer$.used,
     free=function() self$size() - self$used(),
 
-    empty=function() self$used() == 0L,
-    full=function() self$used() == self$size(),
+    is_empty=function() self$used() == 0L,
+    is_full=function() self$used() == self$size(),
 
     ## Mostly debugging:
     head_pos=function() {
