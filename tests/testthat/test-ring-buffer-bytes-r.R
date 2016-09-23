@@ -284,3 +284,49 @@ test_that("overflow error; push", {
   expect_true(b2$is_empty())
   expect_true(b1$is_full())
 })
+
+## Then growth, for which we also have to test where we get to, which
+## is a bit more of a faff.  However, if the error is thrown correctly
+## for all of the above tests, we should be able to get away with just
+## running this for one and checking carefully it does the right thing.
+test_that("overflow grow; set", {
+  PHI <- 1.6180339887
+  n <- 10
+  s <- 6
+  b <- ring_buffer_bytes(n, s, "grow")
+  pat <- random_bytes(1)
+  newlen <- ceiling(n * PHI)
+
+  expect_equal(b$size(), n)
+  expect_equal(b$set(pat, n + 1), n + 1)
+  expect_equal(b$size(), newlen)
+  expect_equal(b$size(TRUE), newlen * s)
+  expect_equal(b$bytes_data(), (newlen + 1) * s)
+
+  expect_equal(b$head_pos(), n + 1)
+  expect_equal(b$tail_pos(), 0)
+  expect_equal(b$used(), n + 1)
+  expect_equal(b$free(), newlen - (n + 1))
+
+  expect_equal(b$read(n + 1), rep(pat, (n + 1) * s))
+  b$set(pat, 1)
+  expect_equal(b$size(), newlen)
+
+  ## Now, try and grow this a *lot* more and make sure that we
+  ## increase size the right number of times.
+  m <- 30 * n
+  ceiling(newlen * PHI * ceiling(log((m + n + 2) / newlen, PHI)))
+
+  newlen2 <- ceiling(newlen * PHI ^ ceiling(log((m + n + 2) / newlen, PHI)))
+  b$set(pat, 30 * n)
+  expect_equal(b$size(), newlen2)
+  expect_equal(b$used(), m + n + 2)
+
+  pat2 <- random_bytes(1)
+  b2 <- ring_buffer_bytes(n, s, "grow")
+  b2$set(pat, n)
+  expect_equal(b2$take(n - 2), rep(pat, (n - 2) * s))
+  b2$set(pat2, n - 2)
+  expect_equal(b2$size(), n)
+  expect_true(b2$is_full())
+})
