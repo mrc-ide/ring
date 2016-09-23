@@ -259,3 +259,28 @@ test_that("overflow error; set_stride", {
                fixed=TRUE)
   expect_equal(b$take(1), pat)
 })
+
+test_that("overflow error; push", {
+  n <- 10
+  s <- 6
+  b <- ring_buffer_bytes(n, s, "error")
+
+  expect_error(b$push(random_bytes((n + 1) * s)),
+               "Buffer overflow (adding 11 elements, but 10 available)",
+               fixed=TRUE)
+  expect_true(b$is_empty())
+})
+
+test_that("overflow error; push", {
+  n <- 10
+  s <- 6
+  b1 <- ring_buffer_bytes(n + 1, s)
+  b2 <- ring_buffer_bytes(n, s, "error")
+
+  b1$push(random_bytes((n + 1) * s))
+  expect_error(b1$copy(b2, n + 1),
+               "Buffer overflow (adding 11 elements, but 10 available)",
+               fixed = TRUE)
+  expect_true(b2$is_empty())
+  expect_true(b1$is_full())
+})
