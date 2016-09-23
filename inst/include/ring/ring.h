@@ -180,7 +180,7 @@ const void * ring_buffer_tail(const ring_buffer *buffer);
 //
 //   c: value (0-255) to set all bytes to
 //
-//   len: number of elements to set
+//   n: number of elements to set
 //
 // This starts adding data at `head`.  If the buffer will overflow, at
 // most `bytes_data` bytes will be written (i.e., each element will be
@@ -188,7 +188,7 @@ const void * ring_buffer_tail(const ring_buffer *buffer);
 //
 // Returns the number of bytes actually written to the buffer (so if
 // the buffer overflows this may be less than `len`).
-size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t len);
+size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t n);
 
 // Set a number of the elements of the buffer to a particular byte
 // pattern.  In contrast with `ring_buffer_set`, this does not set
@@ -199,12 +199,12 @@ size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t len);
 //    x: pointer to a set of data to copy into the ring buffer.  This
 //            must be (at least) stride bytes long.
 //
-//    len: number of elements to set
+//    n: number of elements to set
 //
 // This starts adding data at `head`.  If the buffer will overflow, at
 // most `bytes_data` bytes will be written (i.e., each element will be
 // written to once).
-size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t len);
+size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t n);
 
 //// Read and write ////
 

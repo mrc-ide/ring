@@ -1,8 +1,8 @@
 #include <ring/ring.h>
 
 // Some prototypes used here that aren't public:
-void ring_buffer_grow(ring_buffer *buffer, size_t nbytes);
-bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t nbytes);
+void ring_buffer_grow(ring_buffer *buffer, size_t n);
+bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t n);
 const data_t * ring_buffer_end(const ring_buffer *buffer);
 data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p);
 int imin(int a, int b);
@@ -62,26 +62,32 @@ ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
   return ret;
 }
 
-// This number is ~log(phi)
-#define RING_GROW_FACTOR 0.481211825028767
-void ring_buffer_grow(ring_buffer *buffer, size_t nbytes) {
+#define LOG_PHI 0.481211825028767
+void ring_buffer_grow(ring_buffer *buffer, size_t n) {
   const size_t
-    curr_size = ring_buffer_size(buffer, true),
-    curr_used = ring_buffer_used(buffer, true),
+    curr_size = ring_buffer_size(buffer, false),
+    curr_used = ring_buffer_used(buffer, false),
     head_pos = ring_buffer_head_pos(buffer, true),
     tail_pos = ring_buffer_tail_pos(buffer, true);
 
-  const size_t min_new_size = curr_used + nbytes;
-  const double r = ceil(log(min_new_size / curr_size) / RING_GROW_FACTOR);
-  const size_t size_new = ceil(curr_size * exp(r * RING_GROW_FACTOR));
+  const double r = (double) (curr_used + n) / (double) curr_size;
+  const size_t size =
+    ceil(curr_size * exp(ceil(log(r) / LOG_PHI) * LOG_PHI));
+  const size_t bytes_data = (size + 1) * buffer->stride;
+
+#ifdef USING_R
+  Rprintf("growing buffer %d --> %d\n", curr_size, size);
+#endif
 
 #ifdef RING_USE_STDLIB_ALLOC
-  buffer->data = (data_t*) realloc(buffer->data, size_new * sizeof(data_t));
+  buffer->data = (data_t*) realloc(buffer->data, bytes_data * sizeof(data_t));
 #else
-  buffer->data = (data_t*) Realloc(buffer->data, size_new, data_t);
+  buffer->data = (data_t*) Realloc(buffer->data, bytes_data, data_t);
 #endif
   buffer->head = buffer->data + head_pos;
-  buffer->tail = buffer->tail + tail_pos;
+  buffer->tail = buffer->data + tail_pos;
+  buffer->size = size;
+  buffer->bytes_data = bytes_data;
 }
 
 // Below here, nothing else should vary on RING_USE_STDLIB_ALLOC,
@@ -141,13 +147,12 @@ const void * ring_buffer_data(const ring_buffer *buffer) {
 }
 
 size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t n) {
-  const data_t *bufend = ring_buffer_end(buffer);
-  size_t nbytes = n * buffer->stride;
   if (buffer->on_overflow == OVERFLOW_OVERWRITE) {
-    nbytes = imin(nbytes, ring_buffer_bytes_data(buffer));
+    n = imin(n, ring_buffer_size(buffer, false) + 1);
   }
-  const bool overflow = ring_buffer_handle_overflow(buffer, nbytes);
-  size_t nwritten = 0;
+  const bool overflow = ring_buffer_handle_overflow(buffer, n);
+  size_t nwritten = 0, nbytes = n * buffer->stride;
+  const data_t *bufend = ring_buffer_end(buffer);
 
   while (nwritten != nbytes) {
     // don't copy beyond the end of the buffer
@@ -171,23 +176,23 @@ size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t n) {
 
 // A downside of the current approach here is that we will go through
 // the overflow check function n times.
-size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t len) {
+size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t n) {
   if (buffer->on_overflow == OVERFLOW_OVERWRITE) {
-    len = imin(len, ring_buffer_size(buffer, false));
+    n = imin(n, ring_buffer_size(buffer, false));
   } else {
-    ring_buffer_handle_overflow(buffer, len * buffer->stride);
+    ring_buffer_handle_overflow(buffer, n);
   }
-  for (size_t i = 0; i < len; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     ring_buffer_push(buffer, x, 1);
   }
-  return len;
+  return n;
 }
 
 const void * ring_buffer_push(ring_buffer *buffer, const void *src, size_t n) {
+  const size_t overflow = ring_buffer_handle_overflow(buffer, n);
   const size_t nbytes = n * buffer->stride;
   const data_t *source = (const data_t*)src;
   const data_t *bufend = ring_buffer_end(buffer);
-  const size_t overflow = ring_buffer_handle_overflow(buffer, nbytes);
   size_t nread = 0;
   while (nread != nbytes) {
     size_t n = imin(bufend - buffer->head, nbytes - nread);
@@ -278,7 +283,7 @@ const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n) {
   if (nbytes > src_bytes_used) {
     return NULL;
   }
-  const bool overflow = ring_buffer_handle_overflow(dest, nbytes);
+  const bool overflow = ring_buffer_handle_overflow(dest, n);
 
   const data_t *src_bufend = ring_buffer_end(src);
   const data_t *dest_bufend = ring_buffer_end(dest);
@@ -365,7 +370,7 @@ const void * ring_buffer_head_offset(const ring_buffer *buffer, size_t offset) {
 }
 
 void * ring_buffer_head_advance(ring_buffer *buffer) {
-  const bool overflow = ring_buffer_handle_overflow(buffer, buffer->stride);
+  const bool overflow = ring_buffer_handle_overflow(buffer, 1);
   const data_t *bufend = ring_buffer_end(buffer);
 
   buffer->head += buffer->stride;
@@ -516,20 +521,20 @@ int imin(int a, int b) {
   return a < b ? a : b;
 }
 
-bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t nbytes) {
-  bool overflow = ring_buffer_free(buffer, true) < nbytes;
+bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t n) {
+  bool overflow = ring_buffer_free(buffer, true) < n * buffer->stride;
   if (overflow) {
     switch (buffer->on_overflow) {
     case OVERFLOW_OVERWRITE:
       break; // do nothing
     case OVERFLOW_GROW:
-      ring_buffer_grow(buffer, nbytes);
+      ring_buffer_grow(buffer, n);
       overflow = false;
       break;
 #ifdef USING_R
     case OVERFLOW_ERROR:
       Rf_error("Buffer overflow (adding %d elements, but %d available)",
-               nbytes / buffer->stride, ring_buffer_free(buffer, false));
+               n, ring_buffer_free(buffer, false));
       break;
 #endif
     }
