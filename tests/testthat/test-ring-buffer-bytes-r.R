@@ -214,3 +214,48 @@ test_that("head_advance", {
     expect_identical(b$read(b$used()), unlist(tmp[j]))
   }
 })
+
+## Overflow functions are added to:
+##
+## * set
+## * set_stride
+## * push
+## * copy
+## * head_advance
+
+## Of the different overflow actions, error is the easiest:
+test_that("overflow error; set", {
+  n <- 10
+  s <- 6
+  b <- ring_buffer_bytes(n, s, "error")
+  pat <- random_bytes(1)
+
+  expect_error(b$set(pat, n + 1),
+               "Buffer overflow (adding 11 elements, but 10 available)",
+               fixed=TRUE)
+  expect_true(b$is_empty())
+  b$set(pat, n)
+  expect_true(b$is_full())
+  expect_error(b$set(pat, 1),
+               "Buffer overflow (adding 1 elements, but 0 available)",
+               fixed=TRUE)
+  expect_equal(b$take(1), rep(pat, s))
+})
+
+test_that("overflow error; set_stride", {
+  n <- 10
+  s <- 6
+  b <- ring_buffer_bytes(n, s, "error")
+  pat <- random_bytes(s)
+
+  expect_error(b$set(pat, n + 1),
+               "Buffer overflow (adding 11 elements, but 10 available)",
+               fixed=TRUE)
+  expect_true(b$is_empty())
+  b$set(pat, n)
+  expect_true(b$is_full())
+  expect_error(b$set(pat, 1),
+               "Buffer overflow (adding 1 elements, but 0 available)",
+               fixed=TRUE)
+  expect_equal(b$take(1), pat)
+})

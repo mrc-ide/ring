@@ -17,7 +17,7 @@ int imin(int a, int b);
 
 ring_buffer * ring_buffer_create(size_t size, size_t stride,
                                  overflow_action on_overflow) {
-  size_t bytes_data = (size + 1) * stride;
+  const size_t bytes_data = (size + 1) * stride;
 #ifdef RING_USE_STDLIB_ALLOC
   ring_buffer * buffer = (ring_buffer*) calloc(1, sizeof(ring_buffer));
   if (buffer == NULL) {
@@ -62,18 +62,18 @@ ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
   return ret;
 }
 
-// This number is log(1.5)
-#define RING_BUFFER_GROW_FACTOR 0.405
+// This number is ~log(phi)
+#define RING_GROW_FACTOR 0.481211825028767
 void ring_buffer_grow(ring_buffer *buffer, size_t nbytes) {
-  size_t
+  const size_t
     curr_size = ring_buffer_size(buffer, true),
     curr_used = ring_buffer_used(buffer, true),
     head_pos = ring_buffer_head_pos(buffer, true),
     tail_pos = ring_buffer_tail_pos(buffer, true);
 
-  size_t min_new_size = curr_used + nbytes;
-  double r = ceil(log(min_new_size / curr_size) / RING_BUFFER_GROW_FACTOR);
-  size_t size_new = ceil(curr_size * exp(r * RING_BUFFER_GROW_FACTOR));
+  const size_t min_new_size = curr_used + nbytes;
+  const double r = ceil(log(min_new_size / curr_size) / RING_GROW_FACTOR);
+  const size_t size_new = ceil(curr_size * exp(r * RING_GROW_FACTOR));
 
 #ifdef RING_USE_STDLIB_ALLOC
   buffer->data = (data_t*) realloc(buffer->data, size_new * sizeof(data_t));
@@ -122,11 +122,11 @@ bool ring_buffer_is_empty(const ring_buffer *buffer) {
 }
 
 size_t ring_buffer_head_pos(const ring_buffer *buffer, bool bytes) {
-  size_t diff = buffer->head - buffer->data;
+  const size_t diff = buffer->head - buffer->data;
   return bytes ? diff : diff / buffer->stride;
 }
 size_t ring_buffer_tail_pos(const ring_buffer *buffer, bool bytes) {
-  size_t diff = buffer->tail - buffer->data;
+  const size_t diff = buffer->tail - buffer->data;
   return bytes ? diff : diff / buffer->stride;
 }
 
@@ -142,13 +142,16 @@ const void * ring_buffer_data(const ring_buffer *buffer) {
 
 size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t n) {
   const data_t *bufend = ring_buffer_end(buffer);
+  size_t nbytes = n * buffer->stride;
+  if (buffer->on_overflow == OVERFLOW_OVERWRITE) {
+    nbytes = imin(nbytes, ring_buffer_bytes_data(buffer));
+  }
+  const bool overflow = ring_buffer_handle_overflow(buffer, nbytes);
   size_t nwritten = 0;
-  size_t len = imin(n * buffer->stride, ring_buffer_bytes_data(buffer));
-  bool overflow = ring_buffer_handle_overflow(buffer, len);
 
-  while (nwritten != len) {
+  while (nwritten != nbytes) {
     // don't copy beyond the end of the buffer
-    size_t n = imin(bufend - buffer->head, len - nwritten);
+    const size_t n = imin(bufend - buffer->head, nbytes - nwritten);
     memset(buffer->head, c, n);
     buffer->head += n;
     nwritten += n;
@@ -166,22 +169,28 @@ size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t n) {
   return nwritten;
 }
 
+// A downside of the current approach here is that we will go through
+// the overflow check function n times.
 size_t ring_buffer_set_stride(ring_buffer *buffer, const void *x, size_t len) {
-  size_t n = imin(len, ring_buffer_size(buffer, false));
-  for (size_t i = 0; i < n; ++i) {
+  if (buffer->on_overflow == OVERFLOW_OVERWRITE) {
+    len = imin(len, ring_buffer_size(buffer, false));
+  } else {
+    ring_buffer_handle_overflow(buffer, len * buffer->stride);
+  }
+  for (size_t i = 0; i < len; ++i) {
     ring_buffer_push(buffer, x, 1);
   }
-  return n;
+  return len;
 }
 
 const void * ring_buffer_push(ring_buffer *buffer, const void *src, size_t n) {
-  const size_t len = n * buffer->stride;
+  const size_t nbytes = n * buffer->stride;
   const data_t *source = (const data_t*)src;
   const data_t *bufend = ring_buffer_end(buffer);
-  size_t overflow = len > ring_buffer_free(buffer, true);
+  const size_t overflow = ring_buffer_handle_overflow(buffer, nbytes);
   size_t nread = 0;
-  while (nread != len) {
-    size_t n = imin(bufend - buffer->head, len - nread);
+  while (nread != nbytes) {
+    size_t n = imin(bufend - buffer->head, nbytes - nread);
     memcpy(buffer->head, source + nread, n);
     buffer->head += n;
     nread += n;
@@ -207,8 +216,8 @@ const void * ring_buffer_take(ring_buffer *buffer, void *dest, size_t n) {
 
 const void * ring_buffer_read(const ring_buffer *buffer, void *dest, size_t n) {
   size_t bytes_used = ring_buffer_used(buffer, true);
-  size_t len = n * buffer->stride;
-  if (len > bytes_used) {
+  size_t nbytes = n * buffer->stride;
+  if (nbytes > bytes_used) {
     return NULL;
   }
   const data_t *tail = buffer->tail;
@@ -218,8 +227,8 @@ const void * ring_buffer_read(const ring_buffer *buffer, void *dest, size_t n) {
   // which is probably the same assembly but might be nicer to read?
   // I believe that this is going to be sufficiently tested that I can
   // just try replacing the logic here and seeing if they all pass.
-  while (nwritten != len) {
-    size_t n = imin(bufend - tail, len - nwritten);
+  while (nwritten != nbytes) {
+    size_t n = imin(bufend - tail, nbytes - nwritten);
     memcpy((data_t*)dest + nwritten, tail, n);
     tail += n;
     nwritten += n;
@@ -240,9 +249,9 @@ const void * ring_buffer_take_head(ring_buffer *buffer, void *dest, size_t n) {
 
 const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
                                    size_t n) {
-  size_t bytes_used = ring_buffer_used(buffer, true);
-  size_t len = n * buffer->stride;
-  if (len > bytes_used) {
+  const size_t bytes_used = ring_buffer_used(buffer, true);
+  const size_t nbytes = n * buffer->stride;
+  if (nbytes > bytes_used) {
     return NULL;
   }
   const data_t *head = buffer->head;
@@ -264,18 +273,18 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
 const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n) {
   // TODO: Not clear what should be done (if anything other than an
   // error) if the two buffers differ in their stride.
-  size_t src_bytes_used = ring_buffer_used(src, true);
-  size_t n_bytes = n * src->stride;
-  if (n_bytes > src_bytes_used) {
+  const size_t src_bytes_used = ring_buffer_used(src, true);
+  const size_t nbytes = n * src->stride;
+  if (nbytes > src_bytes_used) {
     return NULL;
   }
-  bool overflow = n_bytes > ring_buffer_free(dest, true);
+  const bool overflow = ring_buffer_handle_overflow(dest, nbytes);
 
   const data_t *src_bufend = ring_buffer_end(src);
   const data_t *dest_bufend = ring_buffer_end(dest);
   size_t ncopied = 0;
-  while (ncopied != n_bytes) {
-    size_t nsrc = imin(src_bufend - src->tail, n_bytes - ncopied);
+  while (ncopied != nbytes) {
+    size_t nsrc = imin(src_bufend - src->tail, nbytes - ncopied);
     size_t n = imin(dest_bufend - dest->head, nsrc);
     memcpy(dest->head, src->tail, n);
     src->tail += n;
@@ -299,7 +308,7 @@ const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n) {
 }
 
 bool ring_buffer_mirror(const ring_buffer *src, ring_buffer *dest) {
-  bool ok = src->size == dest->size && src->stride == dest->stride;
+  const bool ok = src->size == dest->size && src->stride == dest->stride;
   if (ok) {
     memcpy(dest->data, src->data, dest->bytes_data);
     dest->head = dest->data + ring_buffer_head_pos(src, true);
@@ -309,9 +318,9 @@ bool ring_buffer_mirror(const ring_buffer *src, ring_buffer *dest) {
 }
 
 const void * ring_buffer_tail_offset(const ring_buffer *buffer, size_t offset) {
-  size_t bytes_used = ring_buffer_used(buffer, true);
-  size_t len = offset * buffer->stride;
-  if (len >= bytes_used) {
+  const size_t bytes_used = ring_buffer_used(buffer, true);
+  const size_t nbytes = offset * buffer->stride;
+  if (nbytes >= bytes_used) {
     return NULL;
   }
   const data_t *tail = buffer->tail;
@@ -321,8 +330,8 @@ const void * ring_buffer_tail_offset(const ring_buffer *buffer, size_t offset) {
   // TODO: this is really a much simpler construct than this as we can
   // only go around once (see also head_offset below which is
   // basically the same code).
-  while (nmoved < len) {
-    size_t n = imin(bufend - tail, len - nmoved);
+  while (nmoved < nbytes) {
+    size_t n = imin(bufend - tail, nbytes - nmoved);
     tail += n;
     nmoved += n;
     if (tail == bufend) {
@@ -334,20 +343,20 @@ const void * ring_buffer_tail_offset(const ring_buffer *buffer, size_t offset) {
 }
 
 const void * ring_buffer_head_offset(const ring_buffer *buffer, size_t offset) {
-  size_t bytes_used = ring_buffer_used(buffer, true);
-  size_t len = (offset + 1) * buffer->stride;
-  if (len > bytes_used) {
+  const size_t bytes_used = ring_buffer_used(buffer, true);
+  const size_t nbytes = (offset + 1) * buffer->stride;
+  if (nbytes > bytes_used) {
     return NULL;
   }
   const data_t *head = buffer->head;
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nmoved = 0;
 
-  while (nmoved < len) {
+  while (nmoved < nbytes) {
     if (head == buffer->data) {
       head = bufend;
     }
-    size_t n = imin(head - buffer->data, len - nmoved);
+    size_t n = imin(head - buffer->data, nbytes - nmoved);
     head -= n;
     nmoved += n;
   }
@@ -356,7 +365,7 @@ const void * ring_buffer_head_offset(const ring_buffer *buffer, size_t offset) {
 }
 
 void * ring_buffer_head_advance(ring_buffer *buffer) {
-  bool overflow = ring_buffer_is_full(buffer);
+  const bool overflow = ring_buffer_handle_overflow(buffer, buffer->stride);
   const data_t *bufend = ring_buffer_end(buffer);
 
   buffer->head += buffer->stride;
@@ -375,7 +384,7 @@ void * ring_buffer_head_advance(ring_buffer *buffer) {
 // be fast.
 const void * ring_buffer_search_linear(const ring_buffer *buffer,
                                        ring_predicate *pred, void *data) {
-  size_t n = ring_buffer_used(buffer, false);
+  const size_t n = ring_buffer_used(buffer, false);
   if (n == 0) {
     // Don't do any search here; there is no position such that
     //   buffer[i] < data
@@ -410,7 +419,7 @@ const void * ring_buffer_search_linear(const ring_buffer *buffer,
 // at one end and grow, or from a position in the array itself.
 const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
                                        ring_predicate *pred, void *data) {
-  size_t n = ring_buffer_used(buffer, false);
+  const size_t n = ring_buffer_used(buffer, false);
   if (n == 0) {
     return NULL;
   }
@@ -508,8 +517,7 @@ int imin(int a, int b) {
 }
 
 bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t nbytes) {
-  size_t space = ring_buffer_free(buffer, true);
-  bool overflow = space < nbytes;
+  bool overflow = ring_buffer_free(buffer, true) < nbytes;
   if (overflow) {
     switch (buffer->on_overflow) {
     case OVERFLOW_OVERWRITE:
