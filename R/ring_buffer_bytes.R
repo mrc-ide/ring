@@ -23,6 +23,13 @@
 ##'   the buffer, you will probably want more than one byte per
 ##'   element; for example, an integer takes 4 bytes and a double
 ##'   takes 8.
+##' @param on_overflow Behaviour on buffer overflow.  The default is
+##'   to overwrite the oldest elements in the buffer
+##'   (\code{"overwrite"}).  Alternative actions are \code{"error"}
+##'   which will throw an error if a function tries to add more
+##'   elements than there are space for, or \code{"grow"} which will
+##'   grow the buffer to accept the new elements (this uses an
+##'   approximately golden ratio approach).
 ##' @export
 ##' @examples
 ##'
@@ -77,8 +84,8 @@
 ##' # If many new elements are added, they will displace the old elements:
 ##' b$push(as.raw(1:75))
 ##' b$read(b$used())
-ring_buffer_bytes <- function(size, stride=1L) {
-  .R6_ring_buffer_bytes$new(size, stride)
+ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
+  .R6_ring_buffer_bytes$new(size, stride, on_overflow)
 }
 
 ##' @importFrom R6 R6Class
@@ -88,9 +95,10 @@ ring_buffer_bytes <- function(size, stride=1L) {
   public = list(
     .ptr = NULL,
 
-    initialize=function(size, stride, ptr=NULL) {
+    initialize=function(size, stride, on_overflow, ptr=NULL) {
       if (is.null(ptr)) {
-        self$.ptr <- .Call(Cring_buffer_create, size, stride)
+        on_overflow <- check_on_overflow(on_overflow)
+        self$.ptr <- .Call(Cring_buffer_create, size, stride, on_overflow)
       } else {
         self$.ptr <- ptr
       }
@@ -234,8 +242,9 @@ ring_buffer_bytes <- function(size, stride=1L) {
 ##' try(
 ##'   b$push("supercalafragalisticexpealadocious")
 ##' ) # error: string is too long
-ring_buffer_bytes_translate <- function(size, stride, to, from) {
-  .R6_ring_buffer_bytes_translate$new(size, stride, to, from)
+ring_buffer_bytes_translate <- function(size, stride, to, from,
+                                        on_overflow = "overwrite") {
+  .R6_ring_buffer_bytes_translate$new(size, stride, to, from, on_overflow)
 }
 
 ## The definition below must follow .R6_ring_buffer_bytes, so either
@@ -252,10 +261,11 @@ ring_buffer_bytes_translate <- function(size, stride, to, from) {
     from=NULL,
     type=NULL,
 
-    initialize=function(size, stride, to, from, type=NULL, ptr=NULL) {
-      assert_function(to)
+    initialize=function(size, stride, to, from, on_overflow,
+                        type = NULL, ptr = NULL) {
+      assert_function(to)/
       assert_function(from)
-      super$initialize(size, stride, ptr)
+      super$initialize(size, stride, on_overflow, ptr)
       self$to <- to
       self$from <- from
       self$type <- type
@@ -280,3 +290,16 @@ ring_buffer_bytes_translate <- function(size, stride, to, from) {
     take_head=function(n) self$from(super$take_head(n)),
     read_head=function(n) self$from(super$read_head(n))
   ))
+
+## Must match the order in ring.h
+check_on_overflow <- function(on_overflow) {
+  assert_scalar(on_overflow)
+  assert_character(on_overflow)
+  vals <- c("overwrite", "grow", "error")
+  i <- match(on_overflow, vals)
+  if (is.na(i)) {
+    stop("Invalid value for 'on_overflow'; must be one of ",
+         paste(vals, collapse=", "))
+  }
+  as.integer(i - 1L)
+}

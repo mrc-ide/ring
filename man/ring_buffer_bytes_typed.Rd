@@ -4,7 +4,7 @@
 \alias{ring_buffer_bytes_typed}
 \title{Typed bytes buffer}
 \usage{
-ring_buffer_bytes_typed(size, what, len = NULL)
+ring_buffer_bytes_typed(size, what, len = NULL, on_overflow = "overwrite")
 }
 \arguments{
 \item{size}{The maximum number of elements the buffer can hold.
@@ -20,6 +20,14 @@ given, then if \code{length(what)} is zero, the storage mode of
 \code{what} is used as the type.  Otherwise \code{what} is
 interpreted as the \emph{name} of the storage mode (one of
 "logical", "integer", "double" or "complex".}
+
+\item{on_overflow}{Behaviour on buffer overflow.  The default is
+to overwrite the oldest elements in the buffer
+(\code{"overwrite"}).  Alternative actions are \code{"error"}
+which will throw an error if a function tries to add more
+elements than there are space for, or \code{"grow"} which will
+grow the buffer to accept the new elements (this uses an
+approximately golden ratio approach).}
 }
 \description{
 Create a ring buffer, backed by a \code{\link{ring_buffer_bytes}},

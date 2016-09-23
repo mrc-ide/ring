@@ -8,7 +8,7 @@ bool scalar_logical(SEXP x);
 size_t scalar_size(SEXP x);
 
 // Definitions:
-SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride) {
+SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride, SEXP r_on_overflow) {
   size_t size = (size_t)scalar_size(r_size),
     stride = scalar_size(r_stride);
   if (size == 0) {
@@ -17,7 +17,8 @@ SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride) {
   if (stride == 0) {
     Rf_error("Can't create ring buffer with stride 0");
   }
-  return R_ring_buffer_alloc(ring_buffer_create(size, stride));
+  overflow_action on_overflow = scalar_size(r_on_overflow);
+  return R_ring_buffer_alloc(ring_buffer_create(size, stride, on_overflow));
 }
 
 SEXP R_ring_buffer_duplicate(SEXP extPtr) {

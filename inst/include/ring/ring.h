@@ -3,10 +3,29 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#ifndef RING_USE_STDLIB_ALLOC
+#ifndef USING_R
+#define USING_R
+#endif
+#endif
+
 // Allow use from C++
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+// What to do on overflow.  The OVERFLOW_ERROR action (which calls R's
+// error function) is only available when using R, which is detected
+// by the <R.h> header included.  If you are using RING_USE_STDLIB_ALLOC
+// (see below) but want to use OVERFLOW_ERROR then you'll need to
+// include <R.h> as well.
+typedef enum overflow_action {
+  OVERFLOW_OVERWRITE,
+  OVERFLOW_GROW
+#ifdef USING_R
+  , OVERFLOW_ERROR
+#endif
+} overflow_action;
 
 // The underlying data structure.  None of the fields here should be
 // directly accessed in normal use; use the accessor functions
@@ -38,6 +57,7 @@ typedef struct ring_buffer {
   size_t size;
   size_t stride;
   size_t bytes_data;
+  overflow_action on_overflow;
 
   data_t *data;
   data_t *head;
@@ -68,7 +88,12 @@ typedef struct ring_buffer {
 // which will not depend on *any* R code and use stdlib calloc/free.
 // If allocation fails, then ring_buffer_create will return NULL.  So
 // if using this approach be sure to check the return value!
-ring_buffer * ring_buffer_create(size_t size, size_t stride);
+//
+// The main wrinkle to using RING_USE_STDLIB_ALLOC 1 is that the
+// `overflow_action` `OVERFLOW_ERROR` will not work.  At present this
+// will fail to compile, but in future I may add an error handler.
+ring_buffer * ring_buffer_create(size_t size, size_t stride,
+                                 overflow_action on_overflow);
 
 // Destroy a ring buffer.  Frees the memory
 //

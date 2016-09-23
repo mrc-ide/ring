@@ -1,12 +1,17 @@
 #ifndef _RING_HPP_
 #define _RING_HPP_
 
+// NOTE: the C++ version always uses non-R memory allocation functions
+// because otherwise the R error can jump over destructors causing
+// memory leaks or worse.  Errors will be thrown with "throw", which
+// Rcpp will catch if you use that.
+#define RING_USE_STDLIB_ALLOC 1
 #include <ring/ring.h>
 
 class RingBuffer {
   ring_buffer * buffer;
 public:
-  RingBuffer(size_t size, size_t stride);
+  RingBuffer(size_t size, size_t stride, overflow_action on_overflow);
   ~RingBuffer();
   RingBuffer(const RingBuffer& other);
   RingBuffer& operator=(RingBuffer other);

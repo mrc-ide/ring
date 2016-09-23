@@ -9,7 +9,7 @@ SEXP test(SEXP r_n, SEXP r_p) {
   double p = REAL(r_p)[0];
 
   // Stride must be given here.
-  ring_buffer * r = ring_buffer_create(n, sizeof(double));
+  ring_buffer * r = ring_buffer_create(n, sizeof(double), OVERFLOW_OVERWRITE);
 
   // Generate a bunch of random numbers until we hit the cut off 'p'
   GetRNGstate();

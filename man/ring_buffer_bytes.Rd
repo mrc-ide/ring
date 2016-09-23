@@ -4,7 +4,7 @@
 \alias{ring_buffer_bytes}
 \title{Byte array based ring buffer}
 \usage{
-ring_buffer_bytes(size, stride = 1L)
+ring_buffer_bytes(size, stride = 1L, on_overflow = "overwrite")
 }
 \arguments{
 \item{size}{Size of the buffer, each entry of which will be
@@ -15,6 +15,14 @@ byte.  If you want to store anything other than a bytestream in
 the buffer, you will probably want more than one byte per
 element; for example, an integer takes 4 bytes and a double
 takes 8.}
+
+\item{on_overflow}{Behaviour on buffer overflow.  The default is
+to overwrite the oldest elements in the buffer
+(\code{"overwrite"}).  Alternative actions are \code{"error"}
+which will throw an error if a function tries to add more
+elements than there are space for, or \code{"grow"} which will
+grow the buffer to accept the new elements (this uses an
+approximately golden ratio approach).}
 }
 \description{
 Construct a ring buffer where the buffer holds a stream of bytes.

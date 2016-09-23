@@ -4,7 +4,7 @@
 \alias{ring_buffer_bytes_translate}
 \title{Typed bytes ring buffer}
 \usage{
-ring_buffer_bytes_translate(size, stride, to, from)
+ring_buffer_bytes_translate(size, stride, to, from, on_overflow = "overwrite")
 }
 \arguments{
 \item{size}{Size of the buffer, each entry of which will be
@@ -20,6 +20,14 @@ takes 8.}
 \code{stride} bytes.}
 
 \item{from}{Function to convert a set of bytes to an R object.}
+
+\item{on_overflow}{Behaviour on buffer overflow.  The default is
+to overwrite the oldest elements in the buffer
+(\code{"overwrite"}).  Alternative actions are \code{"error"}
+which will throw an error if a function tries to add more
+elements than there are space for, or \code{"grow"} which will
+grow the buffer to accept the new elements (this uses an
+approximately golden ratio approach).}
 }
 \description{
 This ring buffer is based on \code{\link{ring_buffer_bytes}} but

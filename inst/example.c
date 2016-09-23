@@ -10,7 +10,7 @@ int step_x(ring_buffer *r, int x);
 void example(size_t nstep, double *ret) {
   // Construct a ring buffer of (max) size 5, each element of which is
   // big enough to contain an integer (probably 4 bytes).
-  ring_buffer *r = ring_buffer_create(5, sizeof(int));
+  ring_buffer *r = ring_buffer_create(5, sizeof(int), OVERFLOW_OVERWRITE);
 
   // Starting point of the simulation, as in the R version:
   int x = 0;

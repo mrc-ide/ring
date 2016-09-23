@@ -1,6 +1,8 @@
 #include <ring/ring.h>
 
 // Some prototypes used here that aren't public:
+void ring_buffer_grow(ring_buffer *buffer, size_t nbytes);
+bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t nbytes);
 const data_t * ring_buffer_end(const ring_buffer *buffer);
 data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p);
 int imin(int a, int b);
@@ -8,11 +10,13 @@ int imin(int a, int b);
 #ifdef RING_USE_STDLIB_ALLOC
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #else
 #include <R.h>
 #endif
 
-ring_buffer * ring_buffer_create(size_t size, size_t stride) {
+ring_buffer * ring_buffer_create(size_t size, size_t stride,
+                                 overflow_action on_overflow) {
   size_t bytes_data = (size + 1) * stride;
 #ifdef RING_USE_STDLIB_ALLOC
   ring_buffer * buffer = (ring_buffer*) calloc(1, sizeof(ring_buffer));
@@ -31,6 +35,7 @@ ring_buffer * ring_buffer_create(size_t size, size_t stride) {
   buffer->size = size;
   buffer->stride = stride;
   buffer->bytes_data = bytes_data;
+  buffer->on_overflow = on_overflow;
   ring_buffer_reset(buffer);
   return buffer;
 }
@@ -46,7 +51,8 @@ void ring_buffer_destroy(ring_buffer *buffer) {
 }
 
 ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
-  ring_buffer *ret = ring_buffer_create(buffer->size, buffer->stride);
+  ring_buffer *ret = ring_buffer_create(buffer->size, buffer->stride,
+                                        buffer->on_overflow);
 #ifdef RING_USE_STDLIB_ALLOC
   if (ret == NULL) {
     return NULL;
@@ -56,7 +62,30 @@ ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
   return ret;
 }
 
-// Below here, nothing else should vary on RING_USE_STDLIB_ALLOC.
+// This number is log(1.5)
+#define RING_BUFFER_GROW_FACTOR 0.405
+void ring_buffer_grow(ring_buffer *buffer, size_t nbytes) {
+  size_t
+    curr_size = ring_buffer_size(buffer, true),
+    curr_used = ring_buffer_used(buffer, true),
+    head_pos = ring_buffer_head_pos(buffer, true),
+    tail_pos = ring_buffer_tail_pos(buffer, true);
+
+  size_t min_new_size = curr_used + nbytes;
+  double r = ceil(log(min_new_size / curr_size) / RING_BUFFER_GROW_FACTOR);
+  size_t size_new = ceil(curr_size * exp(r * RING_BUFFER_GROW_FACTOR));
+
+#ifdef RING_USE_STDLIB_ALLOC
+  buffer->data = (data_t*) realloc(buffer->data, size_new * sizeof(data_t));
+#else
+  buffer->data = (data_t*) Realloc(buffer->data, size_new, data_t);
+#endif
+  buffer->head = buffer->data + head_pos;
+  buffer->tail = buffer->tail + tail_pos;
+}
+
+// Below here, nothing else should vary on RING_USE_STDLIB_ALLOC,
+// though there is one dependency on USING_R
 
 void ring_buffer_reset(ring_buffer *buffer) {
   buffer->head = buffer->tail = buffer->data;
@@ -115,7 +144,7 @@ size_t ring_buffer_set(ring_buffer *buffer, data_t c, size_t n) {
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;
   size_t len = imin(n * buffer->stride, ring_buffer_bytes_data(buffer));
-  bool overflow = len > ring_buffer_free(buffer, true);
+  bool overflow = ring_buffer_handle_overflow(buffer, len);
 
   while (nwritten != len) {
     // don't copy beyond the end of the buffer
@@ -476,4 +505,26 @@ data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p) {
 
 int imin(int a, int b) {
   return a < b ? a : b;
+}
+
+bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t nbytes) {
+  size_t space = ring_buffer_free(buffer, true);
+  bool overflow = space < nbytes;
+  if (overflow) {
+    switch (buffer->on_overflow) {
+    case OVERFLOW_OVERWRITE:
+      break; // do nothing
+    case OVERFLOW_GROW:
+      ring_buffer_grow(buffer, nbytes);
+      overflow = false;
+      break;
+#ifdef USING_R
+    case OVERFLOW_ERROR:
+      Rf_error("Buffer overflow (adding %d elements, but %d available)",
+               nbytes / buffer->stride, ring_buffer_free(buffer, false));
+      break;
+#endif
+    }
+  }
+  return overflow;
 }

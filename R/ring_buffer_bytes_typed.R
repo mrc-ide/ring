@@ -25,6 +25,7 @@
 ##'   \code{what} is used as the type.  Otherwise \code{what} is
 ##'   interpreted as the \emph{name} of the storage mode (one of
 ##'   "logical", "integer", "double" or "complex".
+##' @inheritParams ring_buffer_bytes
 ##' @export
 ##' @author Rich FitzJohn
 ##' @examples
@@ -73,7 +74,8 @@
 ##' b$push(seq_len(6))
 ##' b$tail()
 ##' b$tail_offset(1)
-ring_buffer_bytes_typed <- function(size, what, len = NULL) {
+ring_buffer_bytes_typed <- function(size, what, len = NULL,
+                                    on_overflow = "overwrite") {
   if (is.character(what) && length(what) == 1L) {
     type <- what
     len <- len %||% 0L # keeps error messages constant
@@ -106,6 +108,6 @@ ring_buffer_bytes_typed <- function(size, what, len = NULL) {
   to <- convert_to[[type]]
   from <- convert_from[[type]]
 
-  .R6_ring_buffer_bytes_translate$new(size, stride, to, from,
+  .R6_ring_buffer_bytes_translate$new(size, stride, to, from, on_overflow,
                                       paste0("typed:", type))
 }

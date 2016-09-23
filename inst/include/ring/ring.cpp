@@ -1,4 +1,3 @@
-#define RING_USE_STDLIB_ALLOC 1
 #include <ring/ring.hpp>
 #include <algorithm>
 #include <new>
@@ -6,8 +5,9 @@ extern "C" {
 #include <ring/ring.c>
 }
 
-RingBuffer::RingBuffer(size_t size, size_t stride) :
-  buffer(ring_buffer_create(size, stride)) {
+RingBuffer::RingBuffer(size_t size, size_t stride,
+                       overflow_action on_overflow) :
+  buffer(ring_buffer_create(size, stride, on_overflow)) {
   if (buffer == NULL) {
     throw std::bad_alloc();
   }
