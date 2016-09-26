@@ -245,12 +245,57 @@ test_that("set", {
 })
 
 test_that("no overflow", {
-  buf <- ring_buffer_env(10, TRUE)
+  buf <- ring_buffer_env(10, "error")
   expect_error(buf$push(1:11), "Buffer overflow")
   expect_equal(buf$used(), 0)
+  expect_true(buf$.check_overflow)
+  expect_true(buf$.prevent_overflow)
 
   buf$push(1:5)
   expect_error(buf$push(6:11), "Buffer overflow")
   expect_equal(buf$used(), 5)
+  expect_equal(buf$size(), 10)
   expect_equal(as.list(buf), as.list(1:5))
+
+  buf2 <- buf$duplicate()
+  expect_true(buf2$.check_overflow)
+  expect_true(buf2$.prevent_overflow)
+  expect_error(buf2$push(6:11), "Buffer overflow")
+  expect_equal(buf2$used(), 5)
+  expect_equal(as.list(buf2), as.list(1:5))
+})
+
+test_that("grow", {
+  ## First, try manually growing a buffer under various states.  This
+  ## has slightly fewer moving parts than doing this reactively based
+  ## on overflow.
+  ##
+  ## There are three scenarios to try here: empty, partially full and
+  ## totally full.
+
+  ## (1) empty
+  buf <- ring_buffer_env(4)
+  expect_null(ring_buffer_env_grow(buf, 3))
+  expect_equal(buf$size(), 7)
+  expect_equal(buf$used(), 0)
+  buf$push(1:7)
+  expect_equal(buf$read(7), as.list(1:7))
+
+  ## (2) partially full
+  buf <- ring_buffer_env(4)
+  buf$push(1:2)
+  ring_buffer_env_grow(buf, 3)
+  expect_equal(buf$size(), 7)
+  expect_equal(buf$used(), 2)
+  buf$push(3:7)
+  expect_equal(buf$read(7), as.list(1:7))
+
+  ## (3) completely full
+  buf <- ring_buffer_env(4)
+  buf$push(1:4)
+  ring_buffer_env_grow(buf, 3)
+  expect_equal(buf$size(), 7)
+  expect_equal(buf$used(), 4)
+  buf$push(5:7)
+  expect_equal(buf$read(7), as.list(1:7))
 })

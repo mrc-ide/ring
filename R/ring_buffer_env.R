@@ -32,8 +32,8 @@
 ##' buf$take(3)
 ##' buf$push(11:15)
 ##' buf$take(2)
-ring_buffer_env <- function(size, prevent_overflow=FALSE) {
-  .R6_ring_buffer_env$new(size, prevent_overflow)
+ring_buffer_env <- function(size, on_overflow = "overwrite") {
+  .R6_ring_buffer_env$new(size, on_overflow)
 }
 
 ## TODO: implement growth, which is fairly easy to do here; we break
@@ -55,7 +55,10 @@ ring_buffer_env <- function(size, prevent_overflow=FALSE) {
 ## for capacity will be all O(n) which is a bit bad but probably a
 ## reasonable price to pay for simpler and more robust code.
 
-ring_buffer_env_create <- function(size) {
+## This creates a doubly-linked list with a pair of pointers
+## (next/prev) pointing up and down the list.  It does not splice
+## them.
+double_linked_list_create <- function(size) {
   head <- prev <- NULL
   for (i in seq_len(size)) {
     x <- new.env(parent=emptyenv())
@@ -67,9 +70,20 @@ ring_buffer_env_create <- function(size) {
     }
     prev <- x
   }
+  list(head, prev)
+}
 
-  x$.next <- head
-  head$.prev <- x
+## This turns a doubly-linked list into a ring buffer by splicing the
+## ends of the list together.  The "first" element of the ring is set
+## to hold size and used elements, which we used to distinguish
+## between full/empty and to make capacity lookups O(1) not O(n).
+ring_buffer_env_create <- function(size) {
+  list <- double_linked_list_create(size)
+  head <- list[[1L]]
+  tail <- list[[2L]]
+
+  tail$.next <- head
+  head$.prev <- tail
   head$.size <- as.integer(size)
   head$.used <- 0L
 
@@ -93,7 +107,29 @@ ring_buffer_env_duplicate <- function(buffer) {
     tail <- tail$.next
   }
 
+  ret$.check_overflow <- buffer$.check_overflow
+  ret$.prevent_overflow <- buffer$.prevent_overflow
+
   ret
+}
+
+ring_buffer_env_grow <- function(buffer, n) {
+  list <- double_linked_list_create(n)
+  front <- list[[1]]
+  back <- list[[2]]
+
+  h <- buffer$.head
+  x <- h$.prev
+  x$.next <- front
+  front$.prev <- x
+  h$.prev <- back
+  back$.next <- h
+
+  buffer$.buffer$.size <- buffer$.buffer$.size + n
+  if (buffer$used() > 0) {
+    buffer$.head <- front
+  }
+  invisible(NULL)
 }
 
 ##' @importFrom R6 R6Class
@@ -111,12 +147,14 @@ ring_buffer_env_duplicate <- function(buffer) {
     .buffer=NULL,
     .head=NULL,
     .tail=NULL,
+    .check_overflow=NULL,
     .prevent_overflow=NULL,
 
-    initialize=function(size, prevent_overflow) {
-      assert_scalar_logical(prevent_overflow)
+    initialize=function(size, on_overflow) {
+      ## assert_scalar_logical(on_overflow) # -copy from bytes
       self$.buffer <- ring_buffer_env_create(size)
-      self$.prevent_overflow <- prevent_overflow
+      self$.check_overflow <- on_overflow != "overwrite"
+      self$.prevent_overflow <- on_overflow == "error"
       self$reset()
     },
 
@@ -273,9 +311,13 @@ ring_buffer_env_check_underflow <- function(obj, requested) {
 
 ring_buffer_env_check_overflow <- function(obj, requested) {
   ## TODO: Perhaps an S3 condition?
-  if (obj$.prevent_overflow && requested > obj$free()) {
-    stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
-                 requested, obj$free()))
+  if (obj$.check_overflow && requested > obj$free()) {
+    if (obj$.prevent_overflow) {
+      stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
+                   requested, obj$free()))
+    } else {
+      ring_buffer_env_grow(obj, requested)
+    }
   }
 }
 

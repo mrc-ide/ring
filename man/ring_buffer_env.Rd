@@ -4,7 +4,7 @@
 \alias{ring_buffer_env}
 \title{Environment-based ring buffer}
 \usage{
-ring_buffer_env(size, prevent_overflow = FALSE)
+ring_buffer_env(size, on_overflow = "overwrite")
 }
 \arguments{
 \item{size}{The (maximum) number of entries the buffer can
