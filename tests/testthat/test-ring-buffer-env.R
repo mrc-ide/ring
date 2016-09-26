@@ -332,3 +332,17 @@ test_that("grow on overflow", {
   expect_equal(buf$size(), 18)
   expect_equal(buf$read(18), as.list(3:20))
 })
+
+test_that("invalid overflow option", {
+  expect_error(ring_buffer_env(10, "g"),
+               "Invalid value for 'on_overflow'")
+  expect_error(ring_buffer_env(10, NA),
+               "Invalid value for 'on_overflow'")
+  expect_error(ring_buffer_env(10, "magic"),
+               "Invalid value for 'on_overflow'")
+
+  expect_error(ring_buffer_env(10, 1),
+               "on_overflow must be a character")
+  expect_error(ring_buffer_env(10, character(0)),
+               "on_overflow must be a scalar")
+})

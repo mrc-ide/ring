@@ -389,3 +389,17 @@ test_that("overflow grow; set", {
   expect_equal(b2$size(), n)
   expect_true(b2$is_full())
 })
+
+test_that("invalid overflow option", {
+  expect_error(ring_buffer_bytes(10, 10, "g"),
+               "Invalid value for 'on_overflow'")
+  expect_error(ring_buffer_bytes(10, 10, NA),
+               "Invalid value for 'on_overflow'")
+  expect_error(ring_buffer_bytes(10, 10, "magic"),
+               "Invalid value for 'on_overflow'")
+
+  expect_error(ring_buffer_bytes(10, 10, 1),
+               "on_overflow must be a character")
+  expect_error(ring_buffer_bytes(10, 10, character(0)),
+               "on_overflow must be a scalar")
+})
