@@ -37,9 +37,6 @@ ring_buffer_env <- function(size, on_overflow = "overwrite") {
   .R6_ring_buffer_env$new(size, on_overflow)
 }
 
-## TODO: implement growth, which is fairly easy to do here; we break
-## the ring and splice in another doubly linked list.
-
 ## There is an interface issue here that I need to deal with once I
 ## have the basic logic working; is the point of the buffer to
 ## implement a FIFO queue, or something more general?  In which case
@@ -115,6 +112,9 @@ ring_buffer_env_duplicate <- function(buffer) {
 }
 
 ring_buffer_env_grow <- function(buffer, n) {
+  if (n == 0) {
+    return(invisible(NULL))
+  }
   list <- double_linked_list_create(n)
   front <- list[[1]]
   back <- list[[2]]
@@ -167,6 +167,10 @@ ring_buffer_env_grow <- function(buffer, n) {
 
     duplicate=function() {
       ring_buffer_env_duplicate(self)
+    },
+
+    grow=function(n) {
+      ring_buffer_env_grow(self, n)
     },
 
     size=function() self$.buffer$.size,

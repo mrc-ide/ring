@@ -26,6 +26,12 @@ SEXP R_ring_buffer_duplicate(SEXP extPtr) {
   return R_ring_buffer_alloc(ring_buffer_duplicate(prev));
 }
 
+SEXP R_ring_buffer_grow(SEXP extPtr, SEXP r_n, SEXP r_exact) {
+  ring_buffer_grow(ring_buffer_get(extPtr, true),
+                   scalar_size(r_n), scalar_logical(r_exact));
+  return R_NilValue;
+}
+
 SEXP R_ring_buffer_size(SEXP extPtr, SEXP bytes) {
   return ScalarInteger(ring_buffer_size(ring_buffer_get(extPtr, true),
                                           scalar_logical(bytes)));

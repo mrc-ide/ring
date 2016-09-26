@@ -1,7 +1,6 @@
 #include <ring/ring.h>
 
 // Some prototypes used here that aren't public:
-void ring_buffer_grow(ring_buffer *buffer, size_t n);
 bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t n);
 const data_t * ring_buffer_end(const ring_buffer *buffer);
 data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p);
@@ -62,22 +61,26 @@ ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
   return ret;
 }
 
+// TODO: consider exporting the growth function?
 #define LOG_PHI 0.481211825028767
-void ring_buffer_grow(ring_buffer *buffer, size_t n) {
+void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
+  if (n == 0) {
+    return;
+  }
   const size_t
     curr_size = ring_buffer_size(buffer, false),
-    curr_used = ring_buffer_used(buffer, false),
     head_pos = ring_buffer_head_pos(buffer, true),
     tail_pos = ring_buffer_tail_pos(buffer, true);
 
-  const double r = (double) (curr_used + n) / (double) curr_size;
-  const size_t size =
-    ceil(curr_size * exp(ceil(log(r) / LOG_PHI) * LOG_PHI));
+  size_t size;
+  if (exact) {
+    size = curr_size + n;
+  } else {
+    const size_t curr_used = ring_buffer_used(buffer, false);
+    const double r = (double) (curr_used + n) / (double) curr_size;
+    size = ceil(curr_size * exp(ceil(log(r) / LOG_PHI) * LOG_PHI));
+  }
   const size_t bytes_data = (size + 1) * buffer->stride;
-
-#ifdef USING_R
-  Rprintf("growing buffer %d --> %d\n", curr_size, size);
-#endif
 
 #ifdef RING_USE_STDLIB_ALLOC
   buffer->data = (data_t*) realloc(buffer->data, bytes_data * sizeof(data_t));
@@ -528,7 +531,7 @@ bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t n) {
     case OVERFLOW_OVERWRITE:
       break; // do nothing
     case OVERFLOW_GROW:
-      ring_buffer_grow(buffer, n);
+      ring_buffer_grow(buffer, n, false);
       overflow = false;
       break;
 #ifdef USING_R

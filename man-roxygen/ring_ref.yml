@@ -31,6 +31,18 @@ duplicate:
     underlying data and the position of the head and tail.
   return: A new ring buffer object
 
+grow:
+  short: >-
+    Increase the size of the buffer by \code{n} elements.
+  params:
+    n: >-
+      The number of additional elements that space should be reserved
+      for (scalar non-negative integer).
+    exact: >-
+      Logical scalar indicating if growth should increase the size by
+      \emph{exactly} \code{n} elements (if \codE{TRUE}) or so that
+      \emph{at least} \code{n} additional elements will fit.
+
 size:
   short: >-
     Return the maximum size of the ring buffer

@@ -114,6 +114,10 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
       .R6_ring_buffer_bytes$new(ptr=.Call(Cring_buffer_duplicate, self$.ptr))
     },
 
+    grow = function(n, exact = FALSE) {
+      .Call(Cring_buffer_grow, self$.ptr, n, exact)
+    },
+
     size=function(bytes=FALSE) .Call(Cring_buffer_size, self$.ptr, bytes),
     bytes_data=function() .Call(Cring_buffer_bytes_data, self$.ptr),
     stride=function() .Call(Cring_buffer_stride, self$.ptr),

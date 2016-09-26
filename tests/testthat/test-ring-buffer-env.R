@@ -272,32 +272,46 @@ test_that("grow", {
   ##
   ## There are three scenarios to try here: empty, partially full and
   ## totally full.
+  n <- 4
+  e <- 3
 
   ## (1) empty
-  buf <- ring_buffer_env(4)
-  expect_null(ring_buffer_env_grow(buf, 3))
-  expect_equal(buf$size(), 7)
+  buf <- ring_buffer_env(n)
+  expect_null(buf$grow(e))
+  expect_equal(buf$size(), n + e)
   expect_equal(buf$used(), 0)
-  buf$push(1:7)
-  expect_equal(buf$read(7), as.list(1:7))
+  buf$push(seq_len(n + e))
+  expect_equal(buf$read(n + e), as.list(seq_len(n + e)))
 
   ## (2) partially full
-  buf <- ring_buffer_env(4)
+  buf <- ring_buffer_env(n)
   buf$push(1:2)
-  ring_buffer_env_grow(buf, 3)
-  expect_equal(buf$size(), 7)
+  buf$grow(e)
+  expect_equal(buf$size(), n + e)
   expect_equal(buf$used(), 2)
-  buf$push(3:7)
-  expect_equal(buf$read(7), as.list(1:7))
+  buf$push(e:(n + e))
+  expect_equal(buf$read(n + e), as.list(seq_len(n + e)))
 
-  ## (3) completely full
-  buf <- ring_buffer_env(4)
-  buf$push(1:4)
-  ring_buffer_env_grow(buf, 3)
-  expect_equal(buf$size(), 7)
-  expect_equal(buf$used(), 4)
-  buf$push(5:7)
-  expect_equal(buf$read(7), as.list(1:7))
+  ## (e) completely full
+  buf <- ring_buffer_env(n)
+  buf$push(1:n)
+  buf$grow(e)
+  expect_equal(buf$size(), n + e)
+  expect_equal(buf$used(), n)
+  buf$push(seq_len(e) + n)
+  expect_equal(buf$read(n + e), as.list(seq_len(n + e)))
+})
+
+test_that("zero growth", {
+  n <- 10
+  buf <- ring_buffer_env(n)
+  b <- random_bytes(n)
+  buf$push(b)
+  buf$grow(0)
+  expect_equal(buf$size(), n)
+  expect_equal(buf$read(n), as.list(b))
+  expect_equal(buf$head_pos(), 0)
+  expect_equal(buf$tail_pos(), 0)
 })
 
 test_that("grow on overflow", {

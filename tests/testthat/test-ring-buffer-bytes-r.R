@@ -285,6 +285,65 @@ test_that("overflow error; push", {
   expect_true(b1$is_full())
 })
 
+test_that("grow - exact", {
+  ## First, try manually growing a buffer under various states.  This
+  ## has slightly fewer moving parts than doing this reactively based
+  ## on overflow.
+  ##
+  ## There are three scenarios to try here: empty, partially full and
+  ## totally full.
+  n <- 10
+  s <- 6
+  e <- 3
+
+  ## (1) empty
+  buf <- ring_buffer_bytes(n, s)
+  expect_null(buf$grow(e, TRUE))
+  expect_equal(buf$size(), n + e)
+  expect_equal(buf$used(), 0)
+
+  b <- random_bytes(buf$size() * s)
+  buf$push(b)
+  expect_equal(buf$read(buf$size()), b)
+
+  ## (2) partially full
+  buf <- ring_buffer_bytes(n, s)
+  b1 <- random_bytes(e * s)
+  buf$push(b1)
+  buf$grow(e, TRUE)
+  expect_equal(buf$size(), n + e)
+  expect_equal(buf$used(), e)
+  b2 <- random_bytes(n * s)
+  buf$push(b2)
+  expect_equal(buf$read(n + e), c(b1, b2))
+
+  ## (e) completely full
+  buf <- ring_buffer_bytes(n, s)
+  b1 <- random_bytes(n * s)
+  buf$push(b1)
+  buf$grow(e, TRUE)
+  expect_equal(buf$size(), n + e)
+  expect_equal(buf$used(), n)
+  b2 <- random_bytes(e * s)
+  buf$push(b2)
+  expect_equal(buf$read(n + 3), c(b1, b2))
+})
+
+test_that("zero growth", {
+  n <- 10
+  s <- 6
+  buf <- ring_buffer_bytes(n, s)
+  b <- random_bytes(n * s)
+  buf$push(b)
+  for (exact in c(TRUE, FALSE)) {
+    buf$grow(0, exact)
+    expect_equal(buf$size(), n)
+    expect_equal(buf$read(n), b)
+    expect_equal(buf$head_pos(), n)
+    expect_equal(buf$tail_pos(), 0)
+  }
+})
+
 ## Then growth, for which we also have to test where we get to, which
 ## is a bit more of a faff.  However, if the error is thrown correctly
 ## for all of the above tests, we should be able to get away with just

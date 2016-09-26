@@ -4,6 +4,7 @@
 
 SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride, SEXP r_on_overflow);
 SEXP R_ring_buffer_duplicate(SEXP extPtr);
+SEXP R_ring_buffer_grow(SEXP extPtr, SEXP r_n, SEXP r_exact);
 SEXP R_ring_buffer_size(SEXP extPtr, SEXP bytes);
 SEXP R_ring_buffer_stride(SEXP extPtr);
 SEXP R_ring_buffer_bytes_data(SEXP extPtr);

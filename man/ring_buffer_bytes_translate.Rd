@@ -66,6 +66,24 @@ differences between implementations will be a bit more apparent.
   \emph{Usage:}
   \code{duplicate()}
 }
+\item{\code{grow}}{
+  Increase the size of the buffer by \code{n} elements.
+
+  \emph{Usage:}
+  \itemize{
+    \item{bytes, typed: \code{grow(n)}}
+    \item{env: \code{grow(n, exact = FALSE)}}
+  }
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{n}:   The number of additional elements that space should be reserved for (scalar non-negative integer).
+    }
+
+    \item{\code{exact}:   Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \codE{TRUE}) or so that \emph{at least} \code{n} additional elements will fit.
+    }
+  }
+}
 \item{\code{size}}{
   Return the maximum size of the ring buffer
 

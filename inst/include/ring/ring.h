@@ -108,6 +108,26 @@ void ring_buffer_destroy(ring_buffer *buffer);
 //   buffer: a ring buffer to copy from; will not be modified
 ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer);
 
+// Increase the size of the ring buffer so that it can hold additional
+// elements.  This does not alter existing elements but increases the
+// capacity (similar to he `reserve` method in the C++ standard
+// library).
+//
+//   buffer: a ring buffer to increase the size of
+//
+//   n: the number of elements to increase the buffer by
+//
+//   exact: boolean, indicating if the buffer should be increased by
+//          exactly `n` elements (if true) or by at least `n` elements
+//          (if false).  If using the inexact method, the buffer is
+//          increased in size using geometric growth using the golden
+//          ratio.
+//
+// After using this function, all references to the head or tail are
+// broken and the memory may have been freed and the contents moved
+// elsewhere.
+void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact);
+
 // Reset the state of the buffer.  This "zeros" the head and tail
 // pointer (and may or may not actually reset the data) so that the
 // buffer can be used as if fresh.
