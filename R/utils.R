@@ -44,3 +44,12 @@ include_flags <- function(stdout=TRUE) {
 `%||%` <- function(a, b) {
   if (is.null(a)) b else a
 }
+
+match_value <- function(x, choices, name=deparse(substitute(x))) {
+  assert_character(x, name)
+  assert_scalar(x, nmae)
+  if (!(x %in% choices)) {
+    stop(sprintf("%s must be one of %s", name,
+                 paste(dQuote(choices), collapse = ", ")))
+  }
+}

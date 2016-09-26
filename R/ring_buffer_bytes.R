@@ -292,14 +292,14 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
   ))
 
 ## Must match the order in ring.h
+OVERFLOW_ACTIONS <- c("overwrite", "grow", "error")
 check_on_overflow <- function(on_overflow) {
   assert_scalar(on_overflow)
   assert_character(on_overflow)
-  vals <- c("overwrite", "grow", "error")
-  i <- match(on_overflow, vals)
+  i <- match(on_overflow, OVERFLOW_ACTIONS)
   if (is.na(i)) {
     stop("Invalid value for 'on_overflow'; must be one of ",
-         paste(vals, collapse=", "))
+         paste(OVERFLOW_ACTIONS, collapse=", "))
   }
   as.integer(i - 1L)
 }

@@ -299,3 +299,22 @@ test_that("grow", {
   buf$push(5:7)
   expect_equal(buf$read(7), as.list(1:7))
 })
+
+test_that("grow on overflow", {
+  buf <- ring_buffer_env(4, "grow")
+
+  buf$push(1:10)
+  expect_equal(buf$size(), 10)
+  expect_true(buf$is_full())
+  expect_equal(buf$read(10), as.list(1:10))
+
+  expect_equal(buf$take(2), as.list(1:2))
+
+  buf$push(11:15)
+  expect_equal(buf$size(), 13)
+  expect_equal(buf$read(13), as.list(3:15))
+
+  buf$push(16:20)
+  expect_equal(buf$size(), 18)
+  expect_equal(buf$read(18), as.list(3:20))
+})

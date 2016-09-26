@@ -33,6 +33,7 @@
 ##' buf$push(11:15)
 ##' buf$take(2)
 ring_buffer_env <- function(size, on_overflow = "overwrite") {
+  match_value(on_overflow, OVERFLOW_ACTIONS)
   .R6_ring_buffer_env$new(size, on_overflow)
 }
 
@@ -310,13 +311,17 @@ ring_buffer_env_check_underflow <- function(obj, requested) {
 }
 
 ring_buffer_env_check_overflow <- function(obj, requested) {
-  ## TODO: Perhaps an S3 condition?
-  if (obj$.check_overflow && requested > obj$free()) {
-    if (obj$.prevent_overflow) {
-      stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
-                   requested, obj$free()))
-    } else {
-      ring_buffer_env_grow(obj, requested)
+  if (obj$.check_overflow) {
+    nfree <- obj$free()
+    if (requested > nfree) {
+      if (obj$.prevent_overflow) {
+        ## TODO: Perhaps an S3 condition?  But then I will need the
+        ## same from the C code and that's a bit harder to do I think.
+        stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
+                     requested, obj$free()))
+      } else {
+        ring_buffer_env_grow(obj, requested - nfree)
+      }
     }
   }
 }
