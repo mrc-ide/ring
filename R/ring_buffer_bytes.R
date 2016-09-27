@@ -46,7 +46,7 @@
 ##'   which will throw an error if a function tries to add more
 ##'   elements than there are space for, or \code{"grow"} which will
 ##'   grow the buffer to accept the new elements (this uses an
-##'   approximately golden ratio approach).
+##'   approximately golden ratio approach; see details below).
 ##' @export
 ##' @examples
 ##'

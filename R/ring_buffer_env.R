@@ -16,11 +16,12 @@
 ##' @param size The (maximum) number of entries the buffer can
 ##'   contain.
 ##'
-##' @param prevent_overflow Logial indicating if buffer overflow is
-##'   not allowed.  If \code{FALSE} (the default) then the buffer will
-##'   overflow silently (that is, the oldest data will be
-##'   overwritten).  If \code{TRUE}, then on overflow an error will be
-##'   raised.
+##' @param on_overflow Behaviour on buffer overflow.  The default is
+##'   to overwrite the oldest elements in the buffer
+##'   (\code{"overwrite"}).  Alternative actions are \code{"error"}
+##'   which will throw an error if a function tries to add more
+##'   elements than there are space for, or \code{"grow"} which will
+##'   grow the buffer to accept the new elements.
 ##'
 ##' @template ring_ref
 ##'
