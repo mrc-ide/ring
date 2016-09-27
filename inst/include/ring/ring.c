@@ -78,6 +78,10 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
   } else {
     const size_t curr_used = ring_buffer_used(buffer, false);
     const double r = (double) (curr_used + n) / (double) curr_size;
+    if (r <= 1) {
+      // Refuse to shrink the buffer:
+      return;
+    }
     size = ceil(curr_size * exp(ceil(log(r) / LOG_PHI) * LOG_PHI));
   }
   const size_t bytes_data = (size + 1) * buffer->stride;

@@ -403,3 +403,11 @@ test_that("invalid overflow option", {
   expect_error(ring_buffer_bytes(10, 10, character(0)),
                "on_overflow must be a scalar")
 })
+
+test_that("grow geometrically by zero", {
+  b <- ring_buffer_bytes(10, 6)
+  b$grow(5)
+  expect_equal(b$size(), 10)
+  b$grow(10)
+  expect_equal(b$size(), 10)
+})
