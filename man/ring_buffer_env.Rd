@@ -68,7 +68,7 @@ differences between implementations will be a bit more apparent.
     \item{\code{n}:   The number of additional elements that space should be reserved for (scalar non-negative integer).
     }
 
-    \item{\code{exact}:   Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \codE{TRUE}) or so that \emph{at least} \code{n} additional elements will fit.
+    \item{\code{exact}:   (For bytes buffer only) Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \code{TRUE}) or so that \emph{at least} \code{n} additional elements will fit.
     }
   }
 }

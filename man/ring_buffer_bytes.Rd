@@ -40,6 +40,23 @@ think about.
 If you want to use this to store fixed-size arrays of integers,
 numerics, etc, see \code{\link{ring_buffer_bytes_typed}} which
 wraps this with fast conversion functions.
+
+If the \code{on_overflow} action is \code{grow} and the buffer
+overflows, or if you can \code{grow} with \code{exact = FALSE}
+then the size of the buffer will grow geometrically.  When used
+this way, \code{n} is the number of \emph{additional} elements
+that space is needed for; \code{ring} then looks at the total
+needed capacity (used plus \code{n} relative to \code{size()}).
+\emph{If} the buffer needs to be made larger to fit \code{n}
+elements in then it is grown by a factor of phi (the golden ratio,
+approimatly 1.6).  So if to fit \code{n} elements in the buffer
+needs to be increased in size by \code{m} then the smallest of
+size * phi, size * phi * phi, size * phi^3, ... will be used as
+the new size.
+
+In contrast, using the \code{grow()} method with \code{exact=TRUE}
+will \emph{always} increase the size of the buffer so long as
+\code{n} is positive.
 }
 \section{Methods}{
 
@@ -78,7 +95,7 @@ differences between implementations will be a bit more apparent.
     \item{\code{n}:   The number of additional elements that space should be reserved for (scalar non-negative integer).
     }
 
-    \item{\code{exact}:   Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \codE{TRUE}) or so that \emph{at least} \code{n} additional elements will fit.
+    \item{\code{exact}:   (For bytes buffer only) Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \code{TRUE}) or so that \emph{at least} \code{n} additional elements will fit.
     }
   }
 }
