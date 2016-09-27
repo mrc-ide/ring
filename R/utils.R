@@ -27,7 +27,7 @@ assert_function <- function(x, name=deparse(substitute(x))) {
 
 assert_character <- function(x, name=deparse(substitute(x))) {
   if (!is.character(x) && !is.na(x)) {
-    stop(sprintf("%s must be character", name), call.=FALSE)
+    stop(sprintf("%s must be a character", name), call.=FALSE)
   }
 }
 
@@ -47,9 +47,14 @@ include_flags <- function(stdout=TRUE) {
 
 match_value <- function(x, choices, name=deparse(substitute(x))) {
   assert_character(x, name)
-  assert_scalar(x, nmae)
+  assert_scalar(x, name)
   if (!(x %in% choices)) {
-    stop(sprintf("%s must be one of %s", name,
+    stop(sprintf("Invalid value for '%s'; must be one of %s", name,
                  paste(dQuote(choices), collapse = ", ")))
   }
+}
+
+## This one is a bit different as I've tuned it for speed
+C_assert_size <- function(x, name) {
+  .Call(Cassert_scalar_size, x, name)
 }

@@ -6,6 +6,41 @@
 #include "convert.h"
 
 #include <R_ext/Rdynload.h>
+
+// This is used in the environment buffer to give nice error messages
+// without slowing us down too badly.
+//
+// I've tried using .External but it still looks like the promises are
+// forced causing a big slowdown.
+SEXP assert_scalar_size(SEXP x, SEXP r_name) {
+  const char * name = CHAR(STRING_ELT(r_name, 0));
+  if (length(x) != 1) {
+    Rf_error("%s must be a scalar", name);
+  }
+  int ix;
+  if (TYPEOF(x) == INTSXP) {
+    ix = INTEGER(x)[0];
+    if (ix == NA_INTEGER) {
+      Rf_error("%s must not be NA", name);
+    }
+  } else if (TYPEOF(x) == REALSXP) {
+    double rx = REAL(x)[0];
+    if (!R_FINITE(rx)) {
+      Rf_error("%s must not be NA", name);
+    }
+    ix = (int) rx;
+    if (fabs(rx - ix) > 1e-8) {
+      Rf_error("%s must be an integer", name);
+    }
+  } else {
+    Rf_error("%s must be an integer", name);
+  }
+  if (ix < 0) {
+    Rf_error("%s must be nonnegative", name);
+  }
+  return R_NilValue;
+}
+
 static const R_CallMethodDef call_methods[] = {
   {"Cring_buffer_create",      (DL_FUNC) &R_ring_buffer_create,      3},
   {"Cring_buffer_duplicate",   (DL_FUNC) &R_ring_buffer_duplicate,   1},
@@ -41,6 +76,8 @@ static const R_CallMethodDef call_methods[] = {
   {"Cbytes_to_double",         (DL_FUNC) &bytes_to_double,           1},
   {"Ccomplex_to_bytes",        (DL_FUNC) &complex_to_bytes,          1},
   {"Cbytes_to_complex",        (DL_FUNC) &bytes_to_complex,          1},
+  // Utility
+  {"Cassert_scalar_size",      (DL_FUNC) &assert_scalar_size,        2},
   {NULL,                       NULL,                                 0}
 };
 

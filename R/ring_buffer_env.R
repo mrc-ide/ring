@@ -33,6 +33,7 @@
 ##' buf$push(11:15)
 ##' buf$take(2)
 ring_buffer_env <- function(size, on_overflow = "overwrite") {
+  C_assert_size(size, "size")
   match_value(on_overflow, OVERFLOW_ACTIONS)
   .R6_ring_buffer_env$new(size, on_overflow)
 }
@@ -112,6 +113,7 @@ ring_buffer_env_duplicate <- function(buffer) {
 }
 
 ring_buffer_env_grow <- function(buffer, n) {
+  C_assert_size(n, "n")
   if (n == 0) {
     return(invisible(NULL))
   }
@@ -133,6 +135,12 @@ ring_buffer_env_grow <- function(buffer, n) {
   invisible(NULL)
 }
 
+## NOTE: I've put lots of C_assert_size(n) calls in; implementing this
+## in R takes about ~3us but the C version here takes ~.4us; the
+## former is about the same as accessing the $size() method while the
+## latter is about 3x the cost of `TRUE == FALSE`.  Having these here
+## gives us nicer, and fairly consistent, error messages at a low
+## overhead.
 ##' @importFrom R6 R6Class
 .R6_ring_buffer_env <- R6::R6Class(
   "ring_buffer_env",
@@ -152,7 +160,6 @@ ring_buffer_env_grow <- function(buffer, n) {
     .prevent_overflow=NULL,
 
     initialize=function(size, on_overflow) {
-      ## assert_scalar_logical(on_overflow) # -copy from bytes
       self$.buffer <- ring_buffer_env_create(size)
       self$.check_overflow <- on_overflow != "overwrite"
       self$.prevent_overflow <- on_overflow == "error"
@@ -170,6 +177,7 @@ ring_buffer_env_grow <- function(buffer, n) {
     },
 
     grow=function(n) {
+      C_assert_size(n, "n")
       ring_buffer_env_grow(self, n)
     },
 
@@ -201,6 +209,7 @@ ring_buffer_env_grow <- function(buffer, n) {
 
     ## Start getting strong divergence here:
     set=function(data, n) {
+      C_assert_size(n, "n")
       ring_buffer_env_check_overflow(self, n)
       for (i in seq_len(min(n, self$size()))) {
         ring_buffer_env_write_to_head(self, data)
@@ -227,15 +236,20 @@ ring_buffer_env_grow <- function(buffer, n) {
     },
 
     take=function(n) {
+      C_assert_size(n, "n")
       dat <- ring_buffer_env_read_from_tail(self, n)
       self$.tail <- dat[[2L]]
       self$.buffer$.used <- self$.buffer$.used - as.integer(n)
       dat[[1L]]
     },
 
-    read=function(n) ring_buffer_env_read_from_tail(self, n)[[1L]],
+    read=function(n) {
+      C_assert_size(n, "n")
+      ring_buffer_env_read_from_tail(self, n)[[1L]]
+    },
 
     copy=function(dest, n) {
+      C_assert_size(n, "n")
       ring_buffer_env_check_underflow(self, n)
       ring_buffer_env_check_overflow(dest, n)
 
@@ -250,16 +264,19 @@ ring_buffer_env_grow <- function(buffer, n) {
     },
 
     head_offset=function(n) {
+      C_assert_size(n, "n")
       ring_buffer_env_check_underflow(self, n + 1L)
       ring_buffer_env_move_backward(self$.head$.prev, n)$data
     },
     tail_offset=function(n) {
+      C_assert_size(n, "n")
       ring_buffer_env_check_underflow(self, n + 1L)
       ring_buffer_env_move_forward(self$.tail, n)$data
     },
 
     ## This is the unusual direction...
     take_head=function(n) {
+      C_assert_size(n, "n")
       dat <- ring_buffer_env_read_from_head(self, n)
       self$.head <- dat[[2L]]
       self$.buffer$.used <- self$.buffer$.used - as.integer(n)
@@ -267,6 +284,7 @@ ring_buffer_env_grow <- function(buffer, n) {
     },
 
     read_head=function(n) {
+      C_assert_size(n, "n")
       ring_buffer_env_read_from_head(self, n)[[1L]]
     }
   ))

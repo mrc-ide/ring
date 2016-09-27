@@ -11,6 +11,14 @@ test_that("assertions work", {
 
   expect_error(assert_function(1.5), "must be a function")
   expect_error(assert_function(list()), "must be a function")
+
+  expect_error(C_assert_size(NULL, "xxx"), "xxx must be a scalar")
+  expect_error(C_assert_size(1:2, "xxx"), "xxx must be a scalar")
+  expect_error(C_assert_size(pi, "xxx"), "xxx must be an integer")
+  expect_error(C_assert_size("x", "xxx"), "xxx must be an integer")
+  expect_error(C_assert_size(NA_integer_, "xxx"), "xxx must not be NA")
+  expect_error(C_assert_size(NA_real_, "xxx"), "xxx must not be NA")
+  expect_error(C_assert_size(-3L, "xxx"), "xxx must be nonnegative")
 })
 
 test_that("compiler flags", {
