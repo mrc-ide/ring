@@ -51,7 +51,7 @@ README.md: README.Rmd
 
 vignettes/%.Rmd: vignettes/src/%.R
 	${RSCRIPT} -e 'library(sowsear); sowsear("$<", output="$@")'
-vignettes: vignettes/ring.Rmd
+vignettes: vignettes/ring.Rmd vignettes/ring_applications.Rmd
 	${RSCRIPT} -e 'library(methods); devtools::build_vignettes()'
 
 # No real targets!
