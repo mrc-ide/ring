@@ -66,3 +66,20 @@ pool <- function(type, n) {
                  complex=complex(real=rnorm(20), imaginary=rnorm(20)))
   sample(pool, n, TRUE)
 }
+
+## I am continuing to have horrid problems with system.file when
+## working under devtools, or which versions are broken.  This
+## workaround is ported from dde.
+if (nzchar(system.file("examples", package = "ring"))) {
+  PATH_EXAMPLES <- system.file("examples", package = "ring")
+} else {
+  PATH_EXAMPLES <- "../../inst/examples"
+}
+
+load_ring_vector <- function(env = parent.frame()) {
+  sys.source(file.path(PATH_EXAMPLES, "ring_vector.R"), env)
+}
+load_ring_matrix <- function(env = parent.frame()) {
+  sys.source(file.path(PATH_EXAMPLES, "ring_vector.R"), env)
+  sys.source(file.path(PATH_EXAMPLES, "ring_matrix.R"), env)
+}

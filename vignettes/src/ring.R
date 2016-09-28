@@ -350,7 +350,7 @@ writeLines(c("```c",
 
 ##+ echo=FALSE, results="asis"
 writeLines(c("```c",
-             readLines(system.file("example.c", package="ring")),
+             readLines(system.file("examples/example.c", package="ring")),
              "```"))
 
 ## # The C++ API

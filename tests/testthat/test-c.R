@@ -81,7 +81,8 @@ test_that("example", {
 
   writeLines(paste0("PKG_CPPFLAGS = ", include_flags(FALSE)),
              "Makevars")
-  file.copy(system.file("example.c", package="ring"), ".", overwrite=TRUE)
+  file.copy(system.file("examples/example.c", package="ring"), ".",
+            overwrite=TRUE)
   on.exit(file.remove(c("example.c", "Makevars")))
 
   res <- system2(R, c("CMD", "SHLIB", "example.c"),
