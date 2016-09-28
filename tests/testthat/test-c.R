@@ -2,6 +2,13 @@ context("C interface")
 
 test_that("check package", {
   skip_on_cran()
+  ## This one needs a local installation of ring to work for the
+  ## LinkingTo: interface to work (skip_if_not_installed does not work
+  ## for this as despite the name it doesn't check installation, it
+  ## checks if it can be loaded).
+  if (!("ring" %in% .packages(TRUE))) {
+    skip("ring not installed")
+  }
   Sys.setenv("R_TESTS" = "")
 
   R <- file.path(R.home(), "bin", "R")
@@ -20,8 +27,10 @@ test_that("standalone", {
   if (!nzchar(gcc)) {
     skip("No gcc")
   }
+
   path <- system.file("include", package="ring")
-  args <- c("-I", path, "-std=c99",  "-o", "ring_standalone", "ring_standalone.c")
+  args <- c(include_flags(FALSE), "-std=c99",  "-o", "ring_standalone",
+            "ring_standalone.c")
   code <- system2(gcc, args)
   expect_equal(code, 0)
   if (file.exists("ring_standalone")) {
