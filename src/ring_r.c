@@ -232,6 +232,16 @@ SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_n) {
   return ScalarInteger(head - dest->data);
 }
 
+SEXP R_ring_buffer_mirror(SEXP srcPtr, SEXP destPtr) {
+  ring_buffer *src = ring_buffer_get(srcPtr, true),
+    *dest = ring_buffer_get(destPtr, true);
+  bool ok = ring_buffer_mirror(src, dest);
+  if (!ok) {
+    Rf_error("Cannot mirror incompatible ring buffers");
+  }
+  return R_NilValue;
+}
+
 // Allocation and finalisation:
 SEXP R_ring_buffer_alloc(ring_buffer *buffer) {
   SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));

@@ -172,6 +172,13 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
       .Call(Cring_buffer_copy, self$.ptr, dest$.ptr, n)
     },
 
+    mirror=function(dest) {
+      if (!inherits(dest, "ring_buffer_bytes")) {
+        stop("'dest' must be a 'ring_buffer_bytes'")
+      }
+      .Call(Cring_buffer_mirror, self$.ptr, dest$.ptr)
+    },
+
     ## Nondestructive:
     head_offset=function(n) .Call(Cring_buffer_head_offset, self$.ptr, n),
     tail_offset=function(n) .Call(Cring_buffer_tail_offset, self$.ptr, n),
