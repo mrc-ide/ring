@@ -295,11 +295,9 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
 }
 
 const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n) {
-  // TODO: Not clear what should be done (if anything other than an
-  // error) if the two buffers differ in their stride.
   const size_t src_bytes_used = ring_buffer_used(src, true);
   const size_t nbytes = n * src->stride;
-  if (nbytes > src_bytes_used) {
+  if (src == dest || src->stride != dest->stride || nbytes > src_bytes_used) {
     return NULL;
   }
   const bool overflow = ring_buffer_handle_overflow(dest, n);

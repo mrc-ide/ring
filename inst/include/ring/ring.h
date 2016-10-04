@@ -316,8 +316,10 @@ const void * ring_buffer_read_head(const ring_buffer *buffer, void *dest,
 // It is possible to overflow `dest` and the tail pointer will be
 // updated appropriately if so.
 //
-// Warning: the two buffers must have the same stride, but this is not
-// checked.
+// Warning: the two buffers must have the same stride.  If the buffers
+// do not have the same stride, the function will return NULL (this
+// means if the function returns NULL it could either be an underflow
+// or an incompatible buffer).
 const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n);
 
 // Mirror the contents of ring buffer `src` into ring buffer `dest`.

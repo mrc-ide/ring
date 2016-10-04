@@ -271,7 +271,7 @@ test_that("overflow error; push", {
   expect_true(b$is_empty())
 })
 
-test_that("overflow error; push", {
+test_that("overflow error; copy", {
   n <- 10
   s <- 6
   b1 <- ring_buffer_bytes(n + 1, s)
@@ -283,6 +283,18 @@ test_that("overflow error; push", {
                fixed = TRUE)
   expect_true(b2$is_empty())
   expect_true(b1$is_full())
+})
+
+test_that("incompatible stride on copy", {
+  n <- 10
+  s <- 6
+  b1 <- ring_buffer_bytes(n, s)
+  b1$push(random_bytes((n + 1) * s))
+
+  b2 <- ring_buffer_bytes(n, s + 1)
+  expect_error(b1$copy(b2, 1),
+               "Can't copy as buffers differ in their stride (6 vs 7)",
+               fixed = TRUE)
 })
 
 test_that("grow - exact", {

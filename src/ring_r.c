@@ -224,9 +224,14 @@ SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_n) {
     *dest = ring_buffer_get(destPtr, true);
   data_t * head = (data_t *) ring_buffer_copy(src, dest, n);
   if (head == NULL) {
-    // TODO: better reporting here; make this a general thing I think.
-    // See _take() and _read() for other places this is needed.
-    Rf_error("Buffer underflow");
+    if (src == dest) {
+      Rf_error("Can't copy a buffer into itself");
+    } else if (src->stride != dest->stride) {
+      Rf_error("Can't copy as buffers differ in their stride (%d vs %d)",
+               src->stride, dest->stride);
+    } else {
+      throw_underflow(src, n);
+    }
   }
   return ScalarInteger(head - dest->data);
 }
