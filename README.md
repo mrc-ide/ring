@@ -11,9 +11,19 @@ Ring buffers (or circular buffers) are like arrays that seem circular; data is w
 This package provides two implementations of ring buffers:
 
 1. `ring_buffer_env`: a pure R ring buffer implemented as double linked list (using environments) that is genuinely a ring.
-2. `ring_buffer_bytes`: a ring buffer implemented as an array of bytes with a pair of pointers (in C).  Each "element" of the array can be one or more bytes, but each must have a fixed size.  There is a convenience interface `ring_buffer_bytes_typed` for cases where each element should correspond to a fixed-length vector of one of R's core types.
+2. `ring_buffer_bytes`: a ring buffer implemented as an array of bytes with a pair of pointers (in C).  Each "element" of the array can be one or more bytes, but each must have a fixed size.  There are two convenience interfaces:
+  * `ring_buffer_bytes_translate`: for cases where a raw->R and R->raw translation functions are provided
+  * `ring_buffer_bytes_typed` for cases where each element should correspond to a fixed-length vector of one of R's core numeric-ish types (`logical`, `integer`, `numeric`, `complex`)
 
 Both buffer types can be used from R, and `ring_buffer_bytes` can be used in other packages using R's `LinkingTo:` support.
+
+Both buffer types will refuse to underflow (return elements beyond those that have been written) and behaviour on overflow can be controlled:
+
+* overwrite old data: (the default), for a fixed-memory FIFO buffer
+* grow buffer: expand the buffer geometrically to fit required elements
+* throw error: refuse to overflow
+
+See the documentation for details.
 
 ## Usage
 

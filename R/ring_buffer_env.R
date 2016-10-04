@@ -33,6 +33,26 @@
 ##' buf$take(3)
 ##' buf$push(11:15)
 ##' buf$take(2)
+##'
+##' # The "on_overflow" argument by default allows for the buffer to
+##' # overwrite on overflow.
+##' buf <- ring_buffer_env(10)
+##' buf$push(1:10)
+##' unlist(buf$read(buf$used())) # 1:10
+##' # Over-write the first 5
+##' buf$push(11:15)
+##' unlist(buf$read(buf$used())) # 6:15
+##'
+##' # Alternatively, grow the buffer as overwriting happens
+##' buf <- ring_buffer_env(10, "grow")
+##' buf$push(1:10)
+##' buf$push(11:15)
+##' unlist(buf$read(buf$used())) # 1:15
+##'
+##' # Or throw an error on overflow
+##' buf <- ring_buffer_env(10, "error")
+##' buf$push(1:10)
+##' try(buf$push(11:15))
 ring_buffer_env <- function(size, on_overflow = "overwrite") {
   C_assert_size(size, "size")
   match_value(on_overflow, OVERFLOW_ACTIONS)
@@ -329,7 +349,7 @@ ring_buffer_env_check_underflow <- function(obj, requested) {
   ## TODO: Perhaps an S3 condition?
   if (requested > obj$used()) {
     stop(sprintf("Buffer underflow (requested %d elements but %d available)",
-                 requested, obj$used()))
+                 requested, obj$used()), call. = FALSE)
   }
 }
 
@@ -341,7 +361,8 @@ ring_buffer_env_check_overflow <- function(obj, requested) {
         ## TODO: Perhaps an S3 condition?  But then I will need the
         ## same from the C code and that's a bit harder to do I think.
         stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
-                     requested, obj$free()))
+                     requested, obj$free()),
+             call. = FALSE)
       } else {
         ring_buffer_env_grow(obj, requested - nfree)
       }
