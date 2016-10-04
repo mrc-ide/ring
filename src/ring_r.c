@@ -6,6 +6,7 @@ static void ring_buffer_finalize(SEXP extPtr);
 ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error);
 bool scalar_logical(SEXP x);
 size_t scalar_size(SEXP x);
+void throw_underflow(ring_buffer *buffer, size_t n);
 
 // Definitions:
 SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride, SEXP r_on_overflow) {
@@ -144,8 +145,7 @@ SEXP R_ring_buffer_take(SEXP extPtr, SEXP r_n) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_take(buffer, RAW(ret), n) == NULL) {
-    Rf_error("Buffer underflow (requested %d elements but %d available)",
-             n, ring_buffer_used(buffer, false));
+    throw_underflow(buffer, n);
   }
   UNPROTECT(1);
   // NOTE: In C we return the tail position here but that is not done
@@ -158,7 +158,7 @@ SEXP R_ring_buffer_read(SEXP extPtr, SEXP r_n) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_read(buffer, RAW(ret), n) == NULL) {
-    Rf_error("Buffer underflow");
+    throw_underflow(buffer, n);
   }
   UNPROTECT(1);
   // NOTE: In C we return the tail position here but that is not done
@@ -171,8 +171,7 @@ SEXP R_ring_buffer_take_head(SEXP extPtr, SEXP r_n) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_take_head(buffer, RAW(ret), n) == NULL) {
-    Rf_error("Buffer underflow (requested %d elements but %d available)",
-             n, ring_buffer_used(buffer, false));
+    throw_underflow(buffer, n);
   }
   UNPROTECT(1);
   // NOTE: In C we return the head position here but that is not done
@@ -185,7 +184,7 @@ SEXP R_ring_buffer_read_head(SEXP extPtr, SEXP r_n) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_read_head(buffer, RAW(ret), n) == NULL) {
-    Rf_error("Buffer underflow");
+    throw_underflow(buffer, n);
   }
   UNPROTECT(1);
   // NOTE: In C we return the head position here but that is not done
@@ -199,7 +198,7 @@ SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
   SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
   data_t *data = (data_t*) ring_buffer_tail_offset(buffer, offset);
   if (data == NULL) {
-    Rf_error("Buffer underflow");
+    throw_underflow(buffer, offset);
   }
   memcpy(RAW(ret), data, buffer->stride);
   UNPROTECT(1);
@@ -212,7 +211,7 @@ SEXP R_ring_buffer_head_offset(SEXP extPtr, SEXP r_offset) {
   SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
   data_t *data = (data_t*) ring_buffer_head_offset(buffer, offset);
   if (data == NULL) {
-    Rf_error("Buffer underflow");
+    throw_underflow(buffer, offset);
   }
   memcpy(RAW(ret), data, buffer->stride);
   UNPROTECT(1);
@@ -304,4 +303,9 @@ size_t scalar_size(SEXP x) {
     Rf_error("Expected a nonnegative scalar integer");
     return 0;
   }
+}
+
+void throw_underflow(ring_buffer *buffer, size_t n) {
+  Rf_error("Buffer underflow (requested %d elements but %d available)",
+           n, ring_buffer_used(buffer, false));
 }
