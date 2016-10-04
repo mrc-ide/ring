@@ -23,7 +23,7 @@ test_that("basic", {
     buf <- ring_buffer_bytes_typed(size, create[[type]](n))
 
     expect_is(buf, "ring_buffer_bytes_translate")
-    expect_equal(buf$type, paste0("typed:", type))
+    expect_equal(buf$.type, paste0("typed:", type))
 
     expect_equal(buf$size(), size)
     expect_equal(buf$stride(), sizes[[type]] * n)
@@ -62,12 +62,12 @@ test_that("initialisation", {
   b <- ring_buffer_bytes_typed(5, numeric(), 4L)
   expect_equal(b$size(), 5L)
   expect_equal(b$stride(), sizes[["double"]] * 4L)
-  expect_equal(b$type, "typed:double")
+  expect_equal(b$.type, "typed:double")
 
   b <- ring_buffer_bytes_typed(5, "numeric", 4L)
   expect_equal(b$size(), 5L)
   expect_equal(b$stride(), sizes[["double"]] * 4L)
-  expect_equal(b$type, "typed:double")
+  expect_equal(b$.type, "typed:double")
 
   expect_error(ring_buffer_bytes_typed(5, numeric()),
                "'len' must be greater than zero")
