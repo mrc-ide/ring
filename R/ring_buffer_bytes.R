@@ -278,18 +278,18 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
   inherit=.R6_ring_buffer_bytes,
 
   public=list(
-    to=NULL,
-    from=NULL,
-    type=NULL,
+    .to=NULL,
+    .from=NULL,
+    .type=NULL,
 
     initialize=function(size, stride, to, from, on_overflow,
                         type = NULL, ptr = NULL) {
       assert_function(to)/
       assert_function(from)
       super$initialize(size, stride, on_overflow, ptr)
-      self$to <- to
-      self$from <- from
-      self$type <- type
+      self$.to <- to
+      self$.from <- from
+      self$.type <- type
     },
 
     ## inherits: reset, size, bytes_data, stride, used, free,
@@ -297,19 +297,19 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
 
     duplicate=function() {
       .R6_ring_buffer_bytes_typed$new(
-        NULL, self$stride(), self$to, self$from, self$type, self$.ptr)
+        NULL, self$stride(), self$to, self$.from, self$.type, self$.ptr)
     },
 
-    head=function() self$from(super$head()),
-    tail=function() self$from(super$tail()),
-    set=function(data) super$push(self$to(data)),
-    push=function(data) super$push(self$to(data)),
-    take=function(n) self$from(super$take(n)),
-    read=function(n) self$from(super$read(n)),
-    head_offset=function(n) self$from(super$head_offset(n)),
-    tail_offset=function(n) self$from(super$tail_offset(n)),
-    take_head=function(n) self$from(super$take_head(n)),
-    read_head=function(n) self$from(super$read_head(n))
+    head=function() self$.from(super$head()),
+    tail=function() self$.from(super$tail()),
+    set=function(data) super$push(self$.to(data)),
+    push=function(data) super$push(self$.to(data)),
+    take=function(n) self$.from(super$take(n)),
+    read=function(n) self$.from(super$read(n)),
+    head_offset=function(n) self$.from(super$head_offset(n)),
+    tail_offset=function(n) self$.from(super$tail_offset(n)),
+    take_head=function(n) self$.from(super$take_head(n)),
+    read_head=function(n) self$.from(super$read_head(n))
   ))
 
 ## Must match the order in ring.h
