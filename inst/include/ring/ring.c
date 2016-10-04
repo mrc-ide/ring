@@ -61,7 +61,6 @@ ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
   return ret;
 }
 
-// TODO: consider exporting the growth function?
 #define LOG_PHI 0.481211825028767
 void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
   if (n == 0) {
@@ -87,7 +86,20 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
   const size_t bytes_data = (size + 1) * buffer->stride;
 
 #ifdef RING_USE_STDLIB_ALLOC
-  buffer->data = (data_t*) realloc(buffer->data, bytes_data * sizeof(data_t));
+  void *tmp = realloc(buffer->data, bytes_data * sizeof(data_t));
+  if (tmp != NULL) {
+    buffer->data = (data_t*) tmp;
+  } else {
+    // Out of memory.
+#ifdef USING_R
+    // Probably the most polite thing to do; could cause a memory leak
+    // or leave things in a fairly inconsistent state.
+    Rf_error("Ran out of memory while resizing ring buffer");
+#else
+    // This should cause a crash pretty quickly
+    buffer->data = NULL;
+#endif
+  }
 #else
   buffer->data = (data_t*) Realloc(buffer->data, bytes_data, data_t);
 #endif

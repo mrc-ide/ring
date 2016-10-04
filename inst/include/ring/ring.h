@@ -14,11 +14,14 @@
 extern "C" {
 #endif
 
-// What to do on overflow.  The OVERFLOW_ERROR action (which calls R's
-// error function) is only available when using R, which is detected
-// by the <R.h> header included.  If you are using RING_USE_STDLIB_ALLOC
-// (see below) but want to use OVERFLOW_ERROR then you'll need to
-// include <R.h> as well.
+// What to do on overflow.
+//
+// The OVERFLOW_ERROR action (which calls R's error function) is only
+// available when using R, which is detected by the <R.h> header
+// included.  If you are using RING_USE_STDLIB_ALLOC (see below) but
+// want to use OVERFLOW_ERROR then you'll need to include <R.h> as
+// well, and be willing to deal with an R error and the longjmp that
+// it causes.
 typedef enum overflow_action {
   OVERFLOW_OVERWRITE,
   OVERFLOW_GROW
@@ -85,9 +88,11 @@ typedef struct ring_buffer {
 //     #define RING_USE_STDLIB_ALLOC 1
 //     #include <ring/ring.c>
 //
-// which will not depend on *any* R code and use stdlib calloc/free.
-// If allocation fails, then ring_buffer_create will return NULL.  So
-// if using this approach be sure to check the return value!
+// which will not depend on *any* R code and use stdlib calloc/free
+// (except for the issue with USING_R/OVERFLOW_ERROR above).  With
+// RING_USE_STDLIB_ALLOC defined, if an allocation fails, then
+// ring_buffer_create (and ring_buffer_duplicate below) will return
+// NULL.  So if using this approach be sure to check the return value!
 //
 // The main wrinkle to using RING_USE_STDLIB_ALLOC 1 is that the
 // `overflow_action` `OVERFLOW_ERROR` will not work.  At present this
@@ -126,6 +131,14 @@ ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer);
 // After using this function, all references to the head or tail are
 // broken and the memory may have been freed and the contents moved
 // elsewhere.
+//
+// If RING_USE_STDLIB_ALLOC is defined, and if an allocation fails,
+// then this may leave things in an undesirable state (this is
+// particularly a problem when using on_overflow = OVERFLOW_GROW).
+// Currently, if R is used an R error will be thrown (possibly not a
+// good idea if running under Rcpp) and if running as a standalone
+// application then the data will be set to NULL, probably causing a
+// crash pretty quickly (improvements welcome).
 void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact);
 
 // Reset the state of the buffer.  This "zeros" the head and tail
