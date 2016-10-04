@@ -411,3 +411,51 @@ test_that("grow geometrically by zero", {
   b$grow(10)
   expect_equal(b$size(), 10)
 })
+
+test_that("mirror", {
+  size <- 128
+  stride <- 8
+
+  rb1 <- ring_buffer_bytes(size, stride)
+  rb2 <- ring_buffer_bytes(size, stride)
+
+  bb1 <- random_bytes(floor(size / 2) * stride)
+  bb2 <- random_bytes(floor(size / 3) * stride)
+  rb1$push(bb1)
+  rb2$push(bb2)
+
+  expect_error(rb1$mirror(rb1),
+               "Can't mirror a buffer into itself")
+
+  expect_equal(rb1$read(rb1$used()), bb1)
+  expect_equal(rb2$read(rb2$used()), bb2)
+
+  rb1$mirror(rb2)
+  expect_equal(rb1$read(rb1$used()), bb1)
+  expect_equal(rb1$read(rb1$used()), bb1)
+  expect_equal(rb1$head_pos(), rb2$head_pos())
+  expect_equal(rb1$tail_pos(), rb2$tail_pos())
+
+  ## Now rotate the buffer and try again:
+  rb2$push(random_bytes((size + 5) * stride))
+  rb2$take(4)
+  bb3 <- rb2$read(rb2$used())
+
+  rb2$mirror(rb1)
+  expect_equal(rb1$read(rb1$used()), bb3)
+  expect_equal(rb2$read(rb2$used()), bb3)
+  expect_equal(rb1$head_pos(), rb2$head_pos())
+  expect_equal(rb1$tail_pos(), rb2$tail_pos())
+
+  ## Try a couple of incompatible cases:
+  expect_error(rb1$mirror(ring_buffer_bytes(size - 1, stride)),
+               "Can't mirror as buffers differ in their size (128 vs 127)",
+               fixed = TRUE)
+  expect_error(rb1$mirror(ring_buffer_bytes(size, stride - 1)),
+               "Can't mirror as buffers differ in their stride (8 vs 7)",
+               fixed = TRUE)
+  ## check even when bytes used would be about the same:
+  expect_error(rb1$mirror(ring_buffer_bytes(size / 2, stride * 2)),
+               "Can't mirror as buffers differ",
+               fixed = TRUE)
+})

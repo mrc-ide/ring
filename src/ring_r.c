@@ -236,7 +236,17 @@ SEXP R_ring_buffer_mirror(SEXP srcPtr, SEXP destPtr) {
     *dest = ring_buffer_get(destPtr, true);
   bool ok = ring_buffer_mirror(src, dest);
   if (!ok) {
-    Rf_error("Cannot mirror incompatible ring buffers");
+    if (src == dest) {
+      Rf_error("Can't mirror a buffer into itself");
+    } else if (src->stride != dest->stride) {
+      Rf_error("Can't mirror as buffers differ in their stride (%d vs %d)",
+               src->stride, dest->stride);
+    } else if (src->size != dest->size) {
+      Rf_error("Can't mirror as buffers differ in their size (%d vs %d)",
+               src->size, dest->size);
+    } else {
+      Rf_error("Unknown error [ring bug]"); // #nocov
+    }
   }
   return R_NilValue;
 }

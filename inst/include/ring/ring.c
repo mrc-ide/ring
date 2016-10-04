@@ -332,7 +332,8 @@ const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n) {
 }
 
 bool ring_buffer_mirror(const ring_buffer *src, ring_buffer *dest) {
-  const bool ok = src->size == dest->size && src->stride == dest->stride;
+  const bool ok = src != dest &&
+    src->size == dest->size && src->stride == dest->stride;
   if (ok) {
     memcpy(dest->data, src->data, dest->bytes_data);
     dest->head = dest->data + ring_buffer_head_pos(src, true);

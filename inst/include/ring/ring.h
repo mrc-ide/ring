@@ -331,6 +331,11 @@ const void * ring_buffer_copy(ring_buffer *src, ring_buffer *dest, size_t n);
 //
 // This function will destroy all data in `dest`, but not allocate any
 // memory.
+//
+// Warning: the two buffers must have the same stride *and* the same
+// size.  If they do not, the function will return NULL (this means if
+// the function returns NULL it could either be an underflow or an
+// incompatible buffer).
 bool ring_buffer_mirror(const ring_buffer *src, ring_buffer *dest);
 
 // Returns a pointer to the tail (reading end) of the buffer, offset

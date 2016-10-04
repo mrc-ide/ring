@@ -214,13 +214,26 @@ read:
 
 copy:
   short: >-
-    Copy from into another ring buffer.  This is destructive with
-    respect to both ring buffers; the tail pointer will be moved in
-    this ring buffer as data are taken, and if the destination ring
-    buffer overflows, the tail pointer will be moved too.
+    Copy from \emph{this} ring buffer intoa a different ring buffer.
+    This is destructive with respect to both ring buffers; the tail
+    pointer will be moved in this ring buffer as data are taken, and
+    if the destination ring buffer overflows, the tail pointer will be
+    moved too.
   params:
-    dest: The destination ring buffer
+    dest: The destination ring buffer - will be modified by this call.
     n: The number of elements to copy
+
+mirror:
+  short: >-
+    Mirror the contents of \emph{this} ring buffer into a different
+    ring buffer.  This differs from \code{copy} in that \emph{this}
+    ring buffer is unaffected and in that \emph{all} of this ring
+    buffer is copied over (including head/tail positions).  This
+    provides an alternative way of duplicating state to
+    \code{duplicate} if you already have an appropriately sized ring
+    buffer handy.  No allocations will be done.
+  params:
+    dest: The destination ring buffer - will be modified by this call.
 
 head_offset:
   short: >-

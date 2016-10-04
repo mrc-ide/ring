@@ -65,6 +65,7 @@ static const R_CallMethodDef call_methods[] = {
   {"Cring_buffer_take_head",   (DL_FUNC) &R_ring_buffer_take_head,   2},
   {"Cring_buffer_read_head",   (DL_FUNC) &R_ring_buffer_read_head,   2},
   {"Cring_buffer_copy",        (DL_FUNC) &R_ring_buffer_copy,        3},
+  {"Cring_buffer_mirror",      (DL_FUNC) &R_ring_buffer_mirror,      2},
   {"Cring_buffer_tail_offset", (DL_FUNC) &R_ring_buffer_tail_offset, 2},
   {"Cring_buffer_head_offset", (DL_FUNC) &R_ring_buffer_head_offset, 2},
   // conversion code, used in ring_buffer_bytes_typed

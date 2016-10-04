@@ -176,7 +176,7 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
       if (!inherits(dest, "ring_buffer_bytes")) {
         stop("'dest' must be a 'ring_buffer_bytes'")
       }
-      .Call(Cring_buffer_mirror, self$.ptr, dest$.ptr)
+      invisible(.Call(Cring_buffer_mirror, self$.ptr, dest$.ptr))
     },
 
     ## Nondestructive:
