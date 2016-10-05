@@ -232,7 +232,7 @@ SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_n) {
     } else {
       throw_underflow(src, n);
     }
-  }
+  } // #nocov
   return ScalarInteger(head - dest->data);
 }
 
@@ -323,4 +323,4 @@ size_t scalar_size(SEXP x) {
 void throw_underflow(ring_buffer *buffer, size_t n) {
   Rf_error("Buffer underflow (requested %d elements but %d available)",
            n, ring_buffer_used(buffer, false));
-}
+} // #nocov

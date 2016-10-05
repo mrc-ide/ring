@@ -297,6 +297,16 @@ test_that("incompatible stride on copy", {
                fixed = TRUE)
 })
 
+test_that("can't self copy", {
+  n <- 10
+  s <- 6
+  b1 <- ring_buffer_bytes(n, s)
+
+  expect_error(b1$copy(b1, 1),
+               "Can't copy a buffer into itself",
+               fixed = TRUE)
+})
+
 test_that("grow - exact", {
   ## First, try manually growing a buffer under various states.  This
   ## has slightly fewer moving parts than doing this reactively based
