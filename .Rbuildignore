@@ -28,3 +28,4 @@
 ^man-roxygen$
 ^autodoc\.R$
 ^\.valgrind_ignore$
+^vignettes/src$
