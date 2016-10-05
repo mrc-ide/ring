@@ -5,6 +5,11 @@
 // because otherwise the R error can jump over destructors causing
 // memory leaks or worse.  Errors will be thrown with "throw", which
 // Rcpp will catch if you use that.
+//
+// However, note that if using overflow_action of anything other than
+// OVERFLOW_OVERWRITE is possibly unsafe; OVERFLOW_GROW is fine so
+// long as you never run out of memory, and OVERFLOW_ERROR is probably
+// never safe.
 #define RING_USE_STDLIB_ALLOC 1
 #include <ring/ring.h>
 
@@ -16,6 +21,7 @@ public:
   RingBuffer(const RingBuffer& other);
   RingBuffer& operator=(RingBuffer other);
 
+  void grow(size_t n, bool exact);
   void reset(bool clear);
   size_t size(bool bytes) const;
   size_t free(bool bytes) const;
@@ -34,6 +40,7 @@ public:
   const void * take(void *dest, size_t n);
   const void * read(void *dest, size_t n) const;
   const void * copy(RingBuffer& dest, size_t n);
+  bool mirror(RingBuffer& dest) const;
   const void * tail_offset(size_t offset) const;
   const void * head_offset(size_t offset) const;
 };

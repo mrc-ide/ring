@@ -101,6 +101,7 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
 #endif
   }
 #else
+  // R will handle the crash here for us:
   buffer->data = (data_t*) Realloc(buffer->data, bytes_data, data_t);
 #endif
   buffer->head = buffer->data + head_pos;

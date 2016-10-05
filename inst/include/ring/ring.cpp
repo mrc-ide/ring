@@ -28,6 +28,10 @@ RingBuffer& RingBuffer::operator=(RingBuffer other) {
   return *this;
 }
 
+void RingBuffer::grow(size_t n, bool exact) {
+  ring_buffer_grow(buffer, n, exact);
+}
+
 void RingBuffer::reset(bool clear) {
   ring_buffer_reset(buffer, clear);
 }
@@ -83,6 +87,9 @@ const void * RingBuffer::read(void *dest, size_t n) const {
 }
 const void * RingBuffer::copy(RingBuffer& dest, size_t n) {
   return ring_buffer_copy(buffer, dest.buffer, n);
+}
+bool RingBuffer::mirror(RingBuffer& dest) const {
+  return ring_buffer_mirror(buffer, dest.buffer);
 }
 const void * RingBuffer::tail_offset(size_t offset) const {
   return ring_buffer_tail_offset(buffer, offset);
