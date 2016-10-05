@@ -346,3 +346,10 @@ test_that("invalid overflow option", {
   expect_error(ring_buffer_env(10, character(0)),
                "on_overflow must be a scalar")
 })
+
+test_that("format", {
+  b <- ring_buffer_env(10)
+  expect_false(any(grepl("\\.[a-z]+:", strsplit(format(b), "\n")[[1]])))
+  class(b) <- c("tmp", "R6")
+  expect_true(any(grepl("\\.[a-z]+:", strsplit(format(b), "\n")[[1]])))
+})

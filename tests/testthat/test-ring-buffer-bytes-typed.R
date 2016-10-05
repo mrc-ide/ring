@@ -92,3 +92,9 @@ test_that("translate", {
   expect_equal(b$used(), 1L)
   expect_equal(b$tail(), "12345678")
 })
+
+test_that("format", {
+  b <- ring_buffer_bytes_typed(10, numeric(4))
+  txt <- strsplit(format(b), "\n")[[1]]
+  expect_match(txt[[1]], "typed:double")
+})
