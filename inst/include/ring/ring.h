@@ -144,7 +144,11 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact);
 // Reset the state of the buffer.  This "zeros" the head and tail
 // pointer (and may or may not actually reset the data) so that the
 // buffer can be used as if fresh.
-void ring_buffer_reset(ring_buffer *buffer);
+//
+//   buffer: a ring buffer to reset
+//
+//   clear: boolean, indicating if memory should also be zeroed
+void ring_buffer_reset(ring_buffer *buffer, bool clear);
 
 //// Basic querying: ////
 

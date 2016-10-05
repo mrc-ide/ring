@@ -35,7 +35,7 @@ ring_buffer * ring_buffer_create(size_t size, size_t stride,
   buffer->stride = stride;
   buffer->bytes_data = bytes_data;
   buffer->on_overflow = on_overflow;
-  ring_buffer_reset(buffer);
+  ring_buffer_reset(buffer, false);
   return buffer;
 }
 
@@ -112,8 +112,11 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
 // Below here, nothing else should vary on RING_USE_STDLIB_ALLOC,
 // though there is one dependency on USING_R
 
-void ring_buffer_reset(ring_buffer *buffer) {
+void ring_buffer_reset(ring_buffer *buffer, bool clear) {
   buffer->head = buffer->tail = buffer->data;
+  if (clear) {
+    memset(buffer->data, 0, buffer->bytes_data);
+  }
 }
 
 size_t ring_buffer_size(const ring_buffer *buffer, bool bytes) {

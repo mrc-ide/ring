@@ -109,8 +109,8 @@ SEXP R_ring_buffer_used(SEXP extPtr, SEXP bytes) {
                                           scalar_logical(bytes)));
 }
 
-SEXP R_ring_buffer_reset(SEXP extPtr) {
-  ring_buffer_reset(ring_buffer_get(extPtr, true));
+SEXP R_ring_buffer_reset(SEXP extPtr, SEXP clear) {
+  ring_buffer_reset(ring_buffer_get(extPtr, true), scalar_logical(clear));
   return R_NilValue;
 }
 

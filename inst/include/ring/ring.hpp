@@ -16,7 +16,7 @@ public:
   RingBuffer(const RingBuffer& other);
   RingBuffer& operator=(RingBuffer other);
 
-  void reset();
+  void reset(bool clear);
   size_t size(bool bytes) const;
   size_t free(bool bytes) const;
   size_t used(bool bytes) const;

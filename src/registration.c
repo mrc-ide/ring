@@ -57,7 +57,7 @@ static const R_CallMethodDef call_methods[] = {
   {"Cring_buffer_tail_pos",    (DL_FUNC) &R_ring_buffer_tail_pos,    2},
   {"Cring_buffer_free",        (DL_FUNC) &R_ring_buffer_free,        2},
   {"Cring_buffer_used",        (DL_FUNC) &R_ring_buffer_used,        2},
-  {"Cring_buffer_reset",       (DL_FUNC) &R_ring_buffer_reset,       1},
+  {"Cring_buffer_reset",       (DL_FUNC) &R_ring_buffer_reset,       2},
   {"Cring_buffer_set",         (DL_FUNC) &R_ring_buffer_set,         3},
   {"Cring_buffer_push",        (DL_FUNC) &R_ring_buffer_push,        2},
   {"Cring_buffer_take",        (DL_FUNC) &R_ring_buffer_take,        2},

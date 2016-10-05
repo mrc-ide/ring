@@ -17,7 +17,7 @@ SEXP R_ring_buffer_head_pos(SEXP extPtr, SEXP bytes);
 SEXP R_ring_buffer_tail_pos(SEXP extPtr, SEXP bytes);
 SEXP R_ring_buffer_free(SEXP extPtr, SEXP bytes);
 SEXP R_ring_buffer_used(SEXP extPtr, SEXP bytes);
-SEXP R_ring_buffer_reset(SEXP extPtr);
+SEXP R_ring_buffer_reset(SEXP extPtr, SEXP clear);
 SEXP R_ring_buffer_set(SEXP extPtr, SEXP c, SEXP len);
 SEXP R_ring_buffer_push(SEXP extPtr, SEXP src);
 SEXP R_ring_buffer_take(SEXP extPtr, SEXP r_n);

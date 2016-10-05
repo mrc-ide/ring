@@ -184,6 +184,19 @@ ring_buffer_env_mirror <- function(src, dest) {
   dest$.buffer$.used <- src$.buffer$.used
 }
 
+ring_buffer_reset <- function(buffer, clear) {
+  buffer$.head <- buffer$.buffer
+  buffer$.tail <- buffer$.buffer
+  buffer$.buffer$.used <- 0L
+  if (clear) {
+    x <- buffer$.buffer
+    for (i in seq_len(buffer$size())) {
+      x$data <- NULL
+      x <- x$.next
+    }
+  }
+}
+
 ## NOTE: I've put lots of C_assert_size(n) calls in; implementing this
 ## in R takes about ~3us but the C version here takes ~.4us; the
 ## former is about the same as accessing the $size() method while the
@@ -215,10 +228,8 @@ ring_buffer_env_mirror <- function(src, dest) {
       self$reset()
     },
 
-    reset=function() {
-      self$.head <- self$.buffer
-      self$.tail <- self$.buffer
-      self$.buffer$.used <- 0L
+    reset=function(clear = FALSE) {
+      ring_buffer_reset(self, clear)
     },
 
     duplicate=function() {

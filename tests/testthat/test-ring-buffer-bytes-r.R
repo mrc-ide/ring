@@ -483,3 +483,20 @@ test_that("mirror", {
                "Can't mirror as buffers differ",
                fixed = TRUE)
 })
+
+test_that("reset", {
+  rb <- ring_buffer_bytes(10)
+  rb$push(as.raw(1:3))
+  rb$push(as.raw(seq_len(rb$size())))
+
+  rb$reset()
+  expect_equal(rb$used(), 0)
+  expect_true(rb$is_empty())
+  expect_equal(rb$head_pos(), 0)
+  expect_equal(rb$tail_pos(), 0)
+
+  expect_equal(rb$data(), as.raw(c(9:10, 3, 1:8)))
+
+  rb$reset(TRUE)
+  expect_equal(rb$data(), rep(as.raw(0), rb$bytes_data()))
+})

@@ -393,3 +393,19 @@ test_that("mirror", {
   expect_equal(rb1$tail_pos(), rb2$tail_pos())
   expect_equal(rb1$used(), rb2$used())
 })
+
+test_that("reset", {
+  rb <- ring_buffer_env(10)
+  rb$push(1:3)
+  rb$push(seq_len(rb$size()))
+
+  rb$reset()
+  expect_equal(rb$used(), 0)
+  expect_true(rb$is_empty())
+  expect_equal(rb$head_pos(), 0)
+  expect_equal(rb$tail_pos(), 0)
+
+  expect_equal(rb$.buffer$data, 8L)
+  rb$reset(TRUE)
+  expect_null(rb$.buffer$data)
+})

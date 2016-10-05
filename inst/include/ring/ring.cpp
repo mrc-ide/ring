@@ -28,8 +28,8 @@ RingBuffer& RingBuffer::operator=(RingBuffer other) {
   return *this;
 }
 
-void RingBuffer::reset() {
-  ring_buffer_reset(buffer);
+void RingBuffer::reset(bool clear) {
+  ring_buffer_reset(buffer, clear);
 }
 size_t RingBuffer::size(bool bytes) const {
   return ring_buffer_size(buffer, bytes);

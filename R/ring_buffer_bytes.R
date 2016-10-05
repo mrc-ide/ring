@@ -121,7 +121,9 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
       }
     },
 
-    reset=function() .Call(Cring_buffer_reset, self$.ptr),
+    reset=function(clear = FALSE) {
+      .Call(Cring_buffer_reset, self$.ptr, clear)
+    },
 
     ## NOTE: duplicate is not implemented like the typical R6 clone
     ## method because we need a deep clone here but I don't want a
