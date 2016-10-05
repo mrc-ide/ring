@@ -156,6 +156,34 @@ ring_buffer_env_grow <- function(buffer, n) {
   invisible(NULL)
 }
 
+ring_buffer_env_mirror <- function(src, dest) {
+  if (identical(dest$.buffer, src$.buffer)) {
+    stop("Can't mirror a buffer into itself")
+  }
+  size <- src$size()
+  if (dest$size() != size) {
+    stop(sprintf("Can't mirror as buffers differ in their size (%d vs %d)",
+                 size, dest$size()))
+  }
+
+  ## NOTE: Strictly only the data that is *used* need be copied.
+  ## But that will require that we offset the position of the
+  ## destination buffer so that the start point equals the tail of
+  ## the source buffer.  And I do like the idea of a complete
+  ## reset here.
+  from <- src$.buffer
+  to <- dest$.buffer
+  for (idx in seq_len(size)) {
+    to$data <- from$data
+    to <- to$.next
+    from <- from$.next
+  }
+
+  dest$.head <- ring_buffer_env_move_forward(dest$.buffer, src$head_pos())
+  dest$.tail <- ring_buffer_env_move_forward(dest$.buffer, src$tail_pos())
+  dest$.buffer$.used <- src$.buffer$.used
+}
+
 ## NOTE: I've put lots of C_assert_size(n) calls in; implementing this
 ## in R takes about ~3us but the C version here takes ~.4us; the
 ## former is about the same as accessing the $size() method while the
@@ -270,6 +298,9 @@ ring_buffer_env_grow <- function(buffer, n) {
     },
 
     copy=function(dest, n) {
+      if (identical(dest$.buffer, self$.buffer)) {
+        stop("Can't copy a buffer into itself")
+      }
       C_assert_size(n, "n")
       ring_buffer_env_check_underflow(self, n)
       ring_buffer_env_check_overflow(dest, n)
@@ -282,6 +313,10 @@ ring_buffer_env_grow <- function(buffer, n) {
 
       self$.tail <- tail
       self$.buffer$.used <- self$.buffer$.used - as.integer(n)
+    },
+
+    mirror=function(dest) {
+      ring_buffer_env_mirror(self, dest)
     },
 
     head_offset=function(n) {

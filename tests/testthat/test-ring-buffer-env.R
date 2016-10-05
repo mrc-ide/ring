@@ -353,3 +353,43 @@ test_that("format", {
   class(b) <- c("tmp", "R6")
   expect_true(any(grepl("\\.[a-z]+:", strsplit(format(b), "\n")[[1]])))
 })
+
+test_that("mirror", {
+  size <- 50
+
+  rb1 <- ring_buffer_env(size)
+  rb2 <- ring_buffer_env(size)
+
+  bb1 <- random_bytes(floor(size / 2))
+  bb2 <- random_bytes(floor(size / 3))
+  rb1$push(bb1)
+  rb2$push(bb2)
+
+  expect_error(rb1$mirror(rb1),
+               "Can't mirror a buffer into itself")
+  expect_error(rb1$mirror(ring_buffer_bytes(size - 1)),
+               "Can't mirror as buffers differ in their size (50 vs 49)",
+               fixed = TRUE)
+
+  expect_equal(rb1$read(rb1$used()), as.list(bb1))
+  expect_equal(rb2$read(rb2$used()), as.list(bb2))
+
+  rb1$mirror(rb2)
+  expect_equal(rb1$read(rb1$used()), as.list(bb1))
+  expect_equal(rb1$read(rb1$used()), as.list(bb1))
+  expect_equal(rb1$head_pos(), rb2$head_pos())
+  expect_equal(rb1$tail_pos(), rb2$tail_pos())
+  expect_equal(rb1$used(), rb2$used())
+
+  ## Now rotate the buffer and try again:
+  rb2$push(seq_len(size + 5))
+  rb2$take(4)
+  bb3 <- rb2$read(rb2$used())
+
+  rb2$mirror(rb1)
+  expect_equal(rb1$read(rb1$used()), as.list(bb3))
+  expect_equal(rb2$read(rb2$used()), as.list(bb3))
+  expect_equal(rb1$head_pos(), rb2$head_pos())
+  expect_equal(rb1$tail_pos(), rb2$tail_pos())
+  expect_equal(rb1$used(), rb2$used())
+})

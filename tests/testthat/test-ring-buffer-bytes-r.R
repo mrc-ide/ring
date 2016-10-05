@@ -457,6 +457,7 @@ test_that("mirror", {
   expect_equal(rb1$read(rb1$used()), bb1)
   expect_equal(rb1$head_pos(), rb2$head_pos())
   expect_equal(rb1$tail_pos(), rb2$tail_pos())
+  expect_equal(rb1$used(), rb2$used())
 
   ## Now rotate the buffer and try again:
   rb2$push(random_bytes((size + 5) * stride))
@@ -468,6 +469,7 @@ test_that("mirror", {
   expect_equal(rb2$read(rb2$used()), bb3)
   expect_equal(rb1$head_pos(), rb2$head_pos())
   expect_equal(rb1$tail_pos(), rb2$tail_pos())
+  expect_equal(rb1$used(), rb2$used())
 
   ## Try a couple of incompatible cases:
   expect_error(rb1$mirror(ring_buffer_bytes(size - 1, stride)),
