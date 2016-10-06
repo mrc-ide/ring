@@ -59,22 +59,6 @@ ring_buffer_env <- function(size, on_overflow = "overwrite") {
   .R6_ring_buffer_env$new(size, on_overflow)
 }
 
-## There is an interface issue here that I need to deal with once I
-## have the basic logic working; is the point of the buffer to
-## implement a FIFO queue, or something more general?  In which case
-## what do we do about things like the special treatment of head and
-## tail for the case of using this like a FIFO/buffer.  The other
-## thing I wonder about is whether it's OK to expose the head/tail
-## thing or if we should abstract that away...
-
-## TODO: Throughout, it is possible that any error in the assignment
-## (probably via an R issue, object not being found etc) leaves the
-## size element corrupt.  I'd like to drop this entirely I think, in
-## favour of an odometer based counter.  Once I get some decent tests
-## implemented I can try and swap that out.  When done, the lookups
-## for capacity will be all O(n) which is a bit bad but probably a
-## reasonable price to pay for simpler and more robust code.
-
 ## This creates a doubly-linked list with a pair of pointers
 ## (next/prev) pointing up and down the list.  It does not splice
 ## them.
@@ -392,10 +376,8 @@ ring_buffer_env_write_to_head <- function(buf, data) {
 }
 
 ring_buffer_env_check_underflow <- function(obj, requested) {
-  ## TODO: Perhaps an S3 condition?
   if (requested > obj$used()) {
-    stop(sprintf("Buffer underflow (requested %d elements but %d available)",
-                 requested, obj$used()), call. = FALSE)
+    stop(RingUnderflow(requested, obj$used()))
   }
 }
 
@@ -404,11 +386,7 @@ ring_buffer_env_check_overflow <- function(obj, requested) {
     nfree <- obj$free()
     if (requested > nfree) {
       if (obj$.prevent_overflow) {
-        ## TODO: Perhaps an S3 condition?  But then I will need the
-        ## same from the C code and that's a bit harder to do I think.
-        stop(sprintf("Buffer overflow: (adding %d elements, but %d available)",
-                     requested, obj$free()),
-             call. = FALSE)
+        stop(RingOverflow(requested, nfree))
       } else {
         ring_buffer_env_grow(obj, requested - nfree)
       }
@@ -442,4 +420,20 @@ ring_buffer_env_move_backward <- function(x, n) {
 ##' @export
 as.list.ring_buffer_env <- function(x, ...) {
   ring_buffer_env_read_from_tail(x, x$used())[[1L]]
+}
+
+RingUnderflow <- function(requested, used) {
+  msg <- sprintf("Buffer underflow (requested %d elements but %d available)",
+                 requested, used)
+  structure(list(requested = requested, used = used, message = msg,
+                 call = NULL),
+            class=c("RingUnderflow", "error", "condition"))
+}
+
+RingOverflow <- function(requested, free) {
+  msg <- sprintf("Buffer overflow (requested %d elements but %d available)",
+                 requested, free)
+  structure(list(requested = requested, free = free, message = msg,
+                 call = NULL),
+            class=c("RingOverflow", "error", "condition"))
 }
