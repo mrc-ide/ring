@@ -4,7 +4,7 @@ format_ring_buffer <- function(x) {
   } else {
     ret <- sprintf("<Ring Buffer (%s | %s)>", class(x)[[1L]], x$.type)
   }
-  nms <- ls(x)
+  nms <- setdiff(ls(x), "initialize")
   vals <- vapply(nms, function(i) deparse(args(x[[i]]))[[1L]], character(1))
   details <- sprintf("    %s: %s", nms, trimws(vals))
   paste(c(ret, "  Public:", details), collapse = "\n")
