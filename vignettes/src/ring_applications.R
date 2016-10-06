@@ -27,12 +27,12 @@ set.seed(1)
 ## ## Ring vector
 
 ## The actual code for the buffer here is availabe in the package via
-## `system.file("ring_vector.R", package = "ring")` (the path depends
-## on your R and package installations).
+## `system.file("examples/ring_vector.R", package = "ring")` (the path
+## depends on your R and package installations).
 
 ##+ echo = FALSE, results = "asis"
 local({
-  path <- system.file("ring_vector.R", package = "ring")
+  path <- system.file("examples/ring_vector.R", package = "ring")
   source(path, local = FALSE)
   writeLines(c("```r", readLines(path), "```"))
 })
@@ -122,7 +122,7 @@ plot(h, type="l", xlab="step", ylab="y", las=1)
 
 ##+ echo = FALSE, results = "asis"
 local({
-  path <- system.file("ring_matrix.R", package = "ring")
+  path <- system.file("examples/ring_matrix.R", package = "ring")
   source(path, local = FALSE)
   dat <- readLines(path)
   writeLines(c("```r", dat[!grepl("^###", dat)], "```"))
@@ -144,12 +144,12 @@ push(m, matrix(0L, 1, n))
 m[]
 
 step <- function(m) {
-  if (nrow(x) > 1) {
+  if (nrow(m) > 1) {
     p <- colMeans(diff(m[])) / 2 + 0.5
   } else {
     p <- rep(0.5, ncol(m))
   }
-  x[nrow(x), ] + as.integer(ifelse(runif(length(p)) < p, -1, 1L))
+  m[nrow(m), ] + as.integer(ifelse(runif(length(p)) < p, -1, 1L))
 }
 
 m <- ring_matrix(5, n, "integer", FALSE)

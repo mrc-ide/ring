@@ -114,7 +114,6 @@ c.ring_vector <- function(..., recursive = TRUE) {
   } else {
     x <- ..1
     args <- list(...)[-1]
-    ## TODO: does not deal with other ring buffers here yet.
     lapply(args, ring_vector_compatible, x = x)
     for (m in args) {
       ring_vector_push(x, m)

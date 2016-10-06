@@ -156,7 +156,6 @@ rbind.ring_matrix <- function(...) {
   } else {
     x <- ..1
     args <- list(...)[-1]
-    ## TODO: does not deal with other ring buffers here yet.
     lapply(args, ring_matrix_compatible, x = x)
     for (m in args) {
       ring_matrix_push(x, m)
