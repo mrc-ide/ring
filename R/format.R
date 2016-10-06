@@ -1,4 +1,4 @@
-format_ring_buffer <- function(x) {
+format_ring_buffer <- function(x, ...) {
   if (is.null(x$.type)) {
     ret <- sprintf("<Ring Buffer (%s)>", class(x)[[1L]])
   } else {
