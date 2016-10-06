@@ -260,13 +260,6 @@ ring_buffer_reset <- function(buffer, clear) {
       }
     },
 
-    ## TODO: It will be probably useful on occassion to add a
-    ## data.frame here row-by-row and things like that.  So we might
-    ## have to make this one generic -- or find something that makes
-    ## things iterable.  There are iterator packages we could depend
-    ## on so that it could be possible to say something like:
-    ##
-    ## buf$push(iterate_by_row(data.frame))
     push = function(data, iterate = TRUE) {
       ring_buffer_env_check_overflow(self, if (iterate) length(data) else 1L)
       if (iterate) {

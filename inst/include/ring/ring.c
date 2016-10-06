@@ -251,10 +251,6 @@ const void * ring_buffer_read(const ring_buffer *buffer, void *dest, size_t n) {
   const data_t *tail = buffer->tail;
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nwritten = 0;
-  // TODO: This can be rewritten to allow at once one switch point
-  // which is probably the same assembly but might be nicer to read?
-  // I believe that this is going to be sufficiently tested that I can
-  // just try replacing the logic here and seeing if they all pass.
   while (nwritten != nbytes) {
     size_t n = imin(bufend - tail, nbytes - nwritten);
     memcpy((data_t*)dest + nwritten, tail, n);
@@ -354,9 +350,6 @@ const void * ring_buffer_tail_offset(const ring_buffer *buffer, size_t offset) {
   const data_t *bufend = ring_buffer_end(buffer);
   size_t nmoved = 0;
 
-  // TODO: this is really a much simpler construct than this as we can
-  // only go around once (see also head_offset below which is
-  // basically the same code).
   while (nmoved < nbytes) {
     size_t n = imin(bufend - tail, nbytes - nmoved);
     tail += n;

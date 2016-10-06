@@ -1,38 +1,9 @@
-## TODO: a 'flush' function that gets all and resets would be useful.
-
-## TODO: a "read" modifier to head and tail that reads information.
-## This is used by the C interface and needs only R level support.
-## But the wrapping still needs dealing with so that does require C
-## support.  Hold off for now.
-
 ## NOTE: There are a lot of tests here.  These are derived from the
 ## c-ringbuf/ringbuf-test.c file and exercise everything fairly
 ## carefully.  Unfortunately, having run through all of this we'll
 ## also have to do basically the same for the with-stride buffer too,
 ## along with any other corner cases that involves (which are likely
 ## to be many).
-
-## NOTE: More tests will come when this holds something other than raw
-## bytes.  So if we want a ring buffer of doubles or serialised R
-## objects or whatever, then that will need some additional testing and
-## support.
-
-## NOTE: None of the tests involving ring_buffer_read and
-## ring_buffer_write, which deal with file descriptors, are done.  I
-## don't believe that R makes it possible to pass fds back into C from
-## R.  This might be implemented later though.
-
-## NOTE: None of the tests involving findchr are done because I'm not
-## sure how I will implement this.
-
-## TODO: Still need an R visible "cursor" to the ring buffer that is
-## allowed to move around between head and tail.  Validation here is
-## hard without going overboard.
-
-## TODO: Need a "clone" method that duplicates a buffer.  This is
-## really not that hard as all we have to do is duplicate the data
-## pointer and set the head and tail pointers to have the same
-## relative offset, plus set size and stride.
 
 context("ring_buffer_bytes")
 
@@ -726,7 +697,6 @@ test_that("ring_buffer_push, from, into, no wrap", {
   expect_equal(rb1$head_pos(), 0L)
 })
 
-## TODO: This one might need work (see ringbuf-test.c, l. 1441)
 test_that("ring_buffer_push, overflow when tail > head", {
   ## Overflow with ring_buffer_push when tail pointer is > head
   ## pointer. Should bump tail pointer to head + 1.
@@ -1342,7 +1312,6 @@ test_that("ring_buffer_copy, different capacities, overflow 2nd", {
   expect_true(rb1$is_empty())
   expect_false(rb2$is_empty())
 
-  ## TODO: these could be wrong...
   expect_equal(rb1$tail_pos(), 10)
   expect_equal(rb2$tail_pos(), 2)
   expect_equal(rb1$head_pos(), 10)
