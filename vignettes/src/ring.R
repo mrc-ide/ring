@@ -12,11 +12,11 @@
 ##   %\VignetteEncoding{UTF-8}
 ## ---
 
-##+ echo=FALSE, results="hide"
+##+ echo = FALSE, results = "hide"
 knitr::opts_chunk$set(
-  error=FALSE,
-  fig.width=7,
-  fig.height=5)
+  error = FALSE,
+  fig.width = 7,
+  fig.height = 5)
 set.seed(1)
 
 ## This package implements ring buffers.  A ring buffer can be used as
@@ -48,7 +48,7 @@ set.seed(1)
 ## `ring_buffer_env` function:
 buf <- ring::ring_buffer_env(100)
 
-## This is an [R6](https://github.com/wch/R6) class:
+## This is an [R6](https://github.com/wch/R6) class, with several methods:
 buf
 
 ## Operations on the class happen by running methods using `$`.  So
@@ -64,7 +64,7 @@ buf$is_empty()
 buf$is_full()
 
 ## To start using the buffer we need to put some data in it.  There
-## are two functions for adding data:
+## are two main functions for adding data:
 
 ## * `buf$set(data, n)` sets `n` elements to be the value `data`
 ## * `buf$push(data, iterate)` pushes `data` into the buffer, with the
@@ -91,7 +91,7 @@ buf$read(2)
 
 ## If you try to read too far, then the buffer will underflow and you
 ## will get an error:
-##+ error=TRUE
+##+ error = TRUE
 buf$read(20)
 
 ## If you just want the the first element, use `tail()`
@@ -128,6 +128,12 @@ buf$tail()
 buf$reset()
 buf$used()
 buf$is_empty()
+
+## While the ring buffer is fixed in size in typical use, you can grow
+## it explicitly.  To add additional space, use the `grow` method:
+buf$size()
+buf$grow(20)
+buf$size()
 
 ## ## Application: simulation with recent history
 
@@ -186,9 +192,8 @@ for (i in seq_len(length(h) - 1L)) {
 }
 
 ## Now we have a simulation with a strong mean reverting tendency:
-##+ fig.width=7
-par(mar=c(4, 4, .5, .5))
-plot(h, type="l", xlab="step", ylab="y", las=1)
+par(mar = c(4, 4, .5, .5))
+plot(h, type = "l", xlab = "step", ylab = "y", las = 1)
 
 ## Because the buffer always holds the last 5 (or fewer) elements the
 ## book-keeping involved in working with the last few elements out is
@@ -210,10 +215,11 @@ plot(h, type="l", xlab="step", ylab="y", las=1)
 ## [here](https://github.com/dhess/c-ringbuf), by
 ## [\@dhess](https://github.com/dhess).
 
-## This operates basically the same way as `ring_buffer_env` but with
-## a few differences:
+## This operates basically the same way as `ring_buffer_env`, and
+## presents a very similar interface to R, but with a few key
+## differences:
 
-## * The contents of the buffer are raw bytes (R's raw vectors).
+## * The contents of the buffer are raw bytes (using R's raw vectors).
 ##   These are a bit fiddly to work with but can be very powerful.
 ## * The `iterate` distinction of `push` disappears because there is
 ##   no ambiguity with R objects
@@ -233,6 +239,14 @@ bytes <- as.raw(0:255)
 ## ...and push them into the buffer:
 buf$push(bytes)
 
+## ...read from the buffer
+buf$read(10)
+
+## ...destructively take the oldest elements
+buf$used()
+buf$take(20)
+buf$used()
+
 ## ## Striding
 
 ## Single bytes can hold only values 0 to 255 (or character
@@ -251,7 +265,7 @@ buf <- ring::ring_buffer_bytes(100, 8)
 buf$push(as.raw(1:8))
 
 ## but if you pushed more or less it would be an error:
-##+ error=TRUE
+##+ error = TRUE
 buf$push(as.raw(1:4))
 
 ## Reading happens in *logical* units, not bytes:
@@ -261,7 +275,7 @@ buf$read(1)
 buf$used()
 
 ## or the number of bytes
-buf$used(bytes=TRUE)
+buf$used(bytes = TRUE)
 
 ## ## The typed bytes buffer `ring_buffer_bytes_typed`
 
@@ -300,8 +314,44 @@ buf$push(rnorm(5 * 10))
 buf$take(1)
 
 ## If you try to take more than is in the buffer it is an error:
-##+ error=TRUE
+##+ error = TRUE
 buf$take(10)
+
+## ## The translating bytes buffer `ring_buffer_bytes_translate`
+
+## The `ring_buffer_bytes_typed` function is implemented by
+## translating R objects to bytes (when storing with `$set()`,
+## `$push()`, etc). and from bytes back to R objects (when retrieving
+## with `$read()`, `$take()`, etc).  `ring_buffer_bytes_translate`
+## exposes this interface.
+
+## The "typed" buffers do not allow storing strings because they can
+## be any number of bytes long (the bytes buffers require a fixed
+## "stride" within a buffer).  But we can store fixed length strings.
+
+## To convert a string to a byte sequence, use `charToRaw` (or
+## `as.raw(utf8ToInt(x))`, but then multi-byte sequences might start
+## being difficult).
+(bytes <- charToRaw("hello world"))
+
+## The inverse transformation is `rawToChar` (or `intToUtf8(as.integer(x))`):
+rawToChar(bytes)
+
+## The function `ring_buffer_bytes_translate` takes these functions as
+## its 3rd and fourth arguments.  So to make a buffer that will hold
+## up to 100 strings, each of 8 bytes:
+b <- ring::ring_buffer_bytes_translate(100, 8, charToRaw, rawToChar)
+
+## We can now store 8 character strings:
+b$push("abcdefgh")
+b$tail()
+
+## But other length strings cannot be added:
+##+ error = TRUE
+b$push("hello!")
+
+## Probably this would be most useful storing just single characters
+## as then it would make a buffer of *text*.
 
 ## # The C API
 
@@ -328,9 +378,9 @@ buf$take(10)
 ## fairly straightforward to use (with reference to the docs above;
 ## this is the code underlying the `ring_buffer_bytes` interface).
 
-##+ echo=FALSE, results="asis"
+##+ echo = FALSE, results = "asis"
 writeLines(c("```c",
-             readLines(system.file("include/ring/ring.h", package="ring")),
+             readLines(system.file("include/ring/ring.h", package = "ring")),
              "```"))
 
 ## For a complete real-world example of use, see
@@ -348,9 +398,9 @@ writeLines(c("```c",
 ## A simple application that implements the same mean-reverting
 ## simulation from above:
 
-##+ echo=FALSE, results="asis"
+##+ echo = FALSE, results = "asis"
 writeLines(c("```c",
-             readLines(system.file("examples/example.c", package="ring")),
+             readLines(system.file("examples/example.c", package = "ring")),
              "```"))
 
 ## # The C++ API
@@ -370,7 +420,7 @@ writeLines(c("```c",
 ## * Anywhere in your code you want to use the ring buffer, include
 ##   the line `#include <dde/dde.hpp>` to include the class definition:
 
-##+ echo=FALSE, results="asis"
+##+ echo = FALSE, results = "asis"
 writeLines(c("```cpp",
-             readLines(system.file("include/ring/ring.hpp", package="ring")),
+             readLines(system.file("include/ring/ring.hpp", package = "ring")),
              "```"))
