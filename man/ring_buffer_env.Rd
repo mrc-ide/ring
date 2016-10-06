@@ -47,7 +47,13 @@ differences between implementations will be a bit more apparent.
   Reset the state of the buffer.  This "zeros" the head and tail pointer (and may or may not actually reset the data) so that the buffer can be used as if fresh.  All data are deleted, but not necessarily written to.
 
   \emph{Usage:}
-  \code{reset()}
+  \code{reset(clear = FALSE)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{clear}:   Logical, indicating if the memory should also be cleared. Generally this is not necessary, but with environment buffers this can let the garbage collector clean up large elements.  For the bytes buffer this zeros the memory.
+    }
+  }
 }
 \item{\code{duplicate}}{
   Clone the ring buffer, creating a copy.  Copies both the underlying data and the position of the head and tail.
@@ -266,17 +272,29 @@ differences between implementations will be a bit more apparent.
   For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
 }
 \item{\code{copy}}{
-  Copy from into another ring buffer.  This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.
+  Copy from \emph{this} ring buffer intoa a different ring buffer. This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.
 
   \emph{Usage:}
   \code{copy(dest, n)}
 
   \emph{Arguments:}
   \itemize{
-    \item{\code{dest}:   The destination ring buffer
+    \item{\code{dest}:   The destination ring buffer - will be modified by this call.
     }
 
     \item{\code{n}:   The number of elements to copy
+    }
+  }
+}
+\item{\code{mirror}}{
+  Mirror the contents of \emph{this} ring buffer into a different ring buffer.  This differs from \code{copy} in that \emph{this} ring buffer is unaffected and in that \emph{all} of this ring buffer is copied over (including head/tail positions).  This provides an alternative way of duplicating state to \code{duplicate} if you already have an appropriately sized ring buffer handy.  No allocations will be done.
+
+  \emph{Usage:}
+  \code{mirror(dest)}
+
+  \emph{Arguments:}
+  \itemize{
+    \item{\code{dest}:   The destination ring buffer - will be modified by this call.
     }
   }
 }

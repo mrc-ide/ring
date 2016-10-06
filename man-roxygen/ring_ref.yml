@@ -23,6 +23,12 @@ reset:
     pointer (and may or may not actually reset the data) so that the
     buffer can be used as if fresh.  All data are deleted, but not
     necessarily written to.
+  params:
+    clear: >-
+      Logical, indicating if the memory should also be cleared.
+      Generally this is not necessary, but with environment buffers
+      this can let the garbage collector clean up large elements.  For
+      the bytes buffer this zeros the memory.
   return: Nothing; called for the side effect only.
 
 duplicate:
