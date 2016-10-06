@@ -84,7 +84,7 @@ ring_buffer_bytes_typed <- function(size, what, len = NULL,
       type <- "double"
     } else {
       stop("'what' must be one of ",
-           paste(c(names(sizes), "numeric"), collapse=", "))
+           paste(c(names(sizes), "numeric"), collapse = ", "))
     }
   } else {
     if (is.null(len)) {
@@ -97,7 +97,7 @@ ring_buffer_bytes_typed <- function(size, what, len = NULL,
     }
     if (!(type %in% names(sizes))) {
       stop("storage.mode(what) must be one of ",
-           paste(names(sizes), collapse=", "))
+           paste(names(sizes), collapse = ", "))
     }
   }
   if (len <= 0L) {

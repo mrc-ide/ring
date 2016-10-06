@@ -143,7 +143,7 @@ m[]
 push(m, matrix(0L, 1, n))
 m[]
 
-step <- function(x) {
+step <- function(m) {
   if (nrow(x) > 1) {
     p <- colMeans(diff(m[])) / 2 + 0.5
   } else {

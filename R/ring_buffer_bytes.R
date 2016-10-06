@@ -26,7 +26,7 @@
 ##' size * phi, size * phi * phi, size * phi^3, ... will be used as
 ##' the new size.
 ##'
-##' In contrast, using the \code{grow()} method with \code{exact=TRUE}
+##' In contrast, using the \code{grow()} method with \code{exact = TRUE}
 ##' will \emph{always} increase the size of the buffer so long as
 ##' \code{n} is positive.
 ##'
@@ -112,7 +112,7 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
   public = list(
     .ptr = NULL,
 
-    initialize=function(size, stride, on_overflow, ptr=NULL) {
+    initialize = function(size, stride, on_overflow, ptr = NULL) {
       if (is.null(ptr)) {
         on_overflow <- check_on_overflow(on_overflow)
         self$.ptr <- .Call(Cring_buffer_create, size, stride, on_overflow)
@@ -121,7 +121,7 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
       }
     },
 
-    reset=function(clear = FALSE) {
+    reset = function(clear = FALSE) {
       .Call(Cring_buffer_reset, self$.ptr, clear)
     },
 
@@ -129,52 +129,52 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
     ## method because we need a deep clone here but I don't want a
     ## private set of methods.  Instead we create a clone of the
     ## data and return a brand new instance of the class.
-    duplicate=function() {
-      .R6_ring_buffer_bytes$new(ptr=.Call(Cring_buffer_duplicate, self$.ptr))
+    duplicate = function() {
+      .R6_ring_buffer_bytes$new(ptr = .Call(Cring_buffer_duplicate, self$.ptr))
     },
 
     grow = function(n, exact = FALSE) {
       .Call(Cring_buffer_grow, self$.ptr, n, exact)
     },
 
-    size=function(bytes=FALSE) .Call(Cring_buffer_size, self$.ptr, bytes),
-    bytes_data=function() .Call(Cring_buffer_bytes_data, self$.ptr),
-    stride=function() .Call(Cring_buffer_stride, self$.ptr),
+    size = function(bytes = FALSE) .Call(Cring_buffer_size, self$.ptr, bytes),
+    bytes_data = function() .Call(Cring_buffer_bytes_data, self$.ptr),
+    stride = function() .Call(Cring_buffer_stride, self$.ptr),
 
-    used=function(bytes=FALSE) .Call(Cring_buffer_used, self$.ptr, bytes),
-    free=function(bytes=FALSE) .Call(Cring_buffer_free, self$.ptr, bytes),
+    used = function(bytes = FALSE) .Call(Cring_buffer_used, self$.ptr, bytes),
+    free = function(bytes = FALSE) .Call(Cring_buffer_free, self$.ptr, bytes),
 
-    is_empty=function() .Call(Cring_buffer_is_empty, self$.ptr),
-    is_full=function() .Call(Cring_buffer_is_full, self$.ptr),
+    is_empty = function() .Call(Cring_buffer_is_empty, self$.ptr),
+    is_full = function() .Call(Cring_buffer_is_full, self$.ptr),
 
-    head_pos=function(bytes=FALSE) {
+    head_pos = function(bytes = FALSE) {
       .Call(Cring_buffer_head_pos, self$.ptr, bytes)
     },
-    tail_pos=function(bytes=FALSE) {
+    tail_pos = function(bytes = FALSE) {
       .Call(Cring_buffer_tail_pos, self$.ptr, bytes)
     },
 
-    head=function() .Call(Cring_buffer_head, self$.ptr),
-    tail=function() .Call(Cring_buffer_tail, self$.ptr),
-    data=function() .Call(Cring_buffer_data, self$.ptr),
+    head = function() .Call(Cring_buffer_head, self$.ptr),
+    tail = function() .Call(Cring_buffer_tail, self$.ptr),
+    data = function() .Call(Cring_buffer_data, self$.ptr),
 
-    set=function(data, n) {
+    set = function(data, n) {
       invisible(.Call(Cring_buffer_set, self$.ptr, as.raw(data), n))
     },
-    push=function(data) {
+    push = function(data) {
       invisible(.Call(Cring_buffer_push, self$.ptr, as.raw(data)))
     },
-    take=function(n) .Call(Cring_buffer_take, self$.ptr, n),
-    read=function(n) .Call(Cring_buffer_read, self$.ptr, n),
+    take = function(n) .Call(Cring_buffer_take, self$.ptr, n),
+    read = function(n) .Call(Cring_buffer_read, self$.ptr, n),
 
-    copy=function(dest, n) {
+    copy = function(dest, n) {
       if (!inherits(dest, "ring_buffer_bytes")) {
         stop("'dest' must be a 'ring_buffer_bytes'")
       }
       .Call(Cring_buffer_copy, self$.ptr, dest$.ptr, n)
     },
 
-    mirror=function(dest) {
+    mirror = function(dest) {
       if (!inherits(dest, "ring_buffer_bytes")) {
         stop("'dest' must be a 'ring_buffer_bytes'")
       }
@@ -182,14 +182,13 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
     },
 
     ## Nondestructive:
-    head_offset=function(n) .Call(Cring_buffer_head_offset, self$.ptr, n),
-    tail_offset=function(n) .Call(Cring_buffer_tail_offset, self$.ptr, n),
+    head_offset = function(n) .Call(Cring_buffer_head_offset, self$.ptr, n),
+    tail_offset = function(n) .Call(Cring_buffer_tail_offset, self$.ptr, n),
 
     ## Unusual direction:
-    take_head=function(n) .Call(Cring_buffer_take_head, self$.ptr, n),
-    read_head=function(n) .Call(Cring_buffer_read_head, self$.ptr, n)
+    take_head = function(n) .Call(Cring_buffer_take_head, self$.ptr, n),
+    read_head = function(n) .Call(Cring_buffer_read_head, self$.ptr, n)
   ))
-
 
 ##' This ring buffer is based on \code{\link{ring_buffer_bytes}} but
 ##' performs conversion to/from bytes to something useful as data is
@@ -283,17 +282,17 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
 ## in every language).
 .R6_ring_buffer_bytes_translate <- R6::R6Class(
   "ring_buffer_bytes_translate",
-  cloneable=FALSE,
-  inherit=.R6_ring_buffer_bytes,
+  cloneable = FALSE,
+  inherit = .R6_ring_buffer_bytes,
 
-  public=list(
-    .to=NULL,
-    .from=NULL,
-    .type=NULL,
+  public = list(
+    .to = NULL,
+    .from = NULL,
+    .type = NULL,
 
-    initialize=function(size, stride, to, from, on_overflow,
-                        type = NULL, ptr = NULL) {
-      assert_function(to)/
+    initialize = function(size, stride, to, from, on_overflow,
+                          type = NULL, ptr = NULL) {
+      assert_function(to)
       assert_function(from)
       super$initialize(size, stride, on_overflow, ptr)
       self$.to <- to
@@ -304,21 +303,21 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
     ## inherits: reset, size, bytes_data, stride, used, free,
     ##   head_pos, tail_pos, copy
 
-    duplicate=function() {
+    duplicate = function() {
       .R6_ring_buffer_bytes_typed$new(
         NULL, self$stride(), self$to, self$.from, self$.type, self$.ptr)
     },
 
-    head=function() self$.from(super$head()),
-    tail=function() self$.from(super$tail()),
-    set=function(data) super$push(self$.to(data)),
-    push=function(data) super$push(self$.to(data)),
-    take=function(n) self$.from(super$take(n)),
-    read=function(n) self$.from(super$read(n)),
-    head_offset=function(n) self$.from(super$head_offset(n)),
-    tail_offset=function(n) self$.from(super$tail_offset(n)),
-    take_head=function(n) self$.from(super$take_head(n)),
-    read_head=function(n) self$.from(super$read_head(n))
+    head = function() self$.from(super$head()),
+    tail = function() self$.from(super$tail()),
+    set = function(data) super$push(self$.to(data)),
+    push = function(data) super$push(self$.to(data)),
+    take = function(n) self$.from(super$take(n)),
+    read = function(n) self$.from(super$read(n)),
+    head_offset = function(n) self$.from(super$head_offset(n)),
+    tail_offset = function(n) self$.from(super$tail_offset(n)),
+    take_head = function(n) self$.from(super$take_head(n)),
+    read_head = function(n) self$.from(super$read_head(n))
   ))
 
 ## Must match the order in ring.h
@@ -329,7 +328,7 @@ check_on_overflow <- function(on_overflow) {
   i <- match(on_overflow, OVERFLOW_ACTIONS)
   if (is.na(i)) {
     stop("Invalid value for 'on_overflow'; must be one of ",
-         paste(OVERFLOW_ACTIONS, collapse=", "))
+         paste(OVERFLOW_ACTIONS, collapse = ", "))
   }
   as.integer(i - 1L)
 }

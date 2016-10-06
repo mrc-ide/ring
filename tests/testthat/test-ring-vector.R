@@ -13,12 +13,7 @@ test_that("basic", {
       expect_equal(length(v), 0)
 
       n <- 3
-      pool <- switch(type,
-                     logical=c(TRUE, FALSE, NA),
-                     integer=as.integer(1:50),
-                     double=rnorm(50),
-                     complex=complex(real=rnorm(20), imaginary=rnorm(20)))
-      dat <- sample(pool, n, TRUE)
+      dat <- pool(type, n)
 
       expect_equal(v[], dat[integer(0)])
 

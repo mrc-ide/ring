@@ -23,7 +23,7 @@ test_that("assertions work", {
 
 test_that("compiler flags", {
   flags <- include_flags(FALSE)
-  cmp <- paste0("-I", system.file("include", package="ring"))
+  cmp <- paste0("-I", system.file("include", package = "ring"))
   expect_equal(flags, cmp)
   expect_equal(capture.output(include_flags()), cmp)
 })

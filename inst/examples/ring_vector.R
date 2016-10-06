@@ -22,20 +22,20 @@
 ## * `environment`: Logical indicating if we should use an environment
 ##   buffer (`ring_buffer_env`) or a bytes buffer
 ##   (`ring_buffer_bytes`).
-ring_vector <- function(length_max, type, environment=TRUE) {
+ring_vector <- function(length_max, type, environment = TRUE) {
   type <- match.arg(type, names(create))
   if (environment) {
     buf <- ring::ring_buffer_env(length_max)
   } else {
     buf <- ring::ring_buffer_bytes_typed(length_max, type, 1L)
   }
-  ret <- list(buf=buf, length_max=as.integer(length_max),
-              type=type, environment=environment)
+  ret <- list(buf = buf, length_max = as.integer(length_max),
+              type = type, environment = environment)
   class(ret) <- "ring_vector"
   ret
 }
 
-ring_vector_push <- function(buffer, data, check=TRUE, ...) {
+ring_vector_push <- function(buffer, data, check = TRUE, ...) {
   if (check) {
     ring_vector_compatible(buffer, data)
   }
@@ -49,7 +49,7 @@ ring_vector_compatible <- function(x, data) {
   TRUE
 }
 
-ring_vector_get <- function(x, i=NULL) {
+ring_vector_get <- function(x, i = NULL) {
   if (is.null(i)) {
     ret <- x$buf$read(x$buf$used())
     if (x$environment) {
@@ -105,7 +105,7 @@ length.ring_vector <- function(x, ...) {
   }
 }
 
-c.ring_vector <- function(..., recursive=TRUE) {
+c.ring_vector <- function(..., recursive = TRUE) {
   if (!inherits(..1, "ring_vector")) {
     args <- list(...)
     i <- vapply(args, inherits, logical(1), "ring_vector")
@@ -115,7 +115,7 @@ c.ring_vector <- function(..., recursive=TRUE) {
     x <- ..1
     args <- list(...)[-1]
     ## TODO: does not deal with other ring buffers here yet.
-    lapply(args, ring_vector_compatible, x=x)
+    lapply(args, ring_vector_compatible, x = x)
     for (m in args) {
       ring_vector_push(x, m)
     }
@@ -125,10 +125,10 @@ c.ring_vector <- function(..., recursive=TRUE) {
 
 ## Support functions; these are functions used to create empty storage
 ## for the bytes buffers
-create <- list(logical=logical,
-               integer=integer,
-               double=double,
-               complex=complex)
+create <- list(logical = logical,
+               integer = integer,
+               double = double,
+               complex = complex)
 
 registerS3method("[", "ring_vector", `[.ring_vector`, environment())
 registerS3method("[[", "ring_vector", `[[.ring_vector`, environment())

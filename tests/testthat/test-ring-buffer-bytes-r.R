@@ -232,13 +232,13 @@ test_that("overflow error; set", {
 
   expect_error(b$set(pat, n + 1),
                "Buffer overflow (adding 11 elements, but 10 available)",
-               fixed=TRUE)
+               fixed = TRUE)
   expect_true(b$is_empty())
   b$set(pat, n)
   expect_true(b$is_full())
   expect_error(b$set(pat, 1),
                "Buffer overflow (adding 1 elements, but 0 available)",
-               fixed=TRUE)
+               fixed = TRUE)
   expect_equal(b$take(1), rep(pat, s))
 })
 
@@ -250,13 +250,13 @@ test_that("overflow error; set_stride", {
 
   expect_error(b$set(pat, n + 1),
                "Buffer overflow (adding 11 elements, but 10 available)",
-               fixed=TRUE)
+               fixed = TRUE)
   expect_true(b$is_empty())
   b$set(pat, n)
   expect_true(b$is_full())
   expect_error(b$set(pat, 1),
                "Buffer overflow (adding 1 elements, but 0 available)",
-               fixed=TRUE)
+               fixed = TRUE)
   expect_equal(b$take(1), pat)
 })
 
@@ -267,7 +267,7 @@ test_that("overflow error; push", {
 
   expect_error(b$push(random_bytes((n + 1) * s)),
                "Buffer overflow (adding 11 elements, but 10 available)",
-               fixed=TRUE)
+               fixed = TRUE)
   expect_true(b$is_empty())
 })
 

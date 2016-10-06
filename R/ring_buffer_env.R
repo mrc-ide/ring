@@ -81,7 +81,7 @@ ring_buffer_env <- function(size, on_overflow = "overwrite") {
 double_linked_list_create <- function(size) {
   head <- prev <- NULL
   for (i in seq_len(size)) {
-    x <- new.env(parent=emptyenv())
+    x <- new.env(parent = emptyenv())
     if (is.null(prev)) {
       head <- x
     } else {
@@ -209,66 +209,66 @@ ring_buffer_reset <- function(buffer, clear) {
   ## need to implement our own clone method as the default R6 one is
   ## not going to cut it, given everything inside the class is a
   ## reference.
-  cloneable=FALSE,
+  cloneable = FALSE,
 
-  public=list(
+  public = list(
     ## Making all data members begin with a period; while these still
     ## print with current R6 print semantics, they hopefully will be
     ## treated as private by users.
-    .buffer=NULL,
-    .head=NULL,
-    .tail=NULL,
-    .check_overflow=NULL,
-    .prevent_overflow=NULL,
+    .buffer = NULL,
+    .head = NULL,
+    .tail = NULL,
+    .check_overflow = NULL,
+    .prevent_overflow = NULL,
 
-    initialize=function(size, on_overflow) {
+    initialize = function(size, on_overflow) {
       self$.buffer <- ring_buffer_env_create(size)
       self$.check_overflow <- on_overflow != "overwrite"
       self$.prevent_overflow <- on_overflow == "error"
       self$reset()
     },
 
-    reset=function(clear = FALSE) {
+    reset = function(clear = FALSE) {
       ring_buffer_reset(self, clear)
     },
 
-    duplicate=function() {
+    duplicate = function() {
       ring_buffer_env_duplicate(self)
     },
 
-    grow=function(n) {
+    grow = function(n) {
       C_assert_size(n, "n")
       ring_buffer_env_grow(self, n)
     },
 
-    size=function() self$.buffer$.size,
+    size = function() self$.buffer$.size,
     ## bytes_data
     ## stride
-    used=function() self$.buffer$.used,
-    free=function() self$size() - self$used(),
+    used = function() self$.buffer$.used,
+    free = function() self$size() - self$used(),
 
-    is_empty=function() self$used() == 0L,
-    is_full=function() self$used() == self$size(),
+    is_empty = function() self$used() == 0L,
+    is_full = function() self$used() == self$size(),
 
     ## Mostly debugging:
-    head_pos=function() {
+    head_pos = function() {
       ring_buffer_env_distance_forward(self$.buffer, self$.head)
     },
-    tail_pos=function() {
+    tail_pos = function() {
       ring_buffer_env_distance_forward(self$.buffer, self$.tail)
     },
 
-    head=function() {
+    head = function() {
       ring_buffer_env_check_underflow(self, 1L)
       self$.head$.prev$data
     },
-    tail=function() {
+    tail = function() {
       ring_buffer_env_check_underflow(self, 1L)
       self$.tail$data
     },
 
     ## Start getting strong divergence here:
-    set=function(data, n) {
+    set = function(data, n) {
       C_assert_size(n, "n")
       ring_buffer_env_check_overflow(self, n)
       for (i in seq_len(min(n, self$size()))) {
@@ -283,7 +283,7 @@ ring_buffer_reset <- function(buffer, clear) {
     ## on so that it could be possible to say something like:
     ##
     ## buf$push(iterate_by_row(data.frame))
-    push=function(data, iterate=TRUE) {
+    push = function(data, iterate = TRUE) {
       ring_buffer_env_check_overflow(self, if (iterate) length(data) else 1L)
       if (iterate) {
         for (el in data) {
@@ -295,7 +295,7 @@ ring_buffer_reset <- function(buffer, clear) {
       invisible(data)
     },
 
-    take=function(n) {
+    take = function(n) {
       C_assert_size(n, "n")
       dat <- ring_buffer_env_read_from_tail(self, n)
       self$.tail <- dat[[2L]]
@@ -303,12 +303,12 @@ ring_buffer_reset <- function(buffer, clear) {
       dat[[1L]]
     },
 
-    read=function(n) {
+    read = function(n) {
       C_assert_size(n, "n")
       ring_buffer_env_read_from_tail(self, n)[[1L]]
     },
 
-    copy=function(dest, n) {
+    copy = function(dest, n) {
       if (identical(dest$.buffer, self$.buffer)) {
         stop("Can't copy a buffer into itself")
       }
@@ -326,23 +326,23 @@ ring_buffer_reset <- function(buffer, clear) {
       self$.buffer$.used <- self$.buffer$.used - as.integer(n)
     },
 
-    mirror=function(dest) {
+    mirror = function(dest) {
       ring_buffer_env_mirror(self, dest)
     },
 
-    head_offset=function(n) {
+    head_offset = function(n) {
       C_assert_size(n, "n")
       ring_buffer_env_check_underflow(self, n + 1L)
       ring_buffer_env_move_backward(self$.head$.prev, n)$data
     },
-    tail_offset=function(n) {
+    tail_offset = function(n) {
       C_assert_size(n, "n")
       ring_buffer_env_check_underflow(self, n + 1L)
       ring_buffer_env_move_forward(self$.tail, n)$data
     },
 
     ## This is the unusual direction...
-    take_head=function(n) {
+    take_head = function(n) {
       C_assert_size(n, "n")
       dat <- ring_buffer_env_read_from_head(self, n)
       self$.head <- dat[[2L]]
@@ -350,7 +350,7 @@ ring_buffer_reset <- function(buffer, clear) {
       dat[[1L]]
     },
 
-    read_head=function(n) {
+    read_head = function(n) {
       C_assert_size(n, "n")
       ring_buffer_env_read_from_head(self, n)[[1L]]
     }

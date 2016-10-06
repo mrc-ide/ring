@@ -6,20 +6,20 @@
 ###
 ## * `nr_max`: The maximum number of rows
 ## * `nc`: The number of columns in the matrix
-ring_matrix <- function(nr_max, nc, type, environment=TRUE) {
+ring_matrix <- function(nr_max, nc, type, environment = TRUE) {
   type <- match.arg(type, names(ring:::sizes))
   if (environment) {
     buf <- ring::ring_buffer_env(nr_max)
   } else {
     buf <- ring::ring_buffer_bytes_typed(nr_max, type, nc)
   }
-  ret <- list(buf=buf, nr_max=as.integer(nr_max), nc=as.integer(nc),
-              type=type, environment=environment)
+  ret <- list(buf = buf, nr_max = as.integer(nr_max), nc = as.integer(nc),
+              type = type, environment = environment)
   class(ret) <- "ring_matrix"
   ret
 }
 
-ring_matrix_push <- function(buffer, data, check=TRUE, ...) {
+ring_matrix_push <- function(buffer, data, check = TRUE, ...) {
   if (check) {
     ring_matrix_compatible(buffer, data)
   }
@@ -52,7 +52,7 @@ ring_matrix_compatible <- function(x, data) {
   TRUE
 }
 
-ring_matrix_get <- function(x, i=NULL) {
+ring_matrix_get <- function(x, i = NULL) {
   if (is.null(i)) {
     dat <- x$buf$read(x$buf$used())
     if (x$environment) {
@@ -62,7 +62,7 @@ ring_matrix_get <- function(x, i=NULL) {
         dat <- unlist(dat)
       }
     }
-    ret <- matrix(dat, ncol=x$nc, byrow=TRUE)
+    ret <- matrix(dat, ncol = x$nc, byrow = TRUE)
   } else {
     len <- x$buf$used()
     i <- ring_vector_index(i, len)
@@ -95,12 +95,12 @@ tail.ring_matrix <- function(x, n = 6L, ...) {
   tail.matrix(x, n, FALSE, ...)
 }
 
-`[.ring_matrix` <- function(x, i, j, ..., drop=TRUE) {
+`[.ring_matrix` <- function(x, i, j, ..., drop = TRUE) {
   if (missing(i)) {
     if (missing(j)) {
       ring_matrix_get(x, NULL)
     } else {
-      ring_matrix_get(x, NULL)[, j, drop=drop]
+      ring_matrix_get(x, NULL)[, j, drop = drop]
     }
   } else if (is.matrix(i)) {
     if (!missing(j)) {
@@ -109,7 +109,7 @@ tail.ring_matrix <- function(x, n = 6L, ...) {
     j <- sort(unique(i[, 1L]))
     ring_matrix_get(x, j)[cbind(match(i[, 1L], j), i[, 2L])]
   } else {
-    ring_matrix_get(x, i)[, j, drop=drop]
+    ring_matrix_get(x, i)[, j, drop = drop]
   }
 }
 
@@ -157,7 +157,7 @@ rbind.ring_matrix <- function(...) {
     x <- ..1
     args <- list(...)[-1]
     ## TODO: does not deal with other ring buffers here yet.
-    lapply(args, ring_matrix_compatible, x=x)
+    lapply(args, ring_matrix_compatible, x = x)
     for (m in args) {
       ring_matrix_push(x, m)
     }

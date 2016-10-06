@@ -170,7 +170,7 @@ test_that("overflow works (push)", {
   expect_equal(buf$free(TRUE), size * stride)
 
   d1 <- as.raw(rep(1, stride))
-  d2 <- as.raw(rep(2:(size + 1), each=stride))
+  d2 <- as.raw(rep(2:(size + 1), each = stride))
 
   x1 <- buf$push(d1)
   expect_equal(buf$free(), size - 1)

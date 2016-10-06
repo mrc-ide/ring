@@ -12,13 +12,14 @@ test_that("check package", {
   Sys.setenv("R_TESTS" = "")
 
   R <- file.path(R.home(), "bin", "R")
-  res <- system2(R, c("CMD", "build", "testing"), stdout=FALSE, stderr=FALSE)
+  res <- system2(R, c("CMD", "build", "testing"),
+                 stdout = FALSE, stderr = FALSE)
   path <- sprintf("testing_%s.tar.gz", "0.0.1")
   res <- system2(R, c("CMD", "check", "--no-manual", path),
-                 stdout=TRUE, stderr=TRUE)
+                 stdout = TRUE, stderr = TRUE)
   expect_null(attr(res, "status"))
   file.remove(path)
-  unlink("testing.Rcheck", recursive=TRUE)
+  unlink("testing.Rcheck", recursive = TRUE)
 })
 
 test_that("standalone", {
@@ -28,7 +29,7 @@ test_that("standalone", {
     skip("No gcc")
   }
 
-  path <- system.file("include", package="ring")
+  path <- system.file("include", package = "ring")
   args <- c(include_flags(FALSE), "-std=c99",  "-o", "ring_standalone",
             "ring_standalone.c")
   code <- system2(gcc, args)
@@ -46,7 +47,7 @@ test_that("standalone (c++)", {
   if (!nzchar(gpp)) {
     skip("No g++")
   }
-  path <- system.file("include", package="ring")
+  path <- system.file("include", package = "ring")
   args <- c("-I", path, "-o", "ring_standalone", "ring_standalone.cpp")
   code <- system2(gpp, args)
   expect_equal(code, 0)
@@ -90,12 +91,12 @@ test_that("example", {
 
   writeLines(paste0("PKG_CPPFLAGS = ", include_flags(FALSE)),
              "Makevars")
-  file.copy(system.file("examples/example.c", package="ring"), ".",
-            overwrite=TRUE)
+  file.copy(system.file("examples/example.c", package = "ring"), ".",
+            overwrite = TRUE)
   on.exit(file.remove(c("example.c", "Makevars")))
 
   res <- system2(R, c("CMD", "SHLIB", "example.c"),
-                 stdout=FALSE, stderr=FALSE)
+                 stdout = FALSE, stderr = FALSE)
   expect_equal(res, 0)
 
   dll <- paste0("example", .Platform$dynlib.ext)
@@ -105,12 +106,12 @@ test_that("example", {
     dyn.unload(dll)
     file.remove(dll)
     file.remove("example.o")
-  }, add=TRUE)
+  }, add = TRUE)
 
   set.seed(1)
   res_r <- example(20)
   set.seed(1)
-  res_c <- .Call("r_example", 20L, PACKAGE="example")
+  res_c <- .Call("r_example", 20L, PACKAGE = "example")
 
   expect_equal(res_r, res_c)
 })

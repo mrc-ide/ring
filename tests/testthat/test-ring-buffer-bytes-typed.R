@@ -1,10 +1,11 @@
 context("ring_buffer_bytes_typed (typed)")
 
 test_that("conversion functions are transitive", {
-  vec <- list(logical=c(TRUE, FALSE, NA),
-              integer=c(NA, as.integer(sample(10))),
-              double=c(NA, NaN, runif(10)),
-              complex=c(NA, NaN, complex(real=runif(10), imaginary=runif(10))))
+  vec <- list(
+    logical = c(TRUE, FALSE, NA),
+    integer = c(NA, as.integer(sample(10))),
+    double = c(NA, NaN, runif(10)),
+    complex = c(NA, NaN, complex(real = runif(10), imaginary = runif(10))))
   expect_equal(sort(names(vec)), sort(names(sizes)))
 
   for (nm in names(vec)) {
@@ -28,12 +29,7 @@ test_that("basic", {
     expect_equal(buf$size(), size)
     expect_equal(buf$stride(), sizes[[type]] * n)
 
-    pool <- switch(type,
-                   logical=c(TRUE, FALSE, NA),
-                   integer=as.integer(1:50),
-                   double=rnorm(50),
-                   complex=complex(real=rnorm(20), imaginary=rnorm(20)))
-    x1 <- sample(pool, n, TRUE)
+    x1 <- pool(type, n)
 
     buf$push(x1)
     expect_equal(buf$used(), 1)
@@ -45,14 +41,14 @@ test_that("basic", {
     expect_equal(buf$head_pos(), 1)
     expect_equal(buf$head_pos(TRUE), sizes[[type]] * n)
 
-    x2 <- matrix(sample(pool, n * 3, TRUE), 3, byrow=FALSE)
+    x2 <- matrix(pool(type, n * 3), 3, byrow = FALSE)
     buf$push(x2)
 
     expect_identical(buf$read(4), c(x1, x2))
 
     p <- buf$head_pos(TRUE)
 
-    x3 <- sample(pool, 2, TRUE)
+    x3 <- pool(type, 2)
     expect_error(buf$push(x3), "Incorrect size data")
     expect_identical(buf$head_pos(TRUE), p)
   }
@@ -83,7 +79,7 @@ test_that("initialisation", {
   expect_error(ring_buffer_bytes_typed(5, "character", 10),
                "'what' must be one of")
   expect_error(ring_buffer_bytes_typed(5, character(10)),
-               "storage.mode(what) must be one of", fixed=TRUE)
+               "storage.mode(what) must be one of", fixed = TRUE)
 })
 
 test_that("translate", {

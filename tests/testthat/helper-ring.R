@@ -2,7 +2,7 @@ random_bytes <- function(n) {
   as.raw(sample(2^8, n, TRUE) - 1L)
 }
 
-pad <- function(x, len, with=0) {
+pad <- function(x, len, with = 0) {
   c(x, rep_len(as.raw(with), len - length(x)))
 }
 
@@ -16,7 +16,7 @@ fill_buffer <- function(x, len) {
   } else {
     x <- as.raw(x)
   }
-  rep(x, length.out=len)
+  rep(x, length.out = len)
 }
 
 ## The length of test_pattern should not fit naturally into size, or
@@ -36,16 +36,16 @@ last <- function(x) {
 
 SEARCH_TYPES <- c("linear", "bisect")
 test_search_linear <- function(buffer, value, i) {
-  .Call("test_search_linear", buffer, as.double(value), PACKAGE="ring")
+  .Call("test_search_linear", buffer, as.double(value), PACKAGE = "ring")
 }
 test_search_bisect <- function(buffer, value, i = 0L) {
   .Call("test_search_bisect", buffer, as.double(value), as.integer(i),
-        PACKAGE="ring")
+        PACKAGE = "ring")
 }
 test_search <- function(buffer, value, type, i = 0L) {
   search <- switch(type,
-                   linear=test_search_linear,
-                   bisect=test_search_bisect,
+                   linear = test_search_linear,
+                   bisect = test_search_bisect,
                    stop("Invalid search type"))
   search(buffer, value, i)
 }
@@ -60,10 +60,10 @@ viapply <- function(X, FUN, ...) {
 
 pool <- function(type, n) {
   pool <- switch(type,
-                 logical=c(TRUE, FALSE, NA),
-                 integer=as.integer(1:50),
-                 double=rnorm(50),
-                 complex=complex(real=rnorm(20), imaginary=rnorm(20)))
+                 logical = c(TRUE, FALSE, NA),
+                 integer = as.integer(1:50),
+                 double = rnorm(50),
+                 complex = complex(real = rnorm(20), imaginary = rnorm(20)))
   sample(pool, n, TRUE)
 }
 

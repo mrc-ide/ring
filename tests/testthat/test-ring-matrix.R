@@ -15,13 +15,7 @@ test_that("basic use", {
 
       nr <- 3
       nn <- nr * m$nc
-      pool <- switch(type,
-                     logical=c(TRUE, FALSE, NA),
-                     integer=as.integer(1:50),
-                     double=rnorm(50),
-                     complex=complex(real=rnorm(20), imaginary=rnorm(20)))
-
-      dat <- matrix(sample(pool, nr * m$nc, TRUE), nr, m$nc)
+      dat <- matrix(pool(type, nr * m$nc), nr, m$nc)
 
       expect_equal(m[], dat[integer(0), ])
 
@@ -31,15 +25,15 @@ test_that("basic use", {
       ring_matrix_push(m, dat)
 
       expect_equal(ring_matrix_get(m), dat)
-      expect_equal(ring_matrix_get(m, 1:2), dat[1:2, , drop=FALSE])
+      expect_equal(ring_matrix_get(m, 1:2), dat[1:2, , drop = FALSE])
 
       expect_equal(m[], dat[])
       expect_equal(m[, ], dat[, ])
       expect_equal(m[1:2, ], dat[1:2, ])
       expect_equal(m[1, ], dat[1, ])
-      expect_equal(m[1, , drop=FALSE], dat[1, , drop=FALSE])
+      expect_equal(m[1, , drop = FALSE], dat[1, , drop = FALSE])
       expect_equal(m[, 1], dat[, 1])
-      expect_equal(m[, 1, drop=FALSE], dat[, 1, drop=FALSE])
+      expect_equal(m[, 1, drop = FALSE], dat[, 1, drop = FALSE])
 
       idx <- cbind(sample(nrow(dat), nc, TRUE),
                    sample(ncol(dat), nc, TRUE))
@@ -47,9 +41,9 @@ test_that("basic use", {
 
       expect_equal(dim(m), c(nr, nc))
       expect_equal(head(m), dat)
-      expect_equal(head(m, 1), dat[1,,drop=FALSE])
+      expect_equal(head(m, 1), dat[1, , drop = FALSE])
       expect_equal(tail(m), dat)
-      expect_equal(tail(m, 1), dat[nr,,drop=FALSE])
+      expect_equal(tail(m, 1), dat[nr, , drop = FALSE])
 
       expect_null(dimnames(m))
       expect_null(colnames(m))
@@ -74,7 +68,7 @@ test_that("basic use", {
       expect_equal(nrow(m), nr * 2)
       expect_equal(as.matrix(m), rbind(dat, dat))
 
-      m3 <- rbind(m, dat[nr:1, ], dat[nr,])
+      m3 <- rbind(m, dat[nr:1, ], dat[nr, ])
       expect_equal(as.matrix(m), rbind(dat, dat, dat[nr:1, ], dat[nr, ]))
 
       expect_equal(rbind(dat, m), rbind(dat, as.matrix(m)))

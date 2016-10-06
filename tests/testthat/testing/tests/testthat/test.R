@@ -4,7 +4,7 @@ test_that("basics", {
   set.seed(1)
   n <- 5L
   p <- 0.1
-  x <- .Call("test", n, p, PACKAGE="testing")
+  x <- .Call("test", n, p, PACKAGE = "testing")
   expect_lte(length(x), n)
   expect_true(all(x[-length(x)] > p))
   expect_false(all(x[[length(x)]] > p))
