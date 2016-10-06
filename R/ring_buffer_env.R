@@ -434,7 +434,7 @@ RingUnderflow <- function(requested, used) {
                  requested, used)
   structure(list(requested = requested, used = used, message = msg,
                  call = NULL),
-            class=c("RingUnderflow", "error", "condition"))
+            class = c("RingUnderflow", "error", "condition"))
 }
 
 RingOverflow <- function(requested, free) {
@@ -442,5 +442,5 @@ RingOverflow <- function(requested, free) {
                  requested, free)
   structure(list(requested = requested, free = free, message = msg,
                  call = NULL),
-            class=c("RingOverflow", "error", "condition"))
+            class = c("RingOverflow", "error", "condition"))
 }
