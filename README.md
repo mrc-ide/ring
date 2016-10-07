@@ -6,7 +6,7 @@
 
 > Ring buffers in R and C
 
-Ring buffers (or circular buffers) are like arrays that seem circular; data is written and read in a first-in-first-out (FIFO) style, but once allocated subsequent writes do not ever cause memory allocations.  Circular buffers are useful for collecting and processing data streams or for queues (with a fixed maximum size).  I use them to implement a solver for delay differential equations in [dde](https://github.com/richfitz/dde).
+Ring buffers (or circular buffers) are like arrays that seem circular; data is written and read in a first-in-first-out (FIFO) style, but once allocated subsequent writes do not cause memory allocations.  Circular buffers are useful for collecting and processing data streams or for queues (with a fixed maximum size).  I use them to implement a solver for delay differential equations in [dde](https://github.com/richfitz/dde).
 
 This package provides two implementations of ring buffers:
 
@@ -15,12 +15,12 @@ This package provides two implementations of ring buffers:
   * `ring_buffer_bytes_translate`: for cases where a raw->R and R->raw translation functions are provided
   * `ring_buffer_bytes_typed` for cases where each element should correspond to a fixed-length vector of one of R's core numeric-ish types (`logical`, `integer`, `numeric`, `complex`)
 
-Both buffer types can be used from R, and `ring_buffer_bytes` can be used in other packages using R's `LinkingTo:` support.
+Both buffer types can be used from R, and the code underlying `ring_buffer_bytes` can also be used compiled code in other packages using R's `LinkingTo:` support.
 
-Both buffer types will refuse to underflow (return elements beyond those that have been written) and behaviour on overflow can be controlled:
+Both buffer types will refuse to underflow (return elements beyond those that have been written).  The behaviour on overflow can be controlled:
 
 * overwrite old data: (the default), for a fixed-memory FIFO buffer
-* grow buffer: expand the buffer geometrically to fit required elements
+* grow buffer: expand the buffer geometrically to fit required elements (which will require additional memory allocations and copies)
 * throw error: refuse to overflow
 
 See the documentation for details.

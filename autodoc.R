@@ -85,7 +85,7 @@ format_method <- function(x) {
     usg <- x$usage[!duplicated(x$usage)]
     i <- nzchar(usg)
     usg[i] <- sprintf("\\code{%s}", usg[i])
-    usg[!i] <- "(not supported)"
+    usg[!i] <- "\\emph{(not supported)}"
     usage <- sprintf("\\itemize{\n%s\n}",
                      paste(indent(sprintf("\\item{%s: %s}", nms, usg), 2),
                            collapse="\n"))
@@ -113,8 +113,8 @@ format_class <- function(x) {
 the three main ring buffer classes; \\code{ring_buffer_env}
 ("env"), \\code{ring_buffer_bytes} ("bytes") and
 \\code{ring_buffer_bytes_typed} ("typed").  Almost all methods have
-the same arguments and behaviour, but hopefully in one place the
-differences between implementations will be a bit more apparent.' -> header
+the same arguments and behaviour, but hopefully by listing everything together,
+the differences between implementations will be a bit more apparent.' -> header
   ret <- sprintf("@section Methods:\n\n%s\n\n\\describe{\n%s\n}",
                  header, paste(ret, collapse="\n"))
   ret <- indent(ret, pad="##' ")

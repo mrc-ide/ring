@@ -13,8 +13,8 @@ ring_buffer_bytes(size, stride = 1L, on_overflow = "overwrite")
 \item{stride}{Number of bytes per buffer entry.  Defaults to 1
 byte.  If you want to store anything other than a bytestream in
 the buffer, you will probably want more than one byte per
-element; for example, an integer takes 4 bytes and a double
-takes 8.}
+element; for example, on most R platforms an integer takes 4
+bytes and a double takes 8 (see \code{\link{.Machine}}).}
 
 \item{on_overflow}{Behaviour on buffer overflow.  The default is
 to overwrite the oldest elements in the buffer
@@ -65,8 +65,8 @@ Note that this methods reference section is repeated verbatim between
 the three main ring buffer classes; \code{ring_buffer_env}
 ("env"), \code{ring_buffer_bytes} ("bytes") and
 \code{ring_buffer_bytes_typed} ("typed").  Almost all methods have
-the same arguments and behaviour, but hopefully in one place the
-differences between implementations will be a bit more apparent.
+the same arguments and behaviour, but hopefully by listing everything together,
+the differences between implementations will be a bit more apparent.
 
 \describe{
 \item{\code{reset}}{
@@ -125,7 +125,7 @@ differences between implementations will be a bit more apparent.
 
   \emph{Usage:}
   \itemize{
-    \item{env: (not supported)}
+    \item{env: \emph{(not supported)}}
     \item{bytes, typed: \code{bytes_data()}}
   }
 }
@@ -134,7 +134,7 @@ differences between implementations will be a bit more apparent.
 
   \emph{Usage:}
   \itemize{
-    \item{env: (not supported)}
+    \item{env: \emph{(not supported)}}
     \item{bytes, typed: \code{stride()}}
   }
 }
@@ -263,7 +263,7 @@ differences between implementations will be a bit more apparent.
     \item{\code{data}:   Data to push onto the ring buffer.  For \code{ring_buffer_bytes}, this must be a raw vector with a length that is a multiple of the buffer stride.  For \code{ring_buffer_bytes_typed} it must be a vector of the appropriate type.  For \code{ring_buffer_env} it may be an arbitrary R object (but see \code{iterate} .
     }
 
-    \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate=FALSE}, then the entire object is pushed at once, so always updating only by a single element.
+    \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate = FALSE}, then the entire object is pushed at once, so always updating only by a single element.
     }
   }
 }

@@ -24,13 +24,11 @@ circular, implemented as a doubly linked list that loops back on
 itself.  Each element of the ring buffer can hold an arbitrary R
 object, and no checking is done to make sure that objects are
 similar types; in this way they are most similar to a circular
-version of an R \code{\link{list}}.  In contrast with
-\code{\link{ring_buffer_bytes}}, this ring buffer can optionally
-prevent overflows (in addition to preventing underflows).
+version of an R \code{\link{list}}.
 }
 \details{
 For more information and usage examples, see the vignette
-(\code{vignette{"ring"}}).
+(\code{vignette("ring")}).
 
 On underflow (and overflow if \code{on_overflow = "error"})
 \code{ring} will raise custom exceptions that can be caught
@@ -46,8 +44,8 @@ Note that this methods reference section is repeated verbatim between
 the three main ring buffer classes; \code{ring_buffer_env}
 ("env"), \code{ring_buffer_bytes} ("bytes") and
 \code{ring_buffer_bytes_typed} ("typed").  Almost all methods have
-the same arguments and behaviour, but hopefully in one place the
-differences between implementations will be a bit more apparent.
+the same arguments and behaviour, but hopefully by listing everything together,
+the differences between implementations will be a bit more apparent.
 
 \describe{
 \item{\code{reset}}{
@@ -106,7 +104,7 @@ differences between implementations will be a bit more apparent.
 
   \emph{Usage:}
   \itemize{
-    \item{env: (not supported)}
+    \item{env: \emph{(not supported)}}
     \item{bytes, typed: \code{bytes_data()}}
   }
 }
@@ -115,7 +113,7 @@ differences between implementations will be a bit more apparent.
 
   \emph{Usage:}
   \itemize{
-    \item{env: (not supported)}
+    \item{env: \emph{(not supported)}}
     \item{bytes, typed: \code{stride()}}
   }
 }
@@ -244,7 +242,7 @@ differences between implementations will be a bit more apparent.
     \item{\code{data}:   Data to push onto the ring buffer.  For \code{ring_buffer_bytes}, this must be a raw vector with a length that is a multiple of the buffer stride.  For \code{ring_buffer_bytes_typed} it must be a vector of the appropriate type.  For \code{ring_buffer_env} it may be an arbitrary R object (but see \code{iterate} .
     }
 
-    \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate=FALSE}, then the entire object is pushed at once, so always updating only by a single element.
+    \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate = FALSE}, then the entire object is pushed at once, so always updating only by a single element.
     }
   }
 }

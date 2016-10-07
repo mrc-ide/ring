@@ -38,8 +38,8 @@
 ##' @param stride Number of bytes per buffer entry.  Defaults to 1
 ##'   byte.  If you want to store anything other than a bytestream in
 ##'   the buffer, you will probably want more than one byte per
-##'   element; for example, an integer takes 4 bytes and a double
-##'   takes 8.
+##'   element; for example, on most R platforms an integer takes 4
+##'   bytes and a double takes 8 (see \code{\link{.Machine}}).
 ##' @param on_overflow Behaviour on buffer overflow.  The default is
 ##'   to overwrite the oldest elements in the buffer
 ##'   (\code{"overwrite"}).  Alternative actions are \code{"error"}
@@ -195,8 +195,8 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
 ##' stored/retrieved from the buffer.  This is the interface through
 ##' which \code{ring_buffer_bytes_typed} is implemented.
 ##'
-##' The idea here is that manually working with raw vectors is
-##' annoying, and if you are planning on using a bytes-based buffer
+##' The idea here is that manually working with raw vectors can get
+##' tedious, and if you are planning on using a bytes-based buffer
 ##' while working in R you may have a way of doing converstion from
 ##' and to R objects.  This interface lets you specify the functions
 ##' once and then will apply your conversion function in every case

@@ -4,12 +4,10 @@
 ##' itself.  Each element of the ring buffer can hold an arbitrary R
 ##' object, and no checking is done to make sure that objects are
 ##' similar types; in this way they are most similar to a circular
-##' version of an R \code{\link{list}}.  In contrast with
-##' \code{\link{ring_buffer_bytes}}, this ring buffer can optionally
-##' prevent overflows (in addition to preventing underflows).
+##' version of an R \code{\link{list}}.
 ##'
 ##' For more information and usage examples, see the vignette
-##' (\code{vignette{"ring"}}).
+##' (\code{vignette("ring")}).
 ##'
 ##' On underflow (and overflow if \code{on_overflow = "error"})
 ##' \code{ring} will raise custom exceptions that can be caught

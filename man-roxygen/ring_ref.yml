@@ -181,7 +181,7 @@ push:
       etc.  The \code{iterate} argument switches between
       interpretations; if \code{TRUE} (the default) the push will
       iterate over the object using \code{for (el in x)} (with
-      appropriate S3 dispatch).  If \code{iterate=FALSE}, then the
+      appropriate S3 dispatch).  If \code{iterate = FALSE}, then the
       entire object is pushed at once, so always updating only by a
       single element.
   return: >-
