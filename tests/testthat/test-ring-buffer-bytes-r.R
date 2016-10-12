@@ -504,3 +504,29 @@ test_that("reset", {
   rb$reset(TRUE)
   expect_equal(rb$data(), rep(as.raw(0), rb$bytes_data()))
 })
+
+test_that("head set/advance", {
+  stride <- 4
+  n <- 10
+  rb <- ring_buffer_bytes(n, stride)
+  ## expect_equal(rb$head_data(), rep(as.raw(0), stride))
+  d <- random_bytes(stride)
+  rb$head_set(d)
+  expect_equal(rb$head_data(), d)
+  expect_equal(rb$data(), pad(d, (n + 1) * stride))
+  expect_true(rb$is_empty())
+
+  rb$head_advance()
+  expect_false(rb$is_empty())
+  expect_equal(rb$used(), 1)
+  expect_equal(rb$tail(), d)
+
+  expect_equal(rb$head_data(), rep(as.raw(0), stride))
+
+  expect_error(rb$head_set(random_bytes(stride - 1)),
+               "expected exactly 4 bytes")
+  expect_error(rb$head_set(random_bytes(stride + 1)),
+               "expected exactly 4 bytes")
+
+  expect_equal(rb$head_data(), rep(as.raw(0), stride))
+})

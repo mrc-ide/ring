@@ -187,7 +187,18 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
 
     ## Unusual direction:
     take_head = function(n) .Call(Cring_buffer_take_head, self$.ptr, n),
-    read_head = function(n) .Call(Cring_buffer_read_head, self$.ptr, n)
+    read_head = function(n) .Call(Cring_buffer_read_head, self$.ptr, n),
+
+    ## Advanced
+    head_set = function(data) {
+      invisible(.Call(Cring_buffer_head_set, self$.ptr, data))
+    },
+    head_data = function() {
+      .Call(Cring_buffer_head_data, self$.ptr)
+    },
+    head_advance = function() {
+      invisible(.Call(Cring_buffer_head_advance, self$.ptr))
+    }
   ))
 
 ##' This ring buffer is based on \code{\link{ring_buffer_bytes}} but

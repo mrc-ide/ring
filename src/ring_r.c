@@ -256,6 +256,31 @@ SEXP R_ring_buffer_mirror(SEXP srcPtr, SEXP destPtr) {
   return R_NilValue;
 }
 
+SEXP R_ring_buffer_head_set(SEXP extPtr, SEXP data) {
+  ring_buffer *buffer = ring_buffer_get(extPtr, true);
+  const size_t len = LENGTH(data), stride = buffer->stride;
+  if (len != stride) {
+    Rf_error("Incorrect size data (%d bytes); expected exactly %d bytes",
+             len, stride);
+  }
+  memcpy(buffer->head, RAW(data), stride);
+  return R_NilValue;
+}
+
+SEXP R_ring_buffer_head_data(SEXP extPtr) {
+  ring_buffer *buffer = ring_buffer_get(extPtr, true);
+  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  memcpy(RAW(ret), buffer->head, buffer->stride);
+  UNPROTECT(1);
+  return ret;
+}
+
+SEXP R_ring_buffer_head_advance(SEXP extPtr) {
+  ring_buffer *buffer = ring_buffer_get(extPtr, true);
+  ring_buffer_head_advance(buffer);
+  return R_NilValue;
+}
+
 // Allocation and finalisation:
 SEXP R_ring_buffer_alloc(ring_buffer *buffer) {
   SEXP extPtr = PROTECT(R_MakeExternalPtr(buffer, R_NilValue, R_NilValue));

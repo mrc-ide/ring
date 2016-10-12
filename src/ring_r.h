@@ -28,3 +28,6 @@ SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset);
 SEXP R_ring_buffer_head_offset(SEXP extPtr, SEXP r_offset);
 SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_n);
 SEXP R_ring_buffer_mirror(SEXP srcPtr, SEXP destPtr);
+SEXP R_ring_buffer_head_set(SEXP extPtr, SEXP data);
+SEXP R_ring_buffer_head_data(SEXP extPtr);
+SEXP R_ring_buffer_head_advance(SEXP extPtr);
