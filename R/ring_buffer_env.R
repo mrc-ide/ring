@@ -348,7 +348,7 @@ ring_buffer_reset <- function(buffer, clear) {
     head_set = function(data) {
       self$.head$data <- data
     },
-    head_data = function(data) {
+    head_data = function() {
       self$.head$data
     },
     head_advance = function() {

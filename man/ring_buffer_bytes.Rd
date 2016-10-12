@@ -232,10 +232,7 @@ the differences between implementations will be a bit more apparent.
   Set a number of ring entries to the same value.  The exact behaviour here varies depending on the type of ring buffer.  This function may overflow the ring buffer; in this case the tail will be moved.
 
   \emph{Usage:}
-  \itemize{
-    \item{env, bytes: \code{set(data, n)}}
-    \item{typed: \code{set(data)}}
-  }
+  \code{set(data, n)}
 
   \emph{Arguments:}
   \itemize{
@@ -388,10 +385,7 @@ the differences between implementations will be a bit more apparent.
   Retrieve the current data stored in the head but not advanced. For many cases this may be junk - if the byte buffer has looped then it will be the bytes that will be overwritten on the next write.  However, when using \code{head_set} it will be the data that have been set into the buffer but not yet committed with \code{head_advance}.
 
   \emph{Usage:}
-  \itemize{
-    \item{bytes, typed: \code{head_data(data)}}
-    \item{env: \code{head_data()}}
-  }
+  \code{head_data()}
 }
 \item{\code{head_advance}}{
   Shift the head around one position.  This commits any data written by \code{head_set}.
