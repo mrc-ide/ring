@@ -7,6 +7,7 @@ ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error);
 bool scalar_logical(SEXP x);
 size_t scalar_size(SEXP x);
 void throw_underflow(ring_buffer *buffer, size_t n);
+const data_t * get_raw(SEXP data);
 
 // Definitions:
 SEXP R_ring_buffer_create(SEXP r_size, SEXP r_stride, SEXP r_on_overflow) {
@@ -114,29 +115,30 @@ SEXP R_ring_buffer_reset(SEXP extPtr, SEXP clear) {
   return R_NilValue;
 }
 
-SEXP R_ring_buffer_set(SEXP extPtr, SEXP c, SEXP len) {
+SEXP R_ring_buffer_set(SEXP extPtr, SEXP r_data, SEXP r_n) {
   ring_buffer *buffer = ring_buffer_get(extPtr, true);
-  size_t n = scalar_size(len);
-  data_t *data = RAW(c);
-  if (length(c) == 1) {
+  const size_t n = scalar_size(r_n), n_data = length(r_data);
+  const data_t *data = get_raw(r_data);
+  if (n_data == 1) {
     return ScalarInteger(ring_buffer_set(buffer, data[0], n) / buffer->stride);
-  } else if ((size_t)length(c) == buffer->stride) {
+  } else if (n_data == buffer->stride) {
     return ScalarInteger(ring_buffer_set_stride(buffer, data, n));
   } else {
-    Rf_error("Invalid length input");
+    Rf_error("Invalid length data");
     return R_NilValue;
   }
 }
 
-SEXP R_ring_buffer_push(SEXP extPtr, SEXP src) {
+SEXP R_ring_buffer_push(SEXP extPtr, SEXP r_data) {
   ring_buffer *buffer = ring_buffer_get(extPtr, true);
-  size_t len = LENGTH(src), stride = buffer->stride;
+  size_t len = LENGTH(r_data), stride = buffer->stride;
   if (len % stride != 0) {
     Rf_error("Incorrect size data (%d bytes); expected multiple of %d bytes",
              len, stride);
   }
   size_t n = len / stride;
-  data_t * head = (data_t *) ring_buffer_push(buffer, RAW(src), n);
+  const data_t *data = get_raw(r_data);
+  data_t *head = (data_t *) ring_buffer_push(buffer, data, n);
   return ScalarInteger(head - buffer->data);
 }
 
@@ -256,14 +258,15 @@ SEXP R_ring_buffer_mirror(SEXP srcPtr, SEXP destPtr) {
   return R_NilValue;
 }
 
-SEXP R_ring_buffer_head_set(SEXP extPtr, SEXP data) {
+SEXP R_ring_buffer_head_set(SEXP extPtr, SEXP r_data) {
   ring_buffer *buffer = ring_buffer_get(extPtr, true);
-  const size_t len = LENGTH(data), stride = buffer->stride;
+  const size_t len = LENGTH(r_data), stride = buffer->stride;
   if (len != stride) {
     Rf_error("Incorrect size data (%d bytes); expected exactly %d bytes",
              len, stride);
   }
-  memcpy(buffer->head, RAW(data), stride);
+  const data_t *data = get_raw(r_data);
+  memcpy(buffer->head, data, stride);
   return R_NilValue;
 }
 
@@ -349,3 +352,10 @@ void throw_underflow(ring_buffer *buffer, size_t n) {
   Rf_error("Buffer underflow (requested %d elements but %d available)",
            n, ring_buffer_used(buffer, false));
 } // #nocov
+
+const data_t * get_raw(SEXP data) {
+  if (TYPEOF(data) != RAWSXP) {
+    Rf_error("Expected a raw vector 'data'");
+  }
+  return RAW(data);
+}

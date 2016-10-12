@@ -57,7 +57,7 @@ test_that("bad arguments are caught", {
   expect_error(b$size(c(TRUE, FALSE)), "Expected a logical scalar")
   expect_error(b$size(NA), "Expected a non-missing logical scalar")
 
-  b$push(1:10)
+  b$push(as.raw(1:10))
   expect_error(b$read("a"), "Expected a nonnegative scalar integer")
   expect_error(b$read(-1), "Expected a nonnegative value")
   expect_error(b$read(NULL), "Expected a nonnegative scalar integer")
@@ -89,7 +89,7 @@ test_that("set with zero count", {
   size <- 24L
   buf <- ring_buffer_bytes(size)
 
-  expect_equal(buf$set(1, 0), 0)
+  expect_equal(buf$set(as.raw(1), 0), 0)
   expect_equal(buf$size(), size)
   expect_equal(buf$free(), buf$size())
   expect_equal(buf$used(), 0)
@@ -103,7 +103,7 @@ test_that("set a few bytes", {
 
   buf <- ring_buffer_bytes(size)
   buf$reset()
-  expect_equal(buf$set(57, 7), 7)
+  expect_equal(buf$set(as.raw(57), 7), 7)
   expect_equal(buf$size(), size)
   expect_equal(buf$free(), buf$size() - 7)
   expect_equal(buf$used(), 7)
@@ -118,7 +118,7 @@ test_that("set full capacity", {
   size <- 4096L
   buf <- ring_buffer_bytes(size)
 
-  expect_equal(buf$set(57, size), size)
+  expect_equal(buf$set(as.raw(57), size), size)
   expect_equal(buf$size(), size)
   expect_equal(buf$free(), 0)
   expect_equal(buf$used(), buf$size())
@@ -132,8 +132,8 @@ test_that("set, twice", {
   rb1 <- ring_buffer_bytes(size)
 
   rb1$reset()
-  expect_equal(rb1$set(57, 7), 7)
-  expect_equal(rb1$set(57, 15), 15)
+  expect_equal(rb1$set(as.raw(57), 7), 7)
+  expect_equal(rb1$set(as.raw(57), 15), 15)
   expect_equal(rb1$size(), size)
   expect_equal(rb1$used(), 7 + 15)
   expect_equal(rb1$free(),
@@ -150,8 +150,8 @@ test_that("set, twice, to full capacity", {
   rb1 <- ring_buffer_bytes(size)
 
   rb1$reset()
-  expect_equal(rb1$set(57, size - 1L), size - 1L)
-  expect_equal(rb1$set(57, 1L), 1L)
+  expect_equal(rb1$set(as.raw(57), size - 1L), size - 1L)
+  expect_equal(rb1$set(as.raw(57), 1L), 1L)
   expect_equal(rb1$size(), size)
   expect_equal(rb1$free(), 0)
   expect_equal(rb1$used(), size)
@@ -165,7 +165,7 @@ test_that("ring_buffer_set, overflow by 1 byte", {
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
-  expect_equal(rb1$set(57, size + 1L), size + 1L)
+  expect_equal(rb1$set(as.raw(57), size + 1L), size + 1L)
 
   expect_equal(rb1$size(), size)
   expect_equal(rb1$free(), 0)
@@ -184,8 +184,8 @@ test_that("ring_buffer_set, twice (overflow by 1 byte on 2nd copy)", {
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
-  expect_equal(rb1$set(57, size), size)
-  expect_equal(rb1$set(57, 1L), 1L)
+  expect_equal(rb1$set(as.raw(57), size), size)
+  expect_equal(rb1$set(as.raw(57), 1L), 1L)
   expect_equal(rb1$size(), size)
   expect_equal(rb1$free(), 0)
   expect_equal(rb1$used(), rb1$size())
@@ -207,7 +207,7 @@ test_that("ring_buffer_set, twice with oveflow", {
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
-  expect_equal(rb1$set(57, size + 2), size + 1L)
+  expect_equal(rb1$set(as.raw(57), size + 2), size + 1L)
   expect_equal(rb1$size(), size)
   expect_equal(rb1$free(), 0)
   expect_equal(rb1$used(), rb1$size())
@@ -223,8 +223,8 @@ test_that("ring_buffer_set, twice, overflowing both times", {
   rb1 <- ring_buffer_bytes(size)
   rb1$reset()
 
-  expect_equal(rb1$set(57, size + 1L), size + 1L)
-  expect_equal(rb1$set(58, size + 1L), size + 1L)
+  expect_equal(rb1$set(as.raw(57), size + 1L), size + 1L)
+  expect_equal(rb1$set(as.raw(58), size + 1L), size + 1L)
   expect_equal(rb1$size(), size)
   expect_equal(rb1$free(), 0)
   expect_equal(rb1$used(), rb1$size())
@@ -256,7 +256,7 @@ test_that("ring_buffer_push with zero count", {
 test_that("ring_buffer_push a few bytes of data", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- charToRaw("abcdefghijk")
@@ -277,7 +277,7 @@ test_that("ring_buffer_push a few bytes of data", {
 test_that("ring_buffer_push full capacity", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("abcdefghijk", (size + 1) * 2)
@@ -305,7 +305,7 @@ test_that("ring_buffer_push full capacity", {
 test_that("ring_buffer_push, twice", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- charToRaw("abcdefghijk")
@@ -330,7 +330,7 @@ test_that("ring_buffer_push, twice", {
 test_that("ring_buffer_push, twice (to full capacity)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("abcdefghijk", size)
@@ -353,7 +353,7 @@ test_that("ring_buffer_push, twice (to full capacity)", {
 test_that("ring_buffer_push, overflow by 1 byte", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("abcdefghijk", size + 1)
@@ -378,7 +378,7 @@ test_that("ring_buffer_push, overflow by 1 byte", {
 test_that("ring_buffer_push, twice (overflow by 1 byte on 2nd copy)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("abcdefghijk", size + 1L)
@@ -408,7 +408,7 @@ test_that("ring_buffer_push, twice (overflow by 1 byte on 2nd copy)", {
 test_that("ring_buffer_push, overflow by 2 bytes (will wrap)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("abcdefghijk", size + 2L)
@@ -430,7 +430,7 @@ test_that("ring_buffer_push, overflow by 2 bytes (will wrap)", {
 test_that("ring_buffer_take with zero count, empty ring buffer", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   expect_equal(rb1$take(0L), raw())
@@ -447,7 +447,7 @@ test_that("ring_buffer_take with zero count, empty ring buffer", {
 test_that("ring_buffer_take with zero count, non-empty ring buffer", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- charToRaw("0123456789A")
@@ -468,7 +468,7 @@ test_that("ring_buffer_take with zero count, non-empty ring buffer", {
 test_that("ring_buffer_take a few bytes of data", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- charToRaw("0123456789A")
@@ -496,7 +496,7 @@ test_that("ring_buffer_take a few bytes of data", {
 test_that("ring_buffer_take full capacity", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("0123456789A", size)
@@ -518,7 +518,7 @@ test_that("ring_buffer_take full capacity", {
 test_that("ring_buffer_take, twice", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("0123456789A", 13)
@@ -538,7 +538,7 @@ test_that("ring_buffer_take, twice", {
 test_that("ring_buffer_take, twice (full capacity)", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("0123456789A", size)
@@ -561,7 +561,7 @@ test_that("ring_buffer_take, twice (full capacity)", {
 test_that("ring_buffer_take, attempt to underflow", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("0123456789A", 15)
@@ -583,7 +583,7 @@ test_that("ring_buffer_take, attempt to underflow", {
 test_that("ring_buffer_take, attempt to underflow on 2nd call", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- fill_buffer("0123456789A", 15)
@@ -606,7 +606,7 @@ test_that("ring_buffer_take, attempt to underflow on 2nd call", {
 test_that("ring_buffer_push followed by ring_buffer_take", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- charToRaw("0123456789A")
@@ -627,7 +627,7 @@ test_that("ring_buffer_push followed by ring_buffer_take", {
 test_that("ring_buffer_push, partial ring_buffer_take", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   bytes <- charToRaw("0123456789A")
@@ -649,7 +649,7 @@ test_that("ring_buffer_push, partial ring_buffer_take", {
 test_that("ring_buffer_push, from, into, no wrap", {
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   len <- 11
@@ -677,7 +677,7 @@ test_that("ring_buffer_push, from, into, no wrap", {
   ## which should cause the head pointer to wrap.
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   len <- 11
@@ -702,7 +702,7 @@ test_that("ring_buffer_push, overflow when tail > head", {
   ## pointer. Should bump tail pointer to head + 1.
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   len <- 11
@@ -737,7 +737,7 @@ test_that("ring_buffer_push, overflow with tail at end", {
   ## buffer.
   size <- 4096L
   rb1 <- ring_buffer_bytes(size)
-  rb1$set(1, rb1$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
   rb1$reset()
 
   len <- 11
@@ -775,8 +775,8 @@ test_that("ring_buffer_copy with zero count, empty buffers", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -803,8 +803,8 @@ test_that("ring_buffer_copy with zero count, empty src", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -834,8 +834,8 @@ test_that("ring_buffer_copy with zero count, empty dst", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -865,8 +865,8 @@ test_that("ring_buffer_copy with zero count", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -897,8 +897,8 @@ test_that("ring_buffer_copy full contents of rb2 into rb1 (from empty)", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -931,8 +931,8 @@ test_that("ring_buffer_copy full contents of rb2 into rb1", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -970,8 +970,8 @@ test_that("ring_buffer_copy, wrap head of dst", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -1012,8 +1012,8 @@ test_that("ring_buffer_copy, wrap head of dst and continue", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -1059,8 +1059,8 @@ test_that("ring_buffer_copy, wrap tail of src", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -1108,8 +1108,8 @@ test_that("ring_buffer_copy, wrap tail of src and head of dst...", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -1159,8 +1159,8 @@ test_that("ring_buffer_copy, force 3 separate memcpy's...", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -1212,8 +1212,8 @@ test_that("ring_buffer_copy overflow", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -1254,8 +1254,8 @@ test_that("ring_buffer_copy attempted underflow", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(size)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 
@@ -1290,8 +1290,8 @@ test_that("ring_buffer_copy, different capacities, overflow 2nd", {
   rb1 <- ring_buffer_bytes(size)
   rb2 <- ring_buffer_bytes(8)
 
-  rb1$set(1, rb1$bytes_data())
-  rb1$set(2, rb2$bytes_data())
+  rb1$set(as.raw(1), rb1$bytes_data())
+  rb1$set(as.raw(2), rb2$bytes_data())
   rb1$reset()
   rb2$reset()
 

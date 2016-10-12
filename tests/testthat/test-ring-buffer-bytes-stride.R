@@ -157,7 +157,7 @@ test_that("set with vector", {
   expect_error(buf$set(random_bytes(2), 1), "Invalid length")
   expect_error(buf$set(random_bytes(10), 1), "Invalid length")
 
-  buf$set(1, 100)
+  buf$set(as.raw(1), 100)
   expect_equal(buf$read(100), rep(as.raw(1), s * 100))
 })
 

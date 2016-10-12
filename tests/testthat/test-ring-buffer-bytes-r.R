@@ -161,7 +161,7 @@ test_that("head() behaviour", {
 test_that("duplicate", {
   n <- 10
   buf <- ring_buffer_bytes(10)
-  buf$push(1:12)
+  buf$push(as.raw(1:12))
   buf$take(3)
 
   expect_equal(buf$head_pos(), 1) # NOTE: different to env!
@@ -183,7 +183,7 @@ test_that("duplicate", {
 
   ## But we can move the two buffers independently.
   expect_equal(cpy$take(2), as.raw(6:7))
-  cpy$push(13)
+  cpy$push(as.raw(13))
 
   expect_equal(buf$head_pos(), 1)
   expect_equal(buf$tail_pos(), 5)
@@ -529,4 +529,12 @@ test_that("head set/advance", {
                "expected exactly 4 bytes")
 
   expect_equal(rb$head_data(), rep(as.raw(0), stride))
+})
+
+test_that("non-raw input", {
+  stride <- 4
+  n <- 10
+  rb <- ring_buffer_bytes(n, stride)
+  expect_error(rb$push(runif(stride)),
+               "Expected a raw vector 'data'", fixed = TRUE)
 })
