@@ -22,7 +22,7 @@ ring_buffer * ring_buffer_create(size_t size, size_t stride,
   if (buffer == NULL) {
     return NULL;
   }
-  buffer->data = (data_t*) calloc(bytes_data, sizeof(data_t));
+  buffer->data = (data_t*) calloc(bytes_data, 1);
   if (buffer->data == NULL) {
     free(buffer);
     return NULL;
@@ -86,7 +86,7 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
   const size_t bytes_data = (size + 1) * buffer->stride;
 
 #ifdef RING_USE_STDLIB_ALLOC
-  void *tmp = realloc(buffer->data, bytes_data * sizeof(data_t));
+  void *tmp = realloc(buffer->data, bytes_data);
   if (tmp != NULL) {
     buffer->data = (data_t*) tmp;
   } else {
@@ -104,6 +104,10 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
   // R will handle the crash here for us:
   buffer->data = (data_t*) Realloc(buffer->data, bytes_data, data_t);
 #endif
+  // Ensure that all newly allocated data is zeroed
+  const size_t len = (curr_size + 1) * buffer->stride;
+  memset(buffer->data + len, 0, bytes_data - len);
+  // And then correctly reset all the pointers
   buffer->head = buffer->data + head_pos;
   buffer->tail = buffer->data + tail_pos;
   buffer->size = size;

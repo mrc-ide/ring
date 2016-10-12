@@ -332,9 +332,13 @@ test_that("grow - exact", {
   buf <- ring_buffer_bytes(n, s)
   b1 <- random_bytes(e * s)
   buf$push(b1)
+  expect_equal(buf$data(), pad(b1, (n + 1) * s))
+
   buf$grow(e, TRUE)
   expect_equal(buf$size(), n + e)
   expect_equal(buf$used(), e)
+  expect_equal(buf$data(), pad(b1, (n + e + 1) * s))
+
   b2 <- random_bytes(n * s)
   buf$push(b2)
   expect_equal(buf$read(n + e), c(b1, b2))
