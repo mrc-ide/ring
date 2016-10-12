@@ -342,6 +342,17 @@ ring_buffer_reset <- function(buffer, clear) {
     read_head = function(n) {
       C_assert_size(n, "n")
       ring_buffer_env_read_from_head(self, n)[[1L]]
+    },
+
+    ## advanced
+    head_set = function(data) {
+      self$.head$data <- data
+    },
+    head_data = function(data) {
+      self$.head$data
+    },
+    head_advance = function() {
+      ring_buffer_head_advance(self)
     }
   ))
 
@@ -369,9 +380,13 @@ ring_buffer_env_read_from_head <- function(buf, n) {
 }
 
 ring_buffer_env_write_to_head <- function(buf, data) {
+  buf$.head$data <- data
+  ring_buffer_head_advance(buf)
+}
+
+ring_buffer_head_advance <- function(buf) {
   n <- buf$.buffer$.used
   full <- n == buf$size()
-  buf$.head$data <- data
   buf$.head <- buf$.head$.next
   if (full) {
     buf$.tail <- buf$.tail$.next

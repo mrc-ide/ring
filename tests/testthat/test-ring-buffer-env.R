@@ -426,3 +426,16 @@ test_that("typed errors", {
   expect_equal(ans$requested, 1)
   expect_equal(tryCatch(b$read(1), RingUnderflow = function(e) e), ans)
 })
+
+test_that("head set/get/advance", {
+  rb <- ring_buffer_env(10)
+  d <- runif(1)
+  rb$head_set(d)
+  expect_equal(rb$head_data(), d)
+  expect_true(rb$is_empty())
+
+  rb$head_advance()
+  expect_false(rb$is_empty())
+  expect_equal(rb$used(), 1)
+  expect_equal(rb$tail(), d)
+})

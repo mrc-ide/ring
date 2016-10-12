@@ -311,4 +311,31 @@
 ##'     }
 ##'   }
 ##' }
+##' \item{\code{head_set}}{
+##'   Set data to the head \emph{without advancing}.  This is useful in cases where the head data will be set and advanced seprately (with \code{head_advance}).  This is unlikely to be useful for all users.  It is used extensively in dde (but called from C).
+##'
+##'   \emph{Usage:}
+##'   \code{head_set(data)}
+##'
+##'   \emph{Arguments:}
+##'   \itemize{
+##'     \item{\code{data}:   Data to set into the head.  For the bytes buffer this must be exactly \code{stride} bytes long, and for the environment buffer it corresponds to a single "element".
+##'     }
+##'   }
+##' }
+##' \item{\code{head_data}}{
+##'   Retrieve the current data stored in the head but not advanced. For many cases this may be junk - if the byte buffer has looped then it will be the bytes that will be overwritten on the next write.  However, when using \code{head_set} it will be the data that have been set into the buffer but not yet committed with \code{head_advance}.
+##'
+##'   \emph{Usage:}
+##'   \itemize{
+##'     \item{bytes, typed: \code{head_data(data)}}
+##'     \item{env: \code{head_data()}}
+##'   }
+##' }
+##' \item{\code{head_advance}}{
+##'   Shift the head around one position.  This commits any data written by \code{head_set}.
+##'
+##'   \emph{Usage:}
+##'   \code{head_advance()}
+##' }
 ##' }
