@@ -40,6 +40,7 @@ test_that("basic", {
 
     expect_equal(buf$head_pos(), 1)
     expect_equal(buf$head_pos(TRUE), sizes[[type]] * n)
+    expect_equal(buf$head_offset(0), buf$head())
 
     x2 <- matrix(pool(type, n * 3), 3, byrow = FALSE)
     buf$push(x2)
@@ -51,6 +52,9 @@ test_that("basic", {
     x3 <- pool(type, 2)
     expect_error(buf$push(x3), "Incorrect size data")
     expect_identical(buf$head_pos(TRUE), p)
+
+    expect_equal(buf$head_offset(3), buf$tail())
+    expect_equal(buf$tail_offset(3), buf$head())
   }
 })
 
@@ -93,4 +97,29 @@ test_that("format", {
   b <- ring_buffer_bytes_typed(10, numeric(4))
   txt <- strsplit(format(b), "\n")[[1]]
   expect_match(txt[[1]], "typed:double")
+})
+
+test_that("set", {
+  b <- ring_buffer_bytes_typed(10, integer(4))
+  r <- pool("integer", 4)
+  b$set(r, b$size())
+  expect_equal(b$head(), r)
+  expect_equal(b$tail(), r)
+  expect_true(b$is_full())
+  expect_equal(b$take(4), rep(r, 4))
+})
+
+test_that("head_set", {
+  b <- ring_buffer_bytes_typed(10, integer(4))
+  r <- pool("integer", 4)
+  b$head_set(r)
+  expect_true(b$is_empty())
+  expect_equal(b$head_data(), r)
+  b$head_advance()
+  expect_equal(b$tail(), r)
+  ## NOTE: these are pretty rubbish error messages
+  expect_error(b$head_set(pool("integer", 5)),
+               "Incorrect size data")
+  expect_error(b$head_set(pool("integer", 3)),
+               "Incorrect size data")
 })

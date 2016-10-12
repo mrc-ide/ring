@@ -321,7 +321,7 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
 
     head = function() self$.from(super$head()),
     tail = function() self$.from(super$tail()),
-    set = function(data) super$push(self$.to(data)),
+    set = function(data, n) super$set(self$.to(data), n),
     push = function(data) super$push(self$.to(data)),
     take = function(n) self$.from(super$take(n)),
     read = function(n) self$.from(super$read(n)),
