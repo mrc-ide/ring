@@ -328,7 +328,9 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
     head_offset = function(n) self$.from(super$head_offset(n)),
     tail_offset = function(n) self$.from(super$tail_offset(n)),
     take_head = function(n) self$.from(super$take_head(n)),
-    read_head = function(n) self$.from(super$read_head(n))
+    read_head = function(n) self$.from(super$read_head(n)),
+    head_set = function(data) super$head_set(self$.to(data)),
+    head_data = function() self$.from(super$head_data())
   ))
 
 ## Must match the order in ring.h
