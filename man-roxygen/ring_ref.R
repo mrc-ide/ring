@@ -9,7 +9,7 @@
 ##'
 ##' \describe{
 ##' \item{\code{reset}}{
-##'   Reset the state of the buffer.  This "zeros" the head and tail pointer (and may or may not actually reset the data) so that the buffer can be used as if fresh.  All data are deleted, but not necessarily written to.
+##'   Reset the state of the buffer.  This "zeros" the head and tail pointer (and may or may not actually reset the data) so that the buffer can be used as if fresh.
 ##'
 ##'   \emph{Usage:}
 ##'   \code{reset(clear = FALSE)}
@@ -19,12 +19,18 @@
 ##'     \item{\code{clear}:   Logical, indicating if the memory should also be cleared. Generally this is not necessary, but with environment buffers this can let the garbage collector clean up large elements.  For the bytes buffer this zeros the memory.
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   Nothing; called for the side effect only. &side_effect
 ##' }
 ##' \item{\code{duplicate}}{
 ##'   Clone the ring buffer, creating a copy.  Copies both the underlying data and the position of the head and tail.
 ##'
 ##'   \emph{Usage:}
 ##'   \code{duplicate()}
+##'
+##'   \emph{Return value}:
+##'   A new ring buffer object
 ##' }
 ##' \item{\code{grow}}{
 ##'   Increase the size of the buffer by \code{n} elements.
@@ -40,12 +46,15 @@
 ##'     \item{\code{n}:   The number of additional elements that space should be reserved for (scalar non-negative integer).
 ##'     }
 ##'
-##'     \item{\code{exact}:   (For bytes buffer only) Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \code{TRUE}) or so that \emph{at least} \code{n} additional elements will fit.
+##'     \item{\code{exact}:   (For bytes buffer only) Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \code{TRUE}) or so that \emph{at least} \code{n} additional elements will fit (growing the buffer geometrically if needed).
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   _yaml.bad-anchor_
 ##' }
 ##' \item{\code{size}}{
-##'   Return the maximum size of the ring buffer
+##'   Return the capacity (maximum size) of the ring buffer
 ##'
 ##'   \emph{Usage:}
 ##'   \itemize{
@@ -58,6 +67,9 @@
 ##'     \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   A scalar integer
 ##' }
 ##' \item{\code{bytes_data}}{
 ##'   Return the total size of the data storage used in this object.
@@ -67,6 +79,9 @@
 ##'     \item{env: \emph{(not supported)}}
 ##'     \item{bytes, typed: \code{bytes_data()}}
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   A scalar integer
 ##' }
 ##' \item{\code{stride}}{
 ##'   Length of each element in the ring buffer, in bytes.  Only implemented (and meaningful) for the bytes buffer; the environment buffer does not support this function as it makes no sense there.
@@ -76,6 +91,9 @@
 ##'     \item{env: \emph{(not supported)}}
 ##'     \item{bytes, typed: \code{stride()}}
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   A scalar integer
 ##' }
 ##' \item{\code{used}}{
 ##'   Return the amount of space used in the ring buffer.
@@ -91,6 +109,9 @@
 ##'     \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   A scalar integer
 ##' }
 ##' \item{\code{free}}{
 ##'   Return the amount of space free in the ring buffer.
@@ -106,18 +127,27 @@
 ##'     \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   A scalar integer
 ##' }
 ##' \item{\code{is_empty}}{
 ##'   Test if the ring buffer is empty
 ##'
 ##'   \emph{Usage:}
 ##'   \code{is_empty()}
+##'
+##'   \emph{Return value}:
+##'   A scalar logical
 ##' }
 ##' \item{\code{is_full}}{
 ##'   Test if the ring buffer is full
 ##'
 ##'   \emph{Usage:}
 ##'   \code{is_full()}
+##'
+##'   \emph{Return value}:
+##'   A scalar logical
 ##' }
 ##' \item{\code{head_pos}}{
 ##'   Return the number of entries from the "start" of the ring buffer the head is.  This is mostly useful for debugging.
@@ -133,6 +163,9 @@
 ##'     \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   A scalar integer
 ##' }
 ##' \item{\code{tail_pos}}{
 ##'   Return the number of entries from the "start" of the ring buffer the tail is.  This is mostly useful for debugging.
@@ -148,6 +181,9 @@
 ##'     \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   A scalar integer
 ##' }
 ##' \item{\code{head}}{
 ##'   Return the contents of the head (the most recently written element in the ring buffer).
@@ -155,7 +191,7 @@
 ##'   \emph{Usage:}
 ##'   \code{head()}
 ##'
-##'   \emph{Value}:
+##'   \emph{Return value}:
 ##'   It depends a little here.  For \code{ring_buffer_env} this is a single R object.  For \code{ring_buffer_bytes} it is a raw vector, the same length as the stride of the ring buffer.  For \code{ring_buffer_bytes_typed}, a single R object that has been translated from raw.
 ##' }
 ##' \item{\code{tail}}{
@@ -164,7 +200,7 @@
 ##'   \emph{Usage:}
 ##'   \code{tail()}
 ##'
-##'   \emph{Value}:
+##'   \emph{Return value}:
 ##'   As for \code{head}
 ##' }
 ##' \item{\code{set}}{
@@ -182,8 +218,8 @@
 ##'     }
 ##'   }
 ##'
-##'   \emph{Value}:
-##'   Returns the number of elements actually written (which may be less than \code{n} if the buffer overflows).
+##'   \emph{Return value}:
+##'   Invisibly returns the number of elements actually written (which may be less than \code{n} if the buffer overflows).  Primarily called for its side effect.
 ##' }
 ##' \item{\code{push}}{
 ##'   Push elements onto the ring buffer head.  This may overflow the ring buffer, destroying the oldest elememnts in the buffer (and moving the position of the tail).
@@ -202,6 +238,9 @@
 ##'     \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate = FALSE}, then the entire object is pushed at once, so always updating only by a single element.
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   For \code{ring_buffer_bytes}, the data invisibly.  For \code{ring_buffer_bytes} and \code{ring_buffer_bytes_typed}, the position of the head pointer (relative to the beginning of the storage region).
 ##' }
 ##' \item{\code{take}}{
 ##'   Destructively take elements from the ring buffer.  This consumes from the tail (the least recently added elements).  It is not possibly to underflow the buffer; if more elements are requested than can be supplied then an error will be thrown and the state of the buffer unmodified.
@@ -215,7 +254,7 @@
 ##'     }
 ##'   }
 ##'
-##'   \emph{Value}:
+##'   \emph{Return value}:
 ##'   For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
 ##' }
 ##' \item{\code{read}}{
@@ -230,11 +269,11 @@
 ##'     }
 ##'   }
 ##'
-##'   \emph{Value}:
+##'   \emph{Return value}:
 ##'   For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
 ##' }
 ##' \item{\code{copy}}{
-##'   Copy from \emph{this} ring buffer intoa a different ring buffer. This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.
+##'   Copy from \emph{this} ring buffer into a different ring buffer. This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.
 ##'
 ##'   \emph{Usage:}
 ##'   \code{copy(dest, n)}
@@ -259,6 +298,9 @@
 ##'     \item{\code{dest}:   The destination ring buffer - will be modified by this call.
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   _yaml.bad-anchor_
 ##' }
 ##' \item{\code{head_offset}}{
 ##'   Nondestructively read the contents of the \code{head} of the buffer, offset by \code{n} entries.
@@ -271,6 +313,9 @@
 ##'     \item{\code{n}:   Head offset.  This moves away from the most recently added item. An offset of 0 reads the most recently added element, 1 reads the element added before that.
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   As for \code{head}
 ##' }
 ##' \item{\code{tail_offset}}{
 ##'   Nondestructively read the contents of the \code{tail} of the buffer, offset by \code{n} entries.
@@ -283,6 +328,9 @@
 ##'     \item{\code{n}:   Tail offset.  This moves away from the oldest item.  An offset of 0 reads the oldest element, 1 reads the element added after that.
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   As for \code{tail} (see \code{head})
 ##' }
 ##' \item{\code{take_head}}{
 ##'   As for \code{take}, but operating on the head rather than the tail.  This is destructive with respect to the head.
@@ -295,6 +343,9 @@
 ##'     \item{\code{n}:   Number of elements to take.
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   As for \code{take}
 ##' }
 ##' \item{\code{read_head}}{
 ##'   As for \code{read}, but operating on the head rather than the tail.  This is not destructive with respect to the tail.
@@ -307,6 +358,9 @@
 ##'     \item{\code{n}:   Number of elements to read.
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   As for \code{read}
 ##' }
 ##' \item{\code{head_set}}{
 ##'   Set data to the head \emph{without advancing}.  This is useful in cases where the head data will be set and advanced seprately (with \code{head_advance}).  This is unlikely to be useful for all users.  It is used extensively in dde (but called from C).
@@ -319,17 +373,26 @@
 ##'     \item{\code{data}:   Data to set into the head.  For the bytes buffer this must be exactly \code{stride} bytes long, and for the environment buffer it corresponds to a single "element".
 ##'     }
 ##'   }
+##'
+##'   \emph{Return value}:
+##'   _yaml.bad-anchor_
 ##' }
 ##' \item{\code{head_data}}{
 ##'   Retrieve the current data stored in the head but not advanced. For many cases this may be junk - if the byte buffer has looped then it will be the bytes that will be overwritten on the next write.  However, when using \code{head_set} it will be the data that have been set into the buffer but not yet committed with \code{head_advance}.
 ##'
 ##'   \emph{Usage:}
 ##'   \code{head_data()}
+##'
+##'   \emph{Return value}:
+##'   As for \code{head}
 ##' }
 ##' \item{\code{head_advance}}{
 ##'   Shift the head around one position.  This commits any data written by \code{head_set}.
 ##'
 ##'   \emph{Usage:}
 ##'   \code{head_advance()}
+##'
+##'   \emph{Return value}:
+##'   _yaml.bad-anchor_
 ##' }
 ##' }

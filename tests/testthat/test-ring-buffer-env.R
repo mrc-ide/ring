@@ -439,3 +439,11 @@ test_that("head set/get/advance", {
   expect_equal(rb$used(), 1)
   expect_equal(rb$tail(), d)
 })
+
+test_that("store arbitrary objects", {
+  rb <- ring_buffer_env(10)
+  fit <- lm(mpg ~ cyl, mtcars)
+  rb$push(fit, iterate = FALSE)
+  ans <- rb$take(1)
+  expect_equal(ans[[1]], fit)
+})

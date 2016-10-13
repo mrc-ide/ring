@@ -15,7 +15,7 @@ This package provides two implementations of ring buffers:
   * `ring_buffer_bytes_translate`: for cases where a raw->R and R->raw translation functions are provided
   * `ring_buffer_bytes_typed` for cases where each element should correspond to a fixed-length vector of one of R's core numeric-ish types (`logical`, `integer`, `numeric`, `complex`)
 
-Both buffer types can be used from R, and the code underlying `ring_buffer_bytes` can also be used compiled code in other packages using R's `LinkingTo:` support.
+Both buffer types can be used from R, and the code underlying `ring_buffer_bytes` can also be used compiled code in other packages using R's `LinkingTo:` support.  A common set of methods is provided, though these do differ in some details.
 
 Both buffer types will refuse to underflow (return elements beyond those that have been written).  The behaviour on overflow can be controlled:
 
@@ -23,7 +23,7 @@ Both buffer types will refuse to underflow (return elements beyond those that ha
 * grow buffer: expand the buffer geometrically to fit required elements (which will require additional memory allocations and copies)
 * throw error: refuse to overflow
 
-See the documentation for details.
+See the reference documentation for details.
 
 ## Usage
 

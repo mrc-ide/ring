@@ -98,7 +98,7 @@ format_method <- function(x) {
     body <- paste0(body, "\n\n\\emph{Details:}\n", x$details)
   }
   if (!is.null(x$value)) {
-    body <- paste0(body, "\n\n\\emph{Value}:\n", x$value)
+    body <- paste0(body, "\n\n\\emph{Return value}:\n", x$value)
   }
   paste(title, indent(body, 2), end, sep = "\n")
 }

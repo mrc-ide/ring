@@ -6,6 +6,13 @@
 ##' similar types; in this way they are most similar to a circular
 ##' version of an R \code{\link{list}}.
 ##'
+##' When pushing objects onto the buffer, you must be careful about
+##' the \code{iterate} argument.  By default if the object has a
+##' \code{length()} greater than 1 then \code{$push()} will iterate
+##' over the object (equivalent to \code{$push(data[[1]],
+##' iterate=FALSE)}, \code{$push(data[[2]], iterate=FALSE)}, and so
+##' on).
+##'
 ##' For more information and usage examples, see the vignette
 ##' (\code{vignette("ring")}).
 ##'
@@ -47,6 +54,11 @@
 ##' # Over-write the first 5
 ##' buf$push(11:15)
 ##' unlist(buf$read(buf$used())) # 6:15
+##'
+##' # Unlike ring_buffer_bytes, these ring buffers can hold any R
+##' # object.  However, you must be careful about use of iterate!
+##' buf$push(lm(mpg ~ cyl, mtcars), iterate = FALSE)
+##' buf$take(1)
 ##'
 ##' # Alternatively, grow the buffer as overwriting happens
 ##' buf <- ring_buffer_env(10, "grow")

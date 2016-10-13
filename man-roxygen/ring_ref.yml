@@ -21,21 +21,20 @@ reset:
   short: >-
     Reset the state of the buffer.  This "zeros" the head and tail
     pointer (and may or may not actually reset the data) so that the
-    buffer can be used as if fresh.  All data are deleted, but not
-    necessarily written to.
+    buffer can be used as if fresh.
   params:
     clear: >-
       Logical, indicating if the memory should also be cleared.
       Generally this is not necessary, but with environment buffers
       this can let the garbage collector clean up large elements.  For
       the bytes buffer this zeros the memory.
-  return: Nothing; called for the side effect only.
+  value: Nothing; called for the side effect only. &side_effect
 
 duplicate:
   short: >-
     Clone the ring buffer, creating a copy.  Copies both the
     underlying data and the position of the head and tail.
-  return: A new ring buffer object
+  value: A new ring buffer object
 
 grow:
   short: >-
@@ -48,30 +47,31 @@ grow:
       (For bytes buffer only) Logical scalar indicating if growth
       should increase the size by \emph{exactly} \code{n} elements (if
       \code{TRUE}) or so that \emph{at least} \code{n} additional
-      elements will fit.
+      elements will fit (growing the buffer geometrically if needed).
+  value: *side_effect
 
 size:
   short: >-
-    Return the maximum size of the ring buffer
+    Return the capacity (maximum size) of the ring buffer
   params:
     bytes: >-
       (for \code{ring_buffer_bytes} only) Logical, indicating if the
       size should be returned in bytes (rather than logical entries,
       which is the default).
-  return: A scalar integer
+  value: A scalar integer
 
 # NOTE: This one is in bytes buffer only, but could probably be removed?
 bytes_data:
   short: >-
     Return the total size of the data storage used in this object.
-  return: A scalar integer
+  value: A scalar integer
 
 stride:
   short: >-
     Length of each element in the ring buffer, in bytes.  Only
     implemented (and meaningful) for the bytes buffer; the environment
     buffer does not support this function as it makes no sense there.
-  return: A scalar integer
+  value: A scalar integer
 
 used:
   short: >-
@@ -81,7 +81,7 @@ used:
       (for \code{ring_buffer_bytes} only) Logical, indicating if the
       size should be returned in bytes (rather than logical entries,
       which is the default).
-  return: A scalar integer
+  value: A scalar integer
 
 free:
   short: >-
@@ -91,15 +91,15 @@ free:
       (for \code{ring_buffer_bytes} only) Logical, indicating if the
       size should be returned in bytes (rather than logical entries,
       which is the default).
-  return: A scalar integer
+  value: A scalar integer
 
 is_empty:
   short: Test if the ring buffer is empty
-  return: A scalar logical
+  value: A scalar logical
 
 is_full:
   short: Test if the ring buffer is full
-  return: A scalar logical
+  value: A scalar logical
 
 head_pos:
   short: >-
@@ -110,7 +110,7 @@ head_pos:
       (for \code{ring_buffer_bytes} only) Logical, indicating if the
       position should be returned in bytes (rather than logical entries,
       which is the default).
-  return: A scalar integer
+  value: A scalar integer
 
 tail_pos:
   short: >-
@@ -121,7 +121,7 @@ tail_pos:
       (for \code{ring_buffer_bytes} only) Logical, indicating if the
       position should be returned in bytes (rather than logical entries,
       which is the default).
-  return: A scalar integer
+  value: A scalar integer
 
 head:
   short: >-
@@ -155,8 +155,9 @@ set:
       of length \code{stride}.
     n: The number of entries to set to \code{data}
   value: >-
-    Returns the number of elements actually written (which may be less
-    than \code{n} if the buffer overflows).
+    Invisibly returns the number of elements actually written (which
+    may be less than \code{n} if the buffer overflows).  Primarily
+    called for its side effect.
 
 push:
   short: >-
@@ -184,7 +185,7 @@ push:
       appropriate S3 dispatch).  If \code{iterate = FALSE}, then the
       entire object is pushed at once, so always updating only by a
       single element.
-  return: >-
+  value: >-
     For \code{ring_buffer_bytes}, the data invisibly.  For
     \code{ring_buffer_bytes} and \code{ring_buffer_bytes_typed}, the
     position of the head pointer (relative to the beginning of the
@@ -220,7 +221,7 @@ read:
 
 copy:
   short: >-
-    Copy from \emph{this} ring buffer intoa a different ring buffer.
+    Copy from \emph{this} ring buffer into a different ring buffer.
     This is destructive with respect to both ring buffers; the tail
     pointer will be moved in this ring buffer as data are taken, and
     if the destination ring buffer overflows, the tail pointer will be
@@ -240,6 +241,7 @@ mirror:
     buffer handy.  No allocations will be done.
   params:
     dest: The destination ring buffer - will be modified by this call.
+  value: *side_effect
 
 head_offset:
   short: >-
@@ -250,6 +252,7 @@ head_offset:
       Head offset.  This moves away from the most recently added item.
       An offset of 0 reads the most recently added element, 1 reads
       the element added before that.
+  value: As for \code{head}
 
 tail_offset:
   short: >-
@@ -260,6 +263,7 @@ tail_offset:
       Tail offset.  This moves away from the oldest item.  An offset
       of 0 reads the oldest element, 1 reads the element added after
       that.
+  value: As for \code{tail} (see \code{head})
 
 take_head:
   short: >-
@@ -267,6 +271,7 @@ take_head:
     tail.  This is destructive with respect to the head.
   params:
     n: Number of elements to take.
+  value: As for \code{take}
 
 read_head:
   short: >-
@@ -274,6 +279,7 @@ read_head:
     tail.  This is not destructive with respect to the tail.
   params:
     n: Number of elements to read.
+  value: As for \code{read}
 
 head_set:
   short: >-
@@ -286,6 +292,7 @@ head_set:
       Data to set into the head.  For the bytes buffer this must be
       exactly \code{stride} bytes long, and for the environment buffer
       it corresponds to a single "element".
+  value: *side_effect
 
 head_data:
   short: >-
@@ -295,8 +302,10 @@ head_data:
     write.  However, when using \code{head_set} it will be the data
     that have been set into the buffer but not yet committed with
     \code{head_advance}.
+  value: As for \code{head}
 
 head_advance:
   short: >-
     Shift the head around one position.  This commits any data written
     by \code{head_set}.
+  value: *side_effect

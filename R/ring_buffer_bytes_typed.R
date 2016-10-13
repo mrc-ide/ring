@@ -13,13 +13,13 @@
 ##'
 ##' @template ring_ref
 ##'
-##' @title Typed bytes buffer
+##' @title Typed bytes ring buffer
 ##' @param size The maximum number of elements the buffer can hold.
 ##'   Each element will be multiple bytes long.
-##' @param what Either a vector on the style of \code{vapply} (e.g.,
-##'   \code{integer(4)} to indicate that each element of the buffer is
-##'   a 4-element integer, or the \code{name} of a storage mode if
-##'   \code{len} is also provided.
+##' @param what Either a vector on the style of \code{\link{vapply}}
+##'   (e.g., \code{integer(4)} to indicate that each element of the
+##'   buffer is a 4-element integer, or the \code{name} of a storage
+##'   mode if \code{len} is also provided.
 ##' @param len If given, then the length of the storage.  If it is
 ##'   given, then if \code{length(what)} is zero, the storage mode of
 ##'   \code{what} is used as the type.  Otherwise \code{what} is
@@ -29,7 +29,6 @@
 ##' @export
 ##' @author Rich FitzJohn
 ##' @examples
-##'
 ##' # Create a ring buffer of 30 integers:
 ##' b <- ring_buffer_bytes_typed(30, integer(1))
 ##'
