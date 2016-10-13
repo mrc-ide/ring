@@ -14,3 +14,4 @@ tests/testthat/ring_standalone
 src/ring.so.dSYM
 .valgrind_ignore
 vignettes/*.html
+tests/testthat/example.so.dSYM

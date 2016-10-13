@@ -30,3 +30,4 @@
 ^\.valgrind_ignore$
 ^vignettes/src$
 ^.lintr$
+^tests/testthat/example\.so\.dSYM$
