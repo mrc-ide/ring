@@ -30,8 +30,8 @@ test_that("standalone", {
   }
 
   path <- system.file("include", package = "ring")
-  args <- c(include_flags(FALSE), "-std=c99",  "-o", "ring_standalone",
-            "ring_standalone.c")
+  args <- c(include_flags(FALSE), "-std=c99",
+            "-o", "ring_standalone", "ring_standalone.c", "-lm")
   code <- system2(gcc, args)
   expect_equal(code, 0)
   if (file.exists("ring_standalone")) {
