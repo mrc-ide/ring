@@ -1,4 +1,6 @@
+#ifndef _RING_H_
 #include <ring/ring.h>
+#endif
 
 // Some prototypes used here that aren't public:
 bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t n);
