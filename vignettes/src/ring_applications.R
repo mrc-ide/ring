@@ -24,6 +24,13 @@ set.seed(1)
 ## better.  This vignette is an attempt at creating "ring" versions of
 ## a vector and matrix data type.
 
+## NOTE: this vignette used to be implemented in the package itself,
+## but I pulled it out of the package because I felt that the
+## implementation wasn't quite right, and that it may not be ideal to
+## have objects that appear to have normal-R sematics operate by side
+## effect.  However, this may give some ideas for how to use ring
+## buffers in practice.
+
 ## ## Ring vector
 
 ## The actual code for the buffer here is availabe in the package via

@@ -19,14 +19,15 @@ knitr::opts_chunk$set(
   fig.height = 5)
 set.seed(1)
 
-## This package implements ring buffers.  A ring buffer can be used as
-## a first-in-first-out (FIFO) buffer where the maximum size is known
-## ahead of time.  Because they do not grow in size, they are useful
-## to avoid using more and more memory as a process runs.  Because the
-## data reading and writing happens in an (apparently) circular way,
-## once data is added to the buffer it is not copied (in contrast if
-## you used a vector then every time data is consumed you'd have to
-## shuffle the vector around).
+## This package implements [ring
+## buffers](https://en.wikipedia.org/wiki/Ring_buffer).  A ring
+## buffer can be used as a first-in-first-out (FIFO) buffer where the
+## maximum size is known ahead of time.  Because they do not grow in
+## size, they are useful to avoid using more and more memory as a
+## process runs.  Because the data reading and writing happens in an
+## (apparently) circular way, once data is added to the buffer it is
+## not copied (in contrast if you used a vector then every time data
+## is consumed you'd have to shuffle the vector around).
 
 ## `ring` implements two different ring buffers that will likely suit
 ## different applications.
@@ -38,6 +39,18 @@ set.seed(1)
 ## * `ring_buffer_env` is implemented as a doubly linked list using
 ##   R's environments.  This buffer can hold arbitrary R objects at
 ##   each position.
+
+## The target audience for this package is either other package
+## developers who need a ring buffer in their package, or modellers
+## who have decided that a ring buffer is the right data structure to
+## help with their simulation model.
+
+## For all buffers, `head` will refer to the next bit of the buffer to
+## be written to, and `tail` will refer to the next bit of the buffer
+## to be read.  That is, elements are pushed onto the `head` of the
+## buffer and retrieved from the `tail`.  (There is no direct analogy
+## between these termas and the R functions `head` and `tail` which
+## operate on fixed-size vectors.)
 
 ## # The environment buffer `ring_buffer_env`
 
@@ -124,7 +137,7 @@ buf$free()
 ## contains "b" and "a" is removed from the buffer:
 buf$tail()
 
-## To reset the buffer, use `reset()`.  This empies the buffer of all data:
+## To reset the buffer, use `reset()`.  This empties the buffer of all data:
 buf$reset()
 buf$used()
 buf$is_empty()
