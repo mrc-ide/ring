@@ -107,6 +107,6 @@ ring_buffer_bytes_typed <- function(size, what, len = NULL,
   to <- convert_to[[type]]
   from <- convert_from[[type]]
 
-  .R6_ring_buffer_bytes_translate$new(size, stride, to, from, on_overflow,
+  R6_ring_buffer_bytes_translate$new(size, stride, to, from, on_overflow,
                                       paste0("typed:", type))
 }

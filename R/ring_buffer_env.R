@@ -80,7 +80,7 @@
 ring_buffer_env <- function(size, on_overflow = "overwrite") {
   C_assert_size(size, "size")
   match_value(on_overflow, OVERFLOW_ACTIONS)
-  .R6_ring_buffer_env$new(size, on_overflow)
+  R6_ring_buffer_env$new(size, on_overflow)
 }
 
 ## This creates a doubly-linked list with a pair of pointers
@@ -212,7 +212,7 @@ ring_buffer_reset <- function(buffer, clear) {
 ## gives us nicer, and fairly consistent, error messages at a low
 ## overhead.
 ##' @importFrom R6 R6Class
-.R6_ring_buffer_env <- R6::R6Class(
+R6_ring_buffer_env <- R6::R6Class(
   "ring_buffer_env",
   ## need to implement our own clone method as the default R6 one is
   ## not going to cut it, given everything inside the class is a

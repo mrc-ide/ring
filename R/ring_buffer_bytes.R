@@ -105,11 +105,11 @@
 ##' b$push(as.raw(1:75))
 ##' b$read(b$used())
 ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
-  .R6_ring_buffer_bytes$new(size, stride, on_overflow)
+  R6_ring_buffer_bytes$new(size, stride, on_overflow)
 }
 
 ##' @importFrom R6 R6Class
-.R6_ring_buffer_bytes <- R6::R6Class(
+R6_ring_buffer_bytes <- R6::R6Class(
   "ring_buffer_bytes",
   cloneable = FALSE,
   public = list(
@@ -133,7 +133,7 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
     ## private set of methods.  Instead we create a clone of the
     ## data and return a brand new instance of the class.
     duplicate = function() {
-      .R6_ring_buffer_bytes$new(ptr = .Call(Cring_buffer_duplicate, self$.ptr))
+      R6_ring_buffer_bytes$new(ptr = .Call(Cring_buffer_duplicate, self$.ptr))
     },
 
     grow = function(n, exact = FALSE) {
@@ -294,17 +294,17 @@ ring_buffer_bytes <- function(size, stride = 1L, on_overflow = "overwrite") {
 ##' ) # error: string is too long
 ring_buffer_bytes_translate <- function(size, stride, to, from,
                                         on_overflow = "overwrite") {
-  .R6_ring_buffer_bytes_translate$new(size, stride, to, from, on_overflow)
+  R6_ring_buffer_bytes_translate$new(size, stride, to, from, on_overflow)
 }
 
-## The definition below must follow .R6_ring_buffer_bytes, so either
+## The definition below must follow R6_ring_buffer_bytes, so either
 ## we use roxygen @import to set the collation or we have to leave it
 ## in this file (or jiggle the files around so they collate correctly
 ## in every language).
-.R6_ring_buffer_bytes_translate <- R6::R6Class(
+R6_ring_buffer_bytes_translate <- R6::R6Class(
   "ring_buffer_bytes_translate",
   cloneable = FALSE,
-  inherit = .R6_ring_buffer_bytes,
+  inherit = R6_ring_buffer_bytes,
 
   public = list(
     .to = NULL,
@@ -325,7 +325,7 @@ ring_buffer_bytes_translate <- function(size, stride, to, from,
     ##   head_pos, tail_pos, copy
 
     duplicate = function() {
-      .R6_ring_buffer_bytes_typed$new(
+      R6_ring_buffer_bytes_typed$new(
         NULL, self$stride(), self$to, self$.from, self$.type, self$.ptr)
     },
 

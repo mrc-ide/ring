@@ -13,10 +13,10 @@ add_usage <- function(dat) {
     names(formals(x[[name]])) %||% character(0)
   }
 
-  cl <- list(env = .R6_ring_buffer_env$public_methods,
-             bytes = .R6_ring_buffer_bytes$public_methods,
-             typed = modifyList(.R6_ring_buffer_bytes$public_methods,
-                                .R6_ring_buffer_bytes_translate$public_methods))
+  cl <- list(env = R6_ring_buffer_env$public_methods,
+             bytes = R6_ring_buffer_bytes$public_methods,
+             typed = modifyList(R6_ring_buffer_bytes$public_methods,
+                                R6_ring_buffer_bytes_translate$public_methods))
 
   valid <- unique(unlist(lapply(cl, names)))
   extra <- setdiff(names(dat), valid)
