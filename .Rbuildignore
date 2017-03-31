@@ -31,3 +31,4 @@
 ^vignettes/src$
 ^.lintr$
 ^tests/testthat/example\.so\.dSYM$
+^CONDUCT\.md$

@@ -23,7 +23,7 @@ Both buffer types will refuse to underflow (return elements beyond those that ha
 * grow buffer: expand the buffer geometrically to fit required elements (which will require additional memory allocations and copies)
 * throw error: refuse to overflow
 
-See the reference documentation for details.
+See the [reference documentation](https://richfitz.github.io/ring) for details.
 
 ## Usage
 
@@ -38,9 +38,11 @@ The reference documentation is also available [online](https://richfitz.github.i
 Requires a working C compiler (e.g., rtools on Windows, Xcode on a mac).
 
 ```r
-devtools::install_github("richfitz/ring", upgrade=FALSE)
+remotes::install_github("richfitz/ring", upgrade = FALSE)
 ```
 
 ## License
 
 MIT + file LICENSE © [Rich FitzJohn](https://github.com/richfitz).
+
+Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
