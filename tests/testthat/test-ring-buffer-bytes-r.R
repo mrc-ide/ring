@@ -538,3 +538,21 @@ test_that("non-raw input", {
   expect_error(rb$push(runif(stride)),
                "Expected a raw vector 'data'", fixed = TRUE)
 })
+
+test_that("invalid copy", {
+  bytes <- as.raw(0:255)
+  buf <- ring_buffer_bytes(length(bytes))
+  expect_error(buf$copy(list(), 0),
+               "'dest' must be a 'ring_buffer_bytes'", fixed = TRUE)
+  expect_error(buf$copy(buf, 0),
+               "Can't copy a buffer into itself", fixed = TRUE)
+})
+
+test_that("invalid mirror", {
+  bytes <- as.raw(0:255)
+  buf <- ring_buffer_bytes(length(bytes))
+  expect_error(buf$mirror(list()),
+               "'dest' must be a 'ring_buffer_bytes'", fixed = TRUE)
+  expect_error(buf$mirror(buf),
+               "Can't mirror a buffer into itself", fixed = TRUE)
+})

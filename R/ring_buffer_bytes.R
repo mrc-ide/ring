@@ -174,12 +174,18 @@ R6_ring_buffer_bytes <- R6::R6Class(
       if (!inherits(dest, "ring_buffer_bytes")) {
         stop("'dest' must be a 'ring_buffer_bytes'")
       }
+      if (identical(dest$.ptr, self$.ptr)) {
+        stop("Can't copy a buffer into itself")
+      }
       .Call(Cring_buffer_copy, self$.ptr, dest$.ptr, n)
     },
 
     mirror = function(dest) {
       if (!inherits(dest, "ring_buffer_bytes")) {
         stop("'dest' must be a 'ring_buffer_bytes'")
+      }
+      if (identical(dest$.ptr, self$.ptr)) {
+        stop("Can't mirror a buffer into itself")
       }
       invisible(.Call(Cring_buffer_mirror, self$.ptr, dest$.ptr))
     },

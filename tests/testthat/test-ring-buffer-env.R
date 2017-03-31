@@ -213,6 +213,13 @@ test_that("copy some", {
   expect_equal(buf2$used(), 5)
 })
 
+test_that("can't copy into self", {
+  n <- 20
+  buf <- ring_buffer_env(n)
+  expect_error(buf$copy(buf, 0),
+               "Can't copy a buffer into itself")
+})
+
 ## Because we do things that create circular references, I want to
 ## check that R will delete everything appropriately.
 test_that("destruction", {
