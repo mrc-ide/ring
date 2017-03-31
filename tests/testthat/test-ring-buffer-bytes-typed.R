@@ -124,6 +124,22 @@ test_that("head_set", {
                "Incorrect size data")
 })
 
+test_that("take_head, read_head", {
+  b <- ring_buffer_bytes_typed(10, integer(4))
+  r <- matrix(pool("integer", 4 * 3), 4)
+  b$push(r)
+  expect_equal(b$read_head(1), r[, 3])
+  expect_equal(b$take_head(1), r[, 3])
+  expect_equal(b$used(), 2)
+
+  expect_equal(b$read_head(2), c(r[, 2:1]))
+  expect_equal(b$take_head(2), c(r[, 2:1]))
+  expect_equal(b$used(), 0)
+
+  expect_error(b$read_head(2), "underflow")
+  expect_error(b$take_head(2), "underflow")
+})
+
 test_that("duplicate", {
   b1 <- ring_buffer_bytes_typed(10, integer(4))
   r <- matrix(pool("integer", 4 * 3), 4)

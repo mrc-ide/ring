@@ -95,9 +95,11 @@ test_that("take_head", {
   m <- 4
   buf$push(1:m)
 
+  expect_equal(buf$read_head(0), list())
   expect_equal(buf$take_head(0), list())
   expect_equal(buf$used(), m)
 
+  expect_equal(buf$read_head(1), list(m))
   expect_equal(buf$take_head(1), list(m))
   expect_equal(buf$used(), m - 1)
 
@@ -106,6 +108,7 @@ test_that("take_head", {
   expect_equal(buf$tail(), 1)
   expect_equal(buf$head(), m - 1L)
 
+  expect_equal(buf$read_head(m - 1), as.list(rev(seq_len(m - 1))))
   expect_equal(buf$take_head(m - 1), as.list(rev(seq_len(m - 1))))
   expect_equal(buf$head_pos(), 0L)
   expect_equal(buf$tail_pos(), 0L)
