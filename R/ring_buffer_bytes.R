@@ -328,11 +328,12 @@ R6_ring_buffer_bytes_translate <- R6::R6Class(
     },
 
     ## inherits: reset, size, bytes_data, stride, used, free,
-    ##   head_pos, tail_pos, copy
+    ##   head_pos, tail_pos, copy, mirror
 
     duplicate = function() {
-      R6_ring_buffer_bytes_typed$new(
-        NULL, self$stride(), self$to, self$.from, self$.type, self$.ptr)
+      ptr_copy <- .Call(Cring_buffer_duplicate, self$.ptr)
+      R6_ring_buffer_bytes_translate$new(
+        NULL, NULL, self$.to, self$.from, NULL, self$.type, ptr_copy)
     },
 
     head = function() self$.from(super$head()),

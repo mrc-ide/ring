@@ -123,3 +123,25 @@ test_that("head_set", {
   expect_error(b$head_set(pool("integer", 3)),
                "Incorrect size data")
 })
+
+test_that("duplicate", {
+  b1 <- ring_buffer_bytes_typed(10, integer(4))
+  r <- matrix(pool("integer", 4 * 3), 4)
+  b1$push(r)
+  b2 <- b1$duplicate()
+  expect_is(b2, class(b1))
+  expect_false(identical(b1$.ptr, b2$ptr))
+
+  expect_equal(b2$head_pos(), b1$head_pos())
+  expect_equal(b2$tail_pos(), b1$tail_pos())
+  expect_equal(b2$used(), b1$used())
+  expect_equal(b2$size(), b1$size())
+  expect_equal(b2$read(b2$used()), b1$read(b1$used()))
+
+  x <- b2$take(1)
+  expect_equal(x, r[, 1])
+
+  ## Uncoupled:
+  expect_equal(b2$used(), 2)
+  expect_equal(b1$used(), 3)
+})
