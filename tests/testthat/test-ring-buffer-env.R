@@ -424,17 +424,17 @@ test_that("typed errors", {
   b <- ring_buffer_env(10, on_overflow = "error")
   expect_error(b$push(1:20), "Buffer overflow")
   ans <- tryCatch(b$push(1:20), error = function(e) e)
-  expect_is(ans, "RingOverflow")
+  expect_is(ans, "ring_overflow")
   expect_equal(ans$free, 10)
   expect_equal(ans$requested, 20)
-  expect_equal(tryCatch(b$push(1:20), RingOverflow = function(e) e), ans)
+  expect_equal(tryCatch(b$push(1:20), ring_overflow = function(e) e), ans)
 
   expect_error(b$read(1), "Buffer underflow")
   ans <- tryCatch(b$read(1), error = function(e) e)
-  expect_is(ans, "RingUnderflow")
+  expect_is(ans, "ring_underflow")
   expect_equal(ans$used, 0)
   expect_equal(ans$requested, 1)
-  expect_equal(tryCatch(b$read(1), RingUnderflow = function(e) e), ans)
+  expect_equal(tryCatch(b$read(1), ring_underflow = function(e) e), ans)
 })
 
 test_that("head set/get/advance", {

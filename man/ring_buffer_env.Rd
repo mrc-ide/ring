@@ -40,7 +40,7 @@ For more information and usage examples, see the vignette
 On underflow (and overflow if \code{on_overflow = "error"})
 \code{ring} will raise custom exceptions that can be caught
 specially by \code{tryCatch}.  These will have class
-\code{RingUnderflow} (and \code{RingOverflow} for overflow).  This
+\code{ring_underflow} (and \code{ring_overflow} for overflow).  This
 is not supported in the bytes buffer yet.  See the examples for
 usage.
 }
@@ -479,9 +479,9 @@ try(buf$push(11:15))
 # The errors that are thrown on underflow / overflow are typed so
 # can be caught by tryCatch:
 tryCatch(buf$read(100),
-         RingUnderflow = function(e) message("nope"))
+         ring_underflow = function(e) message("nope"))
 tryCatch(buf$push(100),
-         RingOverflow = function(e) message("nope again"))
+         ring_overflow = function(e) message("nope again"))
 }
 \author{
 Rich FitzJohn

@@ -19,7 +19,7 @@
 ##' On underflow (and overflow if \code{on_overflow = "error"})
 ##' \code{ring} will raise custom exceptions that can be caught
 ##' specially by \code{tryCatch}.  These will have class
-##' \code{RingUnderflow} (and \code{RingOverflow} for overflow).  This
+##' \code{ring_underflow} (and \code{ring_overflow} for overflow).  This
 ##' is not supported in the bytes buffer yet.  See the examples for
 ##' usage.
 ##'
@@ -74,9 +74,9 @@
 ##' # The errors that are thrown on underflow / overflow are typed so
 ##' # can be caught by tryCatch:
 ##' tryCatch(buf$read(100),
-##'          RingUnderflow = function(e) message("nope"))
+##'          ring_underflow = function(e) message("nope"))
 ##' tryCatch(buf$push(100),
-##'          RingOverflow = function(e) message("nope again"))
+##'          ring_overflow = function(e) message("nope again"))
 ring_buffer_env <- function(size, on_overflow = "overwrite") {
   C_assert_size(size, "size")
   match_value(on_overflow, OVERFLOW_ACTIONS)
@@ -409,7 +409,7 @@ ring_buffer_head_advance <- function(buf) {
 
 ring_buffer_env_check_underflow <- function(obj, requested) {
   if (requested > obj$used()) {
-    stop(RingUnderflow(requested, obj$used()))
+    stop(ring_underflow(requested, obj$used()))
   }
 }
 
@@ -418,7 +418,7 @@ ring_buffer_env_check_overflow <- function(obj, requested) {
     nfree <- obj$free()
     if (requested > nfree) {
       if (obj$.prevent_overflow) {
-        stop(RingOverflow(requested, nfree))
+        stop(ring_overflow(requested, nfree))
       } else {
         ring_buffer_env_grow(obj, requested - nfree)
       }
@@ -454,18 +454,18 @@ as.list.ring_buffer_env <- function(x, ...) {
   ring_buffer_env_read_from_tail(x, x$used())[[1L]]
 }
 
-RingUnderflow <- function(requested, used) {
+ring_underflow <- function(requested, used) {
   msg <- sprintf("Buffer underflow (requested %d elements but %d available)",
                  requested, used)
   structure(list(requested = requested, used = used, message = msg,
                  call = NULL),
-            class = c("RingUnderflow", "error", "condition"))
+            class = c("ring_underflow", "error", "condition"))
 }
 
-RingOverflow <- function(requested, free) {
+ring_overflow <- function(requested, free) {
   msg <- sprintf("Buffer overflow (requested %d elements but %d available)",
                  requested, free)
   structure(list(requested = requested, free = free, message = msg,
                  call = NULL),
-            class = c("RingOverflow", "error", "condition"))
+            class = c("ring_overflow", "error", "condition"))
 }
