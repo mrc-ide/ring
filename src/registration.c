@@ -1,12 +1,9 @@
-// Dynamic routine registration; this speeds up using the compiled
-// routines from .Call() because the symbol lookup is done once at
-// package load and not when the routines are used (see R-exts).
-
 #include "ring_r.h"
 #include "convert.h"
 #include "util.h"
 
 #include <R_ext/Rdynload.h>
+#include <Rversion.h>
 
 static const R_CallMethodDef call_methods[] = {
   {"Cring_buffer_create",      (DL_FUNC) &R_ring_buffer_create,      3},
@@ -55,4 +52,8 @@ static const R_CallMethodDef call_methods[] = {
 // Package initialisation, required for the registration
 void R_init_ring(DllInfo *info) {
   R_registerRoutines(info, NULL, call_methods, NULL, NULL);
+#if defined(R_VERSION) && R_VERSION >= R_Version(3, 3, 0)
+  R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, TRUE);
+#endif
 }
