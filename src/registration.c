@@ -56,7 +56,7 @@ static const R_CallMethodDef call_methods[] = {
 };
 
 // Package initialisation, required for the registration
-void R_init_ring(DllInfo *info) {
+void R_init_ring(DllInfo *dll) {
   R_registerRoutines(info, NULL, call_methods, NULL, NULL);
 #if defined(R_VERSION) && R_VERSION >= R_Version(3, 3, 0)
   R_useDynamicSymbols(dll, FALSE);
