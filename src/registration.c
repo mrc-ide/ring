@@ -1,5 +1,6 @@
-#include "ring_r.h"
 #include "convert.h"
+#include "ring_r.h"
+#include "test.h"
 #include "util.h"
 
 #include <R_ext/Rdynload.h>
@@ -44,8 +45,13 @@ static const R_CallMethodDef call_methods[] = {
   {"Cbytes_to_double",         (DL_FUNC) &bytes_to_double,           1},
   {"Ccomplex_to_bytes",        (DL_FUNC) &complex_to_bytes,          1},
   {"Cbytes_to_complex",        (DL_FUNC) &bytes_to_complex,          1},
+  {"Csizeof_types",            (DL_FUNC) &sizeof_types,              0},
   // Utility
   {"Cassert_scalar_size",      (DL_FUNC) &assert_scalar_size,        2},
+  // Testing
+  {"Ctest_search_linear",      (DL_FUNC) &test_search_linear,        2},
+  {"Ctest_search_bisect",      (DL_FUNC) &test_search_bisect,        3},
+  {"Ctest_advance_head",       (DL_FUNC) &test_advance_head,         2},
   {NULL,                       NULL,                                 0}
 };
 

@@ -1,6 +1,5 @@
+#include "test.h"
 #include <ring/ring.h>
-#include <R.h>
-#include <Rinternals.h>
 
 // NOTE: Duplicated from ring_r.c
 ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error);
@@ -36,7 +35,7 @@ size_t ring_buffer_compute_offset(ring_buffer* buffer, data_t *x) {
 // Off-by-one issues here are tricky though; how we should behave when
 // the values are identical is not obvious and may require some
 // tweaking.
-bool test_find_double(const void *x, void *data) {
+bool pred_find_double(const void *x, void *data) {
   double x_value = *((double*) x);
   double data_value = *((double*) data);
   return x_value <= data_value;
@@ -46,7 +45,7 @@ SEXP test_search_linear(SEXP r_buffer, SEXP r_value) {
   ring_buffer *buffer = ring_buffer_get(r_buffer, true);
   double value = REAL(r_value)[0];
   data_t *x = (data_t*)
-    ring_buffer_search_linear(buffer, test_find_double, &value);
+    ring_buffer_search_linear(buffer, pred_find_double, &value);
   return ScalarInteger(ring_buffer_compute_offset(buffer, x));
 }
 
@@ -55,7 +54,7 @@ SEXP test_search_bisect(SEXP r_buffer, SEXP r_value, SEXP r_i) {
   double value = REAL(r_value)[0];
   int i = INTEGER(r_i)[0];
   data_t *x = (data_t*)
-    ring_buffer_search_bisect(buffer, i, test_find_double, &value);
+    ring_buffer_search_bisect(buffer, i, pred_find_double, &value);
   return ScalarInteger(ring_buffer_compute_offset(buffer, x));
 }
 

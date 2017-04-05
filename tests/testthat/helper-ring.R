@@ -36,11 +36,10 @@ last <- function(x) {
 
 SEARCH_TYPES <- c("linear", "bisect")
 test_search_linear <- function(buffer, value, i) {
-  .Call("test_search_linear", buffer, as.double(value), PACKAGE = "ring")
+  .Call(Ctest_search_linear, buffer, as.double(value))
 }
 test_search_bisect <- function(buffer, value, i = 0L) {
-  .Call("test_search_bisect", buffer, as.double(value), as.integer(i),
-        PACKAGE = "ring")
+  .Call(Ctest_search_bisect, buffer, as.double(value), as.integer(i))
 }
 test_search <- function(buffer, value, type, i = 0L) {
   search <- switch(type,
@@ -51,7 +50,7 @@ test_search <- function(buffer, value, type, i = 0L) {
 }
 
 test_advance_head <- function(b, v) {
-  .Call("test_advance_head", b$.ptr, v)
+  .Call(Ctest_advance_head, b$.ptr, v)
 }
 
 viapply <- function(X, FUN, ...) {
