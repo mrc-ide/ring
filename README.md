@@ -32,7 +32,7 @@ See the [reference documentation](https://richfitz.github.io/ring) for details.
 
 See the vignette [online](https://richfitz.github.io/ring/vignettes/ring.html) (the vignette is not currently shipped with the pacakge as installed via `install_github`, though once the package in on CRAN it will be available with `code(vignette("ring"))`.
 
-A second [vignette](https://richfitz.github.io/ring/vignettes/ring_applications.html") describes possible data structures using a ring buffer.
+A second [vignette](https://richfitz.github.io/ring/vignettes/ring_applications.html) describes possible data structures using a ring buffer.
 
 The reference documentation is also available [online](https://richfitz.github.io/ring), or from the package.
 
