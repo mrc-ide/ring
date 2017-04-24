@@ -1,5 +1,6 @@
 # ring
 
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Linux Build Status](https://travis-ci.org/richfitz/ring.svg?branch=master)](https://travis-ci.org/richfitz/ring)
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/github/richfitz/ring?svg=true)](https://ci.appveyor.com/project/richfitz/ring)
 [![codecov.io](https://codecov.io/github/richfitz/ring/coverage.svg?branch=master)](https://codecov.io/github/richfitz/ring?branch=master)
@@ -23,6 +24,8 @@ Both buffer types will refuse to underflow (return elements beyond those that ha
 * grow buffer: expand the buffer geometrically to fit required elements (which will require additional memory allocations and copies)
 * throw error: refuse to overflow
 
+Depending on your application, these ring buffers may or may not be faster than manually copying data around in vectors.  The benefit of this package rather than doing it by hand is abstracting away a lot of subtle bookkeeping and keeping an inteface that is fairly high level.  However, for C applications, using `ring_buffer_bytes` via the C interface (using `LinkingTo`) is likely to be very fast as it avoids all copies.
+
 See the [reference documentation](https://richfitz.github.io/ring) for details.
 
 ## Usage
@@ -32,14 +35,6 @@ See the vignette [online](https://richfitz.github.io/ring/vignettes/ring.html) (
 A second [vignette](https://richfitz.github.io/ring/vignettes/ring_applications.html") describes possible data structures using a ring buffer.
 
 The reference documentation is also available [online](https://richfitz.github.io/ring), or from the package.
-
-## Installation
-
-Requires a working C compiler (e.g., rtools on Windows, Xcode on a mac).
-
-```r
-remotes::install_github("richfitz/ring", upgrade = FALSE)
-```
 
 ## License
 
