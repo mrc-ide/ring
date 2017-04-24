@@ -416,6 +416,61 @@ writeLines(c("```c",
              readLines(system.file("examples/example.c", package = "ring")),
              "```"))
 
+## ## A nontrivial example
+
+## In the [`dde`](https://github.com/richfitz/dde) package (not yet on
+## CRAN), I use ring buffers to solve delay differential equations
+## (DDEs).  To solve these, we need to know the state of the system at
+## a series of points in the past.  So at every time step we push the
+## state of the system onto a ring buffer.  Then, as the solver moves
+## forward in time we can get the system at some previous point in
+## time by looking back through the ring buffer until the time in
+## question is found.
+
+## In this application a ring buffer is the ideal data structure
+## because we often want to solve equations where the time we look
+## back is a small fraction of the total time.  Without a ring buffer
+## we'd either have to store the _entire_ history (with a large memory
+## cost, most of which is not needed) or periodically copy the history
+## around.
+
+## To use `ring` within the `dde` package:
+
+## * In the `DESCRIPTION` we [declare a link to
+##   `ring`](https://github.com/richfitz/dde/blob/7ebaefd/DESCRIPTION#L14)
+##   using the `LinkingTo:` field.
+##
+## * In the `src` directory, [the contents of `<ring/ring.c>` are
+##   included](https://github.com/richfitz/dde/blob/7ebaefd/src/ring.c);
+##   this is possible because of the `LinkingTo` field.  This file now
+##   includes all the actual ring buffer implementation.
+##
+## * In
+##   [src/dopri.h](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.h#L8)
+##   we include `<ring/ring.h>` which allows the ring buffer code to be used
+##   in any file that includes `dopri.h`.  There is a [data structure
+##   in this
+##   header](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.h#L77-L111)
+##   that includes within itself a ring buffer to hold the history.
+##
+## * In
+##   [src/dopri.c](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c)
+##   the ring buffer code is actually used:
+##
+##     - [initialisation](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L48-L50)
+##     - [a time is found within the ring buffer](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L694-L719)
+##     - [the ring buffer is advanced](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L417)
+##     - [the data is freed](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L220)
+##
+## * In
+##   [src/dopri_5.c](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri_5.c#L109-L119)
+##   new data is written to the head of the ring buffer, being the
+##   state of the system at the end of the step.  The history head is
+##   treated as a big block of contiguous doubles.
+
+## Used this way, the programmer can focus on simply writing to the
+## application and do as little work on bookkeeping as possible.
+
 ## # The C++ API
 
 ## If you're using C++ you may find the [Boost circular
