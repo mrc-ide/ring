@@ -32,3 +32,4 @@
 ^.lintr$
 ^tests/testthat/example\.so\.dSYM$
 ^CONDUCT\.md$
+^release\.md$
