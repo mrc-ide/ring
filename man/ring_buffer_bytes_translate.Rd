@@ -451,6 +451,7 @@ the differences between implementations will be a bit more apparent.
 }
 }
 }
+
 \examples{
 # The "typed" ring buffers do not allow for character vectors to
 # be stored, because strings are generally hard and have unknown
@@ -516,4 +517,3 @@ try(
 \author{
 Rich FitzJohn
 }
-

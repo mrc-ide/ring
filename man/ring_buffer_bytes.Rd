@@ -462,6 +462,7 @@ the differences between implementations will be a bit more apparent.
 }
 }
 }
+
 \examples{
 # Create a ring buffer of 100 bytes
 b <- ring_buffer_bytes(100)
@@ -515,4 +516,3 @@ b$read(b$used())
 b$push(as.raw(1:75))
 b$read(b$used())
 }
-
