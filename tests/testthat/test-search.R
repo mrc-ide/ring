@@ -131,3 +131,18 @@ test_that("nontrivial, wrapped", {
     }
   }
 })
+
+
+test_that("search from too far along", {
+  set.seed(10)
+  b <- ring_buffer_bytes_typed(10, double(1))
+  b$push(rep(1, 6))
+  b$take(6)
+  x <- sort(runif(8))
+  b$push(x)
+
+  z <- mean(x)
+
+  expect_equal(test_search(b$.ptr, z, "bisect", length(x)), -1)
+  expect_equal(test_search(b$.ptr, z, "bisect", length(x) * 2), -1)
+})

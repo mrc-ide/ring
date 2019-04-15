@@ -449,7 +449,7 @@ const void * ring_buffer_search_linear(const ring_buffer *buffer,
 const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
                                        ring_predicate *pred, void *data) {
   const size_t n = ring_buffer_used(buffer, false);
-  if (n == 0) {
+  if (n == 0 || i >= n) {
     return NULL;
   }
   int i0 = i, i1 = i;
@@ -459,7 +459,7 @@ const void * ring_buffer_search_bisect(const ring_buffer *buffer, size_t i,
   // Predicate should return true if we should look further back
   // (increase the tail offset), false otherwise.
   if (pred((void*) x0, data)) { // advance up until we hit the top
-    if (i0 == (int)n - 1) { // guess is already *at* the top.
+    if (i0 >= (int)n - 1) { // guess is already *at* the top.
       return x0;
     }
     i1 = i0 + 1;
