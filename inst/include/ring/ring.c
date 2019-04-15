@@ -42,13 +42,16 @@ ring_buffer * ring_buffer_create(size_t size, size_t stride,
 }
 
 void ring_buffer_destroy(ring_buffer *buffer) {
+  if (buffer) {
 #ifdef RING_USE_STDLIB_ALLOC
-  free(buffer->data);
-  free(buffer);
+    free(buffer->data);
+    free(buffer);
 #else
-  Free(buffer->data);
-  Free(buffer);
+    Free(buffer->data);
+    Free(buffer);
 #endif
+    buffer = NULL;
+  }
 }
 
 ring_buffer * ring_buffer_duplicate(const ring_buffer *buffer) {
