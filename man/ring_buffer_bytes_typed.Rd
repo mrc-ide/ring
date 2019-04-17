@@ -444,6 +444,7 @@ the differences between implementations will be a bit more apparent.
 }
 }
 }
+
 \examples{
 # Create a ring buffer of 30 integers:
 b <- ring_buffer_bytes_typed(30, integer(1))
@@ -493,4 +494,3 @@ b$tail_offset(1)
 \author{
 Rich FitzJohn
 }
-

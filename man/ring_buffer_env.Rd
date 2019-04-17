@@ -444,6 +444,7 @@ the differences between implementations will be a bit more apparent.
 }
 }
 }
+
 \examples{
 buf <- ring_buffer_env(10)
 buf$push(1:10)
@@ -486,4 +487,3 @@ tryCatch(buf$push(100),
 \author{
 Rich FitzJohn
 }
-
