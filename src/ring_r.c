@@ -6,6 +6,7 @@ static void ring_buffer_finalize(SEXP extPtr);
 ring_buffer* ring_buffer_get(SEXP extPtr, bool closed_error);
 bool scalar_logical(SEXP x);
 size_t scalar_size(SEXP x);
+SEXP scalar_size_sexp(size_t x);
 void throw_underflow(ring_buffer *buffer, size_t n);
 const data_t * get_raw(SEXP data);
 
@@ -35,16 +36,17 @@ SEXP R_ring_buffer_grow(SEXP extPtr, SEXP r_n, SEXP r_exact) {
 }
 
 SEXP R_ring_buffer_size(SEXP extPtr, SEXP bytes) {
-  return ScalarInteger(ring_buffer_size(ring_buffer_get(extPtr, true),
-                                          scalar_logical(bytes)));
+  return scalar_size_sexp(ring_buffer_size(ring_buffer_get(extPtr, true),
+                                           scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_stride(SEXP extPtr) {
-  return ScalarInteger(ring_buffer_get(extPtr, true)->stride);
+  return scalar_size_sexp(ring_buffer_get(extPtr, true)->stride);
 }
 
 SEXP R_ring_buffer_bytes_data(SEXP extPtr) {
-  return ScalarInteger(ring_buffer_bytes_data(ring_buffer_get(extPtr, true)));
+  size_t ret = ring_buffer_bytes_data(ring_buffer_get(extPtr, true));
+  return scalar_size_sexp(ret);
 }
 
 SEXP R_ring_buffer_is_full(SEXP extPtr) {
@@ -91,22 +93,22 @@ SEXP R_ring_buffer_data(SEXP extPtr) {
 }
 
 SEXP R_ring_buffer_head_pos(SEXP extPtr, SEXP bytes) {
-  return ScalarInteger(ring_buffer_head_pos(ring_buffer_get(extPtr, true),
+  return scalar_size_sexp(ring_buffer_head_pos(ring_buffer_get(extPtr, true),
                                             scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_tail_pos(SEXP extPtr, SEXP bytes) {
-  return ScalarInteger(ring_buffer_tail_pos(ring_buffer_get(extPtr, true),
+  return scalar_size_sexp(ring_buffer_tail_pos(ring_buffer_get(extPtr, true),
                                             scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_free(SEXP extPtr, SEXP bytes) {
-  return ScalarInteger(ring_buffer_free(ring_buffer_get(extPtr, true),
+  return scalar_size_sexp(ring_buffer_free(ring_buffer_get(extPtr, true),
                                           scalar_logical(bytes)));
 }
 
 SEXP R_ring_buffer_used(SEXP extPtr, SEXP bytes) {
-  return ScalarInteger(ring_buffer_used(ring_buffer_get(extPtr, true),
+  return scalar_size_sexp(ring_buffer_used(ring_buffer_get(extPtr, true),
                                           scalar_logical(bytes)));
 }
 
@@ -120,9 +122,10 @@ SEXP R_ring_buffer_set(SEXP extPtr, SEXP r_data, SEXP r_n) {
   const size_t n = scalar_size(r_n), n_data = length(r_data);
   const data_t *data = get_raw(r_data);
   if (n_data == 1) {
-    return ScalarInteger(ring_buffer_set(buffer, data[0], n) / buffer->stride);
+    size_t ret = ring_buffer_set(buffer, data[0], n) / buffer->stride;
+    return scalar_size_sexp(ret);
   } else if (n_data == buffer->stride) {
-    return ScalarInteger(ring_buffer_set_stride(buffer, data, n));
+    return scalar_size_sexp(ring_buffer_set_stride(buffer, data, n));
   } else {
     Rf_error("Invalid length data");
     return R_NilValue;
@@ -139,7 +142,7 @@ SEXP R_ring_buffer_push(SEXP extPtr, SEXP r_data) {
   size_t n = len / stride;
   const data_t *data = get_raw(r_data);
   data_t *head = (data_t *) ring_buffer_push(buffer, data, n);
-  return ScalarInteger(head - buffer->data);
+  return scalar_size_sexp(head - buffer->data);
 }
 
 SEXP R_ring_buffer_take(SEXP extPtr, SEXP r_n) {
@@ -235,7 +238,7 @@ SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_n) {
       throw_underflow(src, n);
     }
   } // #nocov
-  return ScalarInteger(head - dest->data);
+  return scalar_size_sexp(head - dest->data);
 }
 
 SEXP R_ring_buffer_mirror(SEXP srcPtr, SEXP destPtr) {
@@ -346,6 +349,10 @@ size_t scalar_size(SEXP x) {
     Rf_error("Expected a nonnegative scalar integer");
     return 0;
   }
+}
+
+SEXP scalar_size_sexp(size_t x) {
+  return x > INT_MAX ? ScalarReal(x) : ScalarInteger(x);
 }
 
 void throw_underflow(ring_buffer *buffer, size_t n) {
