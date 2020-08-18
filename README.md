@@ -2,7 +2,7 @@
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Linux Build Status](https://travis-ci.org/mrc-ide/ring.svg?branch=master)](https://travis-ci.org/mrc-ide/ring)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/richfitz/ring?svg=true)](https://ci.appveyor.com/project/richfitz/ring)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/65fqiibc29iyuij9?svg=true)](https://ci.appveyor.com/project/richfitz/ring-vuer2)
 [![codecov.io](https://codecov.io/github/mrc-ide/ring/coverage.svg?branch=master)](https://codecov.io/github/mrc-ide/ring?branch=master)
 
 > Ring buffers in R and C
