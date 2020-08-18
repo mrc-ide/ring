@@ -1320,3 +1320,15 @@ test_that("ring_buffer_copy, different capacities, overflow 2nd", {
   expect_equal(rb2$read(8),
                tail(bytes1, 8))
 })
+
+test_that("ring_buffer_copy, large buffer, don't crash", {
+  testthat::skip_on_cran()
+  b <- ring_buffer_bytes_typed(2^30, numeric(20))
+  r1 <- runif(20)
+  r2 <- runif(20)
+  r3 <- runif(20)
+  b$push(r1)
+  b$push(r2)
+  b$push(r3)
+  expect_equal(b$read(3), c(r1, r2, r3))
+})
