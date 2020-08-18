@@ -8,8 +8,8 @@ Description: Circular / ring buffers in R and C.  There are a couple
     represent different trade-offs.
 License: MIT + file LICENSE
 LazyData: true
-URL: https://github.com/richfitz/ring
-BugReports: https://github.com/richfitz/ring/issues
+URL: https://github.com/mrc-ide/ring
+BugReports: https://github.com/mrc-ide/ring/issues
 Imports:
     R6
 Suggests:

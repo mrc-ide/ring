@@ -397,7 +397,7 @@ writeLines(c("```c",
              "```"))
 
 ## For a complete real-world example of use, see
-## [dde](https://github.com/richfitz/dde), which uses a ring buffer to
+## [dde](https://github.com/mrc-ide/dde), which uses a ring buffer to
 ## hold the history of a set of differential equations, and uses that
 ## to implement delay equations.  Here, the ring buffer means that the
 ## memory requirements don't grow with the length of running the
@@ -418,7 +418,7 @@ writeLines(c("```c",
 
 ## ## A nontrivial example
 
-## In the [`dde`](https://github.com/richfitz/dde) package (not yet on
+## In the [`dde`](https://github.com/mrc-ide/dde) package (not yet on
 ## CRAN), I use ring buffers to solve delay differential equations
 ## (DDEs).  To solve these, we need to know the state of the system at
 ## a series of points in the past.  So at every time step we push the
@@ -437,33 +437,33 @@ writeLines(c("```c",
 ## To use `ring` within the `dde` package:
 
 ## * In the `DESCRIPTION` we [declare a link to
-##   `ring`](https://github.com/richfitz/dde/blob/7ebaefd/DESCRIPTION#L14)
+##   `ring`](https://github.com/mrc-ide/dde/blob/7ebaefd/DESCRIPTION#L14)
 ##   using the `LinkingTo:` field.
 ##
 ## * In the `src` directory, [the contents of `<ring/ring.c>` are
-##   included](https://github.com/richfitz/dde/blob/7ebaefd/src/ring.c);
+##   included](https://github.com/mrc-ide/dde/blob/7ebaefd/src/ring.c);
 ##   this is possible because of the `LinkingTo` field.  This file now
 ##   includes all the actual ring buffer implementation.
 ##
 ## * In
-##   [src/dopri.h](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.h#L8)
+##   [src/dopri.h](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri.h#L8)
 ##   we include `<ring/ring.h>` which allows the ring buffer code to be used
 ##   in any file that includes `dopri.h`.  There is a [data structure
 ##   in this
-##   header](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.h#L77-L111)
+##   header](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri.h#L77-L111)
 ##   that includes within itself a ring buffer to hold the history.
 ##
 ## * In
-##   [src/dopri.c](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c)
+##   [src/dopri.c](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri.c)
 ##   the ring buffer code is actually used:
 ##
-##     - [initialisation](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L48-L50)
-##     - [a time is found within the ring buffer](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L694-L719)
-##     - [the ring buffer is advanced](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L417)
-##     - [the data is freed](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri.c#L220)
+##     - [initialisation](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri.c#L48-L50)
+##     - [a time is found within the ring buffer](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri.c#L694-L719)
+##     - [the ring buffer is advanced](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri.c#L417)
+##     - [the data is freed](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri.c#L220)
 ##
 ## * In
-##   [src/dopri_5.c](https://github.com/richfitz/dde/blob/7ebaefd/src/dopri_5.c#L109-L119)
+##   [src/dopri_5.c](https://github.com/mrc-ide/dde/blob/7ebaefd/src/dopri_5.c#L109-L119)
 ##   new data is written to the head of the ring buffer, being the
 ##   state of the system at the end of the step.  The history head is
 ##   treated as a big block of contiguous doubles.
