@@ -6,7 +6,7 @@
 bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t n);
 const data_t * ring_buffer_end(const ring_buffer *buffer);
 data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p);
-int imin(int a, int b);
+size_t imin(size_t a, size_t b);
 
 #ifdef RING_USE_STDLIB_ALLOC
 #include <stdlib.h>
@@ -541,7 +541,7 @@ data_t * ring_buffer_nextp(ring_buffer *buffer, const data_t *p) {
   return buffer->data + (p - buffer->data) % ring_buffer_bytes_data(buffer);
 }
 
-int imin(int a, int b) {
+size_t imin(size_t a, size_t b) {
   return a < b ? a : b;
 }
 
