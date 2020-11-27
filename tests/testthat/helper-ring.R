@@ -86,6 +86,10 @@ on_ci <- function() {
   isTRUE(as.logical(Sys.getenv("CI")))
 }
 
+on_windows <- function() {
+  tolower(Sys.info()[["sysname"]]) == "windows"
+}
+
 
 skip_on_windows_gha <- function() {
   if (on_ci() && on_windows()) {
