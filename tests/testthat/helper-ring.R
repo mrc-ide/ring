@@ -81,3 +81,18 @@ load_ring_matrix <- function(env = parent.frame()) {
   sys.source(file.path(PATH_RING, "examples", "ring_vector.R"), env)
   sys.source(file.path(PATH_RING, "examples", "ring_matrix.R"), env)
 }
+
+on_ci <- function() {
+  isTRUE(as.logical(Sys.getenv("CI")))
+}
+
+on_windows <- function() {
+  tolower(Sys.info()[["sysname"]]) == "windows"
+}
+
+
+skip_on_windows_gha <- function() {
+  if (on_ci() && on_windows()) {
+    testthat::skip("On Windows Github Actions")
+  }
+}
