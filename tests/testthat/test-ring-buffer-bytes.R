@@ -1323,6 +1323,7 @@ test_that("ring_buffer_copy, different capacities, overflow 2nd", {
 
 test_that("ring_buffer_copy, large buffer, don't crash", {
   testthat::skip_on_cran()
+  testthat::skip_on_gha_windows()
   len <- 34022
   b <- ring_buffer_bytes_typed(10001, numeric(len))
   b$size()
