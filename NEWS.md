@@ -1,3 +1,7 @@
+# ring 1.0.3
+
+* Package DESCRIPTION no longer has a `LazyData` field
+
 # ring 1.0.2
 
 * Fix crash when reading from rings containing more than 2^31 bytes
