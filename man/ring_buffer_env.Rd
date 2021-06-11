@@ -19,7 +19,7 @@ grow the buffer to accept the new elements.}
 }
 \description{
 An environment based ring buffer.  In contrast with
-\code{\link{ring_buffer_bytes}}, this ring buffer is truely
+\code{\link{ring_buffer_bytes}}, this ring buffer is truly
 circular, implemented as a doubly linked list that loops back on
 itself.  Each element of the ring buffer can hold an arbitrary R
 object, and no checking is done to make sure that objects are
@@ -68,7 +68,7 @@ the differences between implementations will be a bit more apparent.
   }
 
   \emph{Return value}:
-  Nothing; called for the side effect only. &side_effect
+  Nothing; called for the side effect only.
 }
 \item{\code{duplicate}}{
   Clone the ring buffer, creating a copy.  Copies both the underlying data and the position of the head and tail.
@@ -98,7 +98,7 @@ the differences between implementations will be a bit more apparent.
   }
 
   \emph{Return value}:
-  _yaml.bad-anchor_
+  Nothing; called for the side effect only.
 }
 \item{\code{size}}{
   Return the capacity (maximum size) of the ring buffer
@@ -269,7 +269,7 @@ the differences between implementations will be a bit more apparent.
   Invisibly returns the number of elements actually written (which may be less than \code{n} if the buffer overflows).  Primarily called for its side effect.
 }
 \item{\code{push}}{
-  Push elements onto the ring buffer head.  This may overflow the ring buffer, destroying the oldest elememnts in the buffer (and moving the position of the tail).
+  Push elements onto the ring buffer head.  This may overflow the ring buffer, destroying the oldest elements in the buffer (and moving the position of the tail).
 
   \emph{Usage:}
   \itemize{
@@ -347,7 +347,7 @@ the differences between implementations will be a bit more apparent.
   }
 
   \emph{Return value}:
-  _yaml.bad-anchor_
+  Nothing; called for the side effect only.
 }
 \item{\code{head_offset}}{
   Nondestructively read the contents of the \code{head} of the buffer, offset by \code{n} entries.
@@ -410,7 +410,7 @@ the differences between implementations will be a bit more apparent.
   As for \code{read}
 }
 \item{\code{head_set}}{
-  Set data to the head \emph{without advancing}.  This is useful in cases where the head data will be set and advanced seprately (with \code{head_advance}).  This is unlikely to be useful for all users.  It is used extensively in dde (but called from C).
+  Set data to the head \emph{without advancing}.  This is useful in cases where the head data will be set and advanced separately (with \code{head_advance}).  This is unlikely to be useful for all users.  It is used extensively in dde (but called from C).
 
   \emph{Usage:}
   \code{head_set(data)}
@@ -422,7 +422,7 @@ the differences between implementations will be a bit more apparent.
   }
 
   \emph{Return value}:
-  _yaml.bad-anchor_
+  Nothing; called for the side effect only.
 }
 \item{\code{head_data}}{
   Retrieve the current data stored in the head but not advanced. For many cases this may be junk - if the byte buffer has looped then it will be the bytes that will be overwritten on the next write.  However, when using \code{head_set} it will be the data that have been set into the buffer but not yet committed with \code{head_advance}.
@@ -440,7 +440,7 @@ the differences between implementations will be a bit more apparent.
   \code{head_advance()}
 
   \emph{Return value}:
-  _yaml.bad-anchor_
+  Nothing; called for the side effect only.
 }
 }
 }

@@ -33,7 +33,7 @@ is consumed you'd have to shuffle the vector around).
 `ring` implements two different ring buffers that will likely suit
 different applications.
 
-* `ring_buffer_bytes` is imlemented as a byte array in C, possibly
+* `ring_buffer_bytes` is implemented as a byte array in C, possibly
   with a "stride" indicating a set of bytes that go together.  Once
   the data reaches the end of the array we start writing to the
   beginning again.
@@ -50,7 +50,7 @@ For all buffers, `head` will refer to the next bit of the buffer to
 be written to, and `tail` will refer to the next bit of the buffer
 to be read.  That is, elements are pushed onto the `head` of the
 buffer and retrieved from the `tail`.  (There is no direct analogy
-between these termas and the R functions `head` and `tail` which
+between these terms and the R functions `head` and `tail` which
 operate on fixed-size vectors.)
 
 # The environment buffer `ring_buffer_env`
@@ -150,7 +150,7 @@ buf$tail_offset(1)
 ```
 
 or moving three elements into the buffer from the head (most
-recently added elemnt) gets the same bit of data
+recently added element) gets the same bit of data
 ``` {r }
 buf$head_offset(3)
 ```
@@ -258,7 +258,7 @@ plot(h, type = "l", xlab = "step", ylab = "y", las = 1)
 
 Because the buffer always holds the last 5 (or fewer) elements the
 book-keeping involved in working with the last few elements out is
-simlified.  Ignoring the fact that we hold the entire history in
+simplified.  Ignoring the fact that we hold the entire history in
 the fixed size vector `h`, only the last few elements need to be
 retained which may be useful if the simulation generates a lot of
 data.
