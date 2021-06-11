@@ -34,3 +34,5 @@
 ^CONDUCT\.md$
 ^release\.md$
 ^\.github$
+^doc$
+^Meta$

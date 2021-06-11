@@ -31,9 +31,9 @@ See the [reference documentation](https://mrc-ide.github.io/ring/) for details.
 
 ## Usage
 
-See the vignette (`vignette("ring")`) for an introduction and basic usage.
+The main package vignette (`vignette("ring")`) contains an introduction and basic usage.
 
-A second [vignette](https://mrc-ide.github.io/ring/vignettes/ring_applications.html) describes possible data structures using a ring buffer.
+A second vignette (`vignette("ring_applications")`) describes possible data structures using a ring buffer.
 
 The reference documentation is also available [online](https://mrc-ide.github.io/ring/), or from the package.
 
