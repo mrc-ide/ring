@@ -1,5 +1,5 @@
 ##' An environment based ring buffer.  In contrast with
-##' \code{\link{ring_buffer_bytes}}, this ring buffer is truely
+##' \code{\link{ring_buffer_bytes}}, this ring buffer is truly
 ##' circular, implemented as a doubly linked list that loops back on
 ##' itself.  Each element of the ring buffer can hold an arbitrary R
 ##' object, and no checking is done to make sure that objects are

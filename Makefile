@@ -36,21 +36,11 @@ clean:
 autodoc:
 	${RSCRIPT} autodoc.R process
 
-staticdocs:
-	@mkdir -p inst/staticdocs
-	${RSCRIPT} -e "library(methods); staticdocs::build_site()"
-	rm -f vignettes/*.html
-	@rmdir inst/staticdocs
-website: staticdocs
-	./update_web.sh
-
 README.md: README.Rmd
 	Rscript -e 'library(methods); devtools::load_all(); knitr::knit("README.Rmd")'
 	sed -i.bak 's/[[:space:]]*$$//' $@
 	rm -f $@.bak
 
-vignettes/%.Rmd: vignettes/src/%.R
-	${RSCRIPT} -e 'library(sowsear); sowsear("$<", output="$@")'
 vignettes: vignettes/ring.Rmd vignettes/ring_applications.Rmd
 	${RSCRIPT} -e 'library(methods); devtools::build_vignettes()'
 

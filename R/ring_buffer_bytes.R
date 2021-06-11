@@ -211,7 +211,7 @@ R6_ring_buffer_bytes <- R6::R6Class(
 ##'
 ##' The idea here is that manually working with raw vectors can get
 ##' tedious, and if you are planning on using a bytes-based buffer
-##' while working in R you may have a way of doing converstion from
+##' while working in R you may have a way of doing conversion from
 ##' and to R objects.  This interface lets you specify the functions
 ##' once and then will apply your conversion function in every case
 ##' where they are needed.

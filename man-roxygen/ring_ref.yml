@@ -28,7 +28,7 @@ reset:
       Generally this is not necessary, but with environment buffers
       this can let the garbage collector clean up large elements.  For
       the bytes buffer this zeros the memory.
-  value: Nothing; called for the side effect only. &side_effect
+  value: &side_effect Nothing; called for the side effect only.
 
 duplicate:
   short: >-
@@ -162,7 +162,7 @@ set:
 push:
   short: >-
     Push elements onto the ring buffer head.  This may overflow the
-    ring buffer, destroying the oldest elememnts in the buffer (and
+    ring buffer, destroying the oldest elements in the buffer (and
     moving the position of the tail).
   params:
     data: >-
@@ -284,7 +284,7 @@ read_head:
 head_set:
   short: >-
     Set data to the head \emph{without advancing}.  This is useful in
-    cases where the head data will be set and advanced seprately (with
+    cases where the head data will be set and advanced separately (with
     \code{head_advance}).  This is unlikely to be useful for all
     users.  It is used extensively in dde (but called from C).
   params:

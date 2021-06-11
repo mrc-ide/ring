@@ -15,3 +15,5 @@ src/ring.so.dSYM
 .valgrind_ignore
 vignettes/*.html
 tests/testthat/example.so.dSYM
+/doc/
+/Meta/
