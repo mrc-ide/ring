@@ -64,7 +64,7 @@ To create a buffer that can hold up to 100 elements, use the
 buf <- ring::ring_buffer_env(100)
 ```
 
-This is an [R6](https://github.com/wch/R6) class, with several methods:
+This is an [R6](https://github.com/r-lib/R6) class, with several methods:
 ``` {r }
 buf
 ```
@@ -569,7 +569,7 @@ application and do as little work on bookkeeping as possible.
 # The C++ API
 
 If you're using C++ you may find the [Boost circular
-buffer](http://www.boost.org/doc/libs/1_61_0/doc/html/circular_buffer.html)
+buffer](https://www.boost.org/doc/libs/1_61_0/doc/html/circular_buffer.html)
 is likely to be far better; you can use this by `LinkingTo:` the
 `BH` package and using `#include <boost/circular_buffer.hpp>` in
 your code.

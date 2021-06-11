@@ -1,7 +1,7 @@
 # ring
 
 <!-- badges: start -->
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R build status](https://github.com/mrc-ide/ring/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/ring/actions)
 [![codecov.io](https://codecov.io/github/mrc-ide/ring/coverage.svg?branch=master)](https://codecov.io/github/mrc-ide/ring?branch=master)
 <!-- badges: end -->
@@ -27,7 +27,7 @@ Both buffer types will refuse to underflow (return elements beyond those that ha
 
 Depending on your application, these ring buffers may or may not be faster than manually copying data around in vectors.  The benefit of this package rather than doing it by hand is abstracting away a lot of subtle bookkeeping and keeping an interface that is fairly high level.  However, for C applications, using `ring_buffer_bytes` via the C interface (using `LinkingTo`) is likely to be very fast as it avoids all copies.
 
-See the [reference documentation](https://mrc-ide.github.io/ring) for details.
+See the [reference documentation](https://mrc-ide.github.io/ring/) for details.
 
 ## Usage
 
@@ -35,7 +35,7 @@ See the vignette (`vignette("ring")`) for an introduction and basic usage.
 
 A second [vignette](https://mrc-ide.github.io/ring/vignettes/ring_applications.html) describes possible data structures using a ring buffer.
 
-The reference documentation is also available [online](https://mrc-ide.github.io/ring), or from the package.
+The reference documentation is also available [online](https://mrc-ide.github.io/ring/), or from the package.
 
 ## License
 
