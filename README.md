@@ -39,6 +39,6 @@ The reference documentation is also available [online](https://mrc-ide.github.io
 
 ## License
 
-MIT + file LICENSE © [Rich FitzJohn](https://github.com/richfitz).
+MIT © Imperial College of Science, Technology and Medicine
 
 Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
