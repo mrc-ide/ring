@@ -41,4 +41,4 @@ The reference documentation is also available [online](https://mrc-ide.github.io
 
 MIT © Imperial College of Science, Technology and Medicine
 
-Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](https://mrc-ide.github.io/ring/CONDUCT.html). By participating in this project you agree to abide by its terms.
