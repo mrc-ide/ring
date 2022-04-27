@@ -30,8 +30,8 @@ ring_buffer * ring_buffer_create(size_t size, size_t stride,
     return NULL;
   }
 #else
-  ring_buffer * buffer = (ring_buffer*) Calloc(1, ring_buffer);
-  buffer->data = (data_t*) Calloc(bytes_data, data_t);
+  ring_buffer * buffer = (ring_buffer*) R_Calloc(1, ring_buffer);
+  buffer->data = (data_t*) R_Calloc(bytes_data, data_t);
 #endif
   buffer->size = size;
   buffer->stride = stride;
@@ -47,8 +47,8 @@ void ring_buffer_destroy(ring_buffer *buffer) {
     free(buffer->data);
     free(buffer);
 #else
-    Free(buffer->data);
-    Free(buffer);
+    R_Free(buffer->data);
+    R_Free(buffer);
 #endif
     buffer = NULL;
   }
