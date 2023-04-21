@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![R build status](https://github.com/mrc-ide/ring/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/ring/actions)
+[![R-CMD-check](https://github.com/mrc-ide/ring/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mrc-ide/ring/actions/workflows/R-CMD-check.yaml)
 [![codecov.io](https://codecov.io/github/mrc-ide/ring/coverage.svg?branch=master)](https://codecov.io/github/mrc-ide/ring?branch=master)
 <!-- badges: end -->
 
