@@ -36,3 +36,6 @@
 ^\.github$
 ^doc$
 ^Meta$
+^src/.*\.gcov$
+^src/.*\.gcda$
+^src/.*\.gcno$
