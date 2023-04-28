@@ -76,7 +76,7 @@ SEXP bytes_to_complex(SEXP x) {
   return ret;
 }
 
-SEXP sizeof_types() {
+SEXP sizeof_types(void) {
   SEXP sizes = PROTECT(allocVector(INTSXP, 4));
   SEXP nms = PROTECT(allocVector(STRSXP, 4)); // R style names
   int * s = INTEGER(sizes);

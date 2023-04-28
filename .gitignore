@@ -17,3 +17,6 @@ vignettes/*.html
 tests/testthat/example.so.dSYM
 /doc/
 /Meta/
+src/*.gcno
+src/*.gcda
+src/*.gcov
