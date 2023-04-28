@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ring</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.4</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/ring.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -67,7 +63,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mrc-ide/ring/">
+  <a href="https://github.com/mrc-ide/ring/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -82,469 +78,488 @@
 
       
 
-      </header><script src="ring_applications_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>ring applications</h1>
-                        <h4 class="author">Rich FitzJohn</h4>
+                        <h4 data-toc-skip class="author">Rich
+FitzJohn</h4>
             
-            <h4 class="date">2021-06-15</h4>
+            <h4 data-toc-skip class="date">2023-04-28</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mrc-ide/ring/blob/master/vignettes/ring_applications.Rmd"><code>vignettes/ring_applications.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mrc-ide/ring/blob/HEAD/vignettes/ring_applications.Rmd" class="external-link"><code>vignettes/ring_applications.Rmd</code></a></small>
       <div class="hidden name"><code>ring_applications.Rmd</code></div>
 
     </div>
 
     
     
-<p>The bytes-based ring buffer in the main vignette is a better data structure to implement the simulation than the environment buffer is because the expected elements in each entry of the buffer are the same. But with a bit of S3 syntactic sugar we can do a bit better. This vignette is an attempt at creating “ring” versions of a vector and matrix data type.</p>
-<p>NOTE: this vignette used to be implemented in the package itself, but I pulled it out of the package because I felt that the implementation wasn’t quite right, and that it may not be ideal to have objects that appear to have normal-R semantics operate by side effect. However, this may give some ideas for how to use ring buffers in practice.</p>
-<div id="ring-vector" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ring-vector" class="anchor"></a>Ring vector</h2>
-<p>The actual code for the buffer here is available in the package via <code><a href="https://rdrr.io/r/base/system.file.html">system.file("examples/ring_vector.R", package = "ring")</a></code> (the path depends on your R and package installations).</p>
+<p>The bytes-based ring buffer in the main vignette is a better data
+structure to implement the simulation than the environment buffer is
+because the expected elements in each entry of the buffer are the same.
+But with a bit of S3 syntactic sugar we can do a bit better. This
+vignette is an attempt at creating “ring” versions of a vector and
+matrix data type.</p>
+<p>NOTE: this vignette used to be implemented in the package itself, but
+I pulled it out of the package because I felt that the implementation
+wasn’t quite right, and that it may not be ideal to have objects that
+appear to have normal-R semantics operate by side effect. However, this
+may give some ideas for how to use ring buffers in practice.</p>
+<div class="section level2">
+<h2 id="ring-vector">Ring vector<a class="anchor" aria-label="anchor" href="#ring-vector"></a>
+</h2>
+<p>The actual code for the buffer here is available in the package via
+<code>system.file("examples/ring_vector.R", package = "ring")</code>
+(the path depends on your R and package installations).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## Simulate an atomic vector or matrix with a ring buffer.  These</span>
-<span class="co">## functions exist mostly as an example of use of a ring buffer</span>
-<span class="co">## designed to work with R functions that do not know (or care) that</span>
-<span class="co">## the object is implemented with a ring buffer behind the scenes.</span>
-<span class="co">## Elements will be added at the end of the vector and taken from the</span>
-<span class="co">## beginning.</span>
-<span class="co">##</span>
-<span class="co">## Note that because the matrix is stored row-wise but R stores</span>
-<span class="co">## matrices column wise, there is a lot of data transposing going on</span>
-<span class="co">## here.  If something like this was needed for performance then</span>
-<span class="co">## you'd want to redo this with column storage.</span>
-<span class="co">##</span>
-<span class="co">## The `push` function is generic and can be used to push</span>
-<span class="co">## elements onto either a `ring_vector` or a `ring_matrix`.</span>
-<span class="co">##</span>
-<span class="co">## Note that these are implemented more as proof-of-concepts rather</span>
-<span class="co">## than really robust data types.</span>
-<span class="co">##</span>
-<span class="co">## * `length_max`: The maximum number of elements</span>
-<span class="co">## * `type`: The type of storage.  Can be "logical", "integer",</span>
-<span class="co">##   "double", or "complex"</span>
-<span class="co">## * `environment`: Logical indicating if we should use an environment</span>
-<span class="co">##   buffer (`ring_buffer_env`) or a bytes buffer</span>
-<span class="co">##   (`ring_buffer_bytes`).</span>
-<span class="va">ring_vector</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">length_max</span>, <span class="va">type</span>, <span class="va">environment</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">type</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html">match.arg</a></span><span class="op">(</span><span class="va">type</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">create</span><span class="op">)</span><span class="op">)</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_env.html">ring_buffer_env</a></span><span class="op">(</span><span class="va">length_max</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_bytes_typed.html">ring_buffer_bytes_typed</a></span><span class="op">(</span><span class="va">length_max</span>, <span class="va">type</span>, <span class="fl">1L</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>buf <span class="op">=</span> <span class="va">buf</span>, length_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">length_max</span><span class="op">)</span>,
-              type <span class="op">=</span> <span class="va">type</span>, environment <span class="op">=</span> <span class="va">environment</span><span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"ring_vector"</span>
-  <span class="va">ret</span>
-<span class="op">}</span>
-
-<span class="va">ring_vector_push</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span>, <span class="va">check</span> <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">check</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu">ring_vector_compatible</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">ring_vector_compatible</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mode.html">storage.mode</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Expected storage.mode of "</span>, <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="cn">TRUE</span>
-<span class="op">}</span>
-
-<span class="va">ring_vector_get</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">read</span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span>
-        <span class="va">ret</span> <span class="op">&lt;-</span> <span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="op">)</span>
-      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-        <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span>
-      <span class="op">}</span>
-    <span class="op">}</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">len</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span>
-    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu">ring_vector_index</span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span>
-    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span>
-    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-      <span class="va">k</span> <span class="op">&lt;-</span> <span class="va">i</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span>
-      <span class="va">ret</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">&lt;=</span> <span class="va">len</span><span class="op">)</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">tail_offset</span><span class="op">(</span><span class="va">k</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span> <span class="kw">else</span> <span class="cn">NA</span>
-    <span class="op">}</span>
-  <span class="op">}</span>
-
-  <span class="va">ret</span>
-<span class="op">}</span>
-
-<span class="va">ring_vector_index</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/logical.html">is.logical</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">len</span><span class="op">)</span> <span class="op">{</span>
-      <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep_len</a></span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span>
-    <span class="op">}</span>
-    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">is.numeric</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Invalid type for index"</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">i</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">len</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>
-  <span class="op">}</span>
-  <span class="va">i</span>
-<span class="op">}</span>
-
-<span class="co">## S3 support:</span>
-<span class="va">push</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/UseMethod.html">UseMethod</a></span><span class="op">(</span><span class="st">"push"</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">push.ring_vector</span> <span class="op">&lt;-</span> <span class="va">ring_vector_push</span>
-
-<span class="va">length.ring_vector</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">`[[.ring_vector`</span> <span class="op">&lt;-</span> <span class="va">`[.ring_vector`</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html">missing</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu">ring_vector_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="fu">ring_vector_get</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-
-<span class="va">c.ring_vector</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span>, <span class="va">recursive</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="va">..1</span>, <span class="st">"ring_vector"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
-    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">inherits</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="st">"ring_vector"</span><span class="op">)</span>
-    <span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">as.matrix</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/call.html">as.call</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html">quote</a></span><span class="op">(</span><span class="va">rbind</span><span class="op">)</span>, <span class="va">args</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">..1</span>
-    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">ring_vector_compatible</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
-    <span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="va">args</span><span class="op">)</span> <span class="op">{</span>
-      <span class="fu">ring_vector_push</span><span class="op">(</span><span class="va">x</span>, <span class="va">m</span><span class="op">)</span>
-    <span class="op">}</span>
-    <span class="va">x</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-
-<span class="co">## Support functions; these are functions used to create empty storage</span>
-<span class="co">## for the bytes buffers</span>
-<span class="va">create</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>logical <span class="op">=</span> <span class="va">logical</span>,
-               integer <span class="op">=</span> <span class="va">integer</span>,
-               double <span class="op">=</span> <span class="va">double</span>,
-               complex <span class="op">=</span> <span class="va">complex</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"["</span>, <span class="st">"ring_vector"</span>, <span class="va">`[.ring_vector`</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"[["</span>, <span class="st">"ring_vector"</span>, <span class="va">`[[.ring_vector`</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"length"</span>, <span class="st">"ring_vector"</span>, <span class="va">length.ring_vector</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="st">"ring_vector"</span>, <span class="va">c.ring_vector</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">## Simulate an atomic vector or matrix with a ring buffer.  These</span></span>
+<span><span class="co">## functions exist mostly as an example of use of a ring buffer</span></span>
+<span><span class="co">## designed to work with R functions that do not know (or care) that</span></span>
+<span><span class="co">## the object is implemented with a ring buffer behind the scenes.</span></span>
+<span><span class="co">## Elements will be added at the end of the vector and taken from the</span></span>
+<span><span class="co">## beginning.</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## Note that because the matrix is stored row-wise but R stores</span></span>
+<span><span class="co">## matrices column wise, there is a lot of data transposing going on</span></span>
+<span><span class="co">## here.  If something like this was needed for performance then</span></span>
+<span><span class="co">## you'd want to redo this with column storage.</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## The `push` function is generic and can be used to push</span></span>
+<span><span class="co">## elements onto either a `ring_vector` or a `ring_matrix`.</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## Note that these are implemented more as proof-of-concepts rather</span></span>
+<span><span class="co">## than really robust data types.</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## * `length_max`: The maximum number of elements</span></span>
+<span><span class="co">## * `type`: The type of storage.  Can be "logical", "integer",</span></span>
+<span><span class="co">##   "double", or "complex"</span></span>
+<span><span class="co">## * `environment`: Logical indicating if we should use an environment</span></span>
+<span><span class="co">##   buffer (`ring_buffer_env`) or a bytes buffer</span></span>
+<span><span class="co">##   (`ring_buffer_bytes`).</span></span>
+<span><span class="va">ring_vector</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">length_max</span>, <span class="va">type</span>, <span class="va">environment</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">type</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">match.arg</a></span><span class="op">(</span><span class="va">type</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">create</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_env.html">ring_buffer_env</a></span><span class="op">(</span><span class="va">length_max</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_bytes_typed.html">ring_buffer_bytes_typed</a></span><span class="op">(</span><span class="va">length_max</span>, <span class="va">type</span>, <span class="fl">1L</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>buf <span class="op">=</span> <span class="va">buf</span>, length_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">length_max</span><span class="op">)</span>,</span>
+<span>              type <span class="op">=</span> <span class="va">type</span>, environment <span class="op">=</span> <span class="va">environment</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"ring_vector"</span></span>
+<span>  <span class="va">ret</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ring_vector_push</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span>, <span class="va">check</span> <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">check</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">ring_vector_compatible</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ring_vector_compatible</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mode.html" class="external-link">storage.mode</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Expected storage.mode of "</span>, <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="cn">TRUE</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ring_vector_get</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">read</span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">ret</span> <span class="op">&lt;-</span> <span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="op">)</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">len</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu">ring_vector_index</span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span></span>
+<span>    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">k</span> <span class="op">&lt;-</span> <span class="va">i</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span></span>
+<span>      <span class="va">ret</span><span class="op">[</span><span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">&lt;=</span> <span class="va">len</span><span class="op">)</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">tail_offset</span><span class="op">(</span><span class="va">k</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span> <span class="kw">else</span> <span class="cn">NA</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="va">ret</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ring_vector_index</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">is.logical</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">len</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep_len</a></span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Invalid type for index"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">i</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">len</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">i</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">## S3 support:</span></span>
+<span><span class="va">push</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/UseMethod.html" class="external-link">UseMethod</a></span><span class="op">(</span><span class="st">"push"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">push.ring_vector</span> <span class="op">&lt;-</span> <span class="va">ring_vector_push</span></span>
+<span></span>
+<span><span class="va">length.ring_vector</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">`[[.ring_vector`</span> <span class="op">&lt;-</span> <span class="va">`[.ring_vector`</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">ring_vector_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="fu">ring_vector_get</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">c.ring_vector</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span>, <span class="va">recursive</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">..1</span>, <span class="st">"ring_vector"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">inherits</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="st">"ring_vector"</span><span class="op">)</span></span>
+<span>    <span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">as.matrix</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/call.html" class="external-link">as.call</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">quote</a></span><span class="op">(</span><span class="va">rbind</span><span class="op">)</span>, <span class="va">args</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">..1</span></span>
+<span>    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">ring_vector_compatible</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="va">args</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu">ring_vector_push</span><span class="op">(</span><span class="va">x</span>, <span class="va">m</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">x</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">## Support functions; these are functions used to create empty storage</span></span>
+<span><span class="co">## for the bytes buffers</span></span>
+<span><span class="va">create</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>logical <span class="op">=</span> <span class="va">logical</span>,</span>
+<span>               integer <span class="op">=</span> <span class="va">integer</span>,</span>
+<span>               double <span class="op">=</span> <span class="va">double</span>,</span>
+<span>               complex <span class="op">=</span> <span class="va">complex</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"["</span>, <span class="st">"ring_vector"</span>, <span class="va">`[.ring_vector`</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"[["</span>, <span class="st">"ring_vector"</span>, <span class="va">`[[.ring_vector`</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"length"</span>, <span class="st">"ring_vector"</span>, <span class="va">length.ring_vector</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="st">"ring_vector"</span>, <span class="va">c.ring_vector</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Then create an integer ring vector of length 5:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu">ring_vector</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu">ring_vector</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Convert back out to be an R vector (involves a copy)</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">v</span><span class="op">[</span><span class="op">]</span></code></pre></div>
-<pre><code>## integer(0)</code></pre>
+<code class="sourceCode R"><span><span class="va">v</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## integer(0)</span></span></code></pre>
 <p>To add things to the vector, use the <code>push</code> generic:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">push</span><span class="op">(</span><span class="va">v</span>, <span class="fl">1L</span><span class="op">)</span>
-<span class="va">v</span><span class="op">[</span><span class="op">]</span></code></pre></div>
-<pre><code>## [1] 1</code></pre>
+<code class="sourceCode R"><span><span class="fu">push</span><span class="op">(</span><span class="va">v</span>, <span class="fl">1L</span><span class="op">)</span></span>
+<span><span class="va">v</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 1</span></span></code></pre>
 <p>This can push multiple items on at once:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">push</span><span class="op">(</span><span class="va">v</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>
-<span class="va">v</span><span class="op">[</span><span class="op">]</span></code></pre></div>
-<pre><code>## [1] 1 2 3 4</code></pre>
+<code class="sourceCode R"><span><span class="fu">push</span><span class="op">(</span><span class="va">v</span>, <span class="fl">2</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">v</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 1 2 3 4</span></span></code></pre>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 4</code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 4</span></span></code></pre>
 <p>Random read access works:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">v</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span></code></pre></div>
-<pre><code>## [1] 3</code></pre>
+<code class="sourceCode R"><span><span class="va">v</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 3</span></span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">v</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></code></pre></div>
-<pre><code>## [1] 1</code></pre>
+<code class="sourceCode R"><span><span class="va">v</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 1</span></span></code></pre>
 <p>Resetting the buffer zeros this all:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">v</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">reset</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>## NULL</code></pre>
+<code class="sourceCode R"><span><span class="va">v</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">reset</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## NULL</span></span></code></pre>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></code></pre></div>
-<pre><code>## [1] 0</code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0</span></span></code></pre>
 <p>Returning to the simulation example from the main vignette:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring_vector</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">integer</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0L</span>
-<span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span>
-<span class="va">h</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span>
-
-<span class="va">step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.5</span><span class="op">)</span> <span class="va">x</span> <span class="op">-</span> <span class="fl">1L</span> <span class="kw">else</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">1L</span>
-<span class="op">}</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html">step</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-  <span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span>
-  <span class="va">h</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring_vector</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0L</span></span>
+<span><span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span></span>
+<span><span class="va">h</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span></span>
+<span></span>
+<span><span class="va">step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fl">0.5</span><span class="op">)</span> <span class="va">x</span> <span class="op">-</span> <span class="fl">1L</span> <span class="kw">else</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">1L</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html" class="external-link">step</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="va">h</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>The whole history:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">h</span></code></pre></div>
-<pre><code>##  [1]  0 -1 -2 -1  0 -1  0  1  2  3  2  1  0  1  0  1  0  1  2  1</code></pre>
+<code class="sourceCode R"><span><span class="va">h</span></span></code></pre></div>
+<pre><code><span><span class="co">##  [1]  0 -1 -2 -1  0 -1  0  1  2  3  2  1  0  1  0  1  0  1  2  1</span></span></code></pre>
 <p>The last 5 steps:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">buf</span><span class="op">[</span><span class="op">]</span></code></pre></div>
-<pre><code>## [1] 1 0 1 2 1</code></pre>
-<p>Now, rewriting again, this time with the step function taking the buffer itself. This simplifies the implementation, with most of the details being handled by the S3 methods for <code>length</code>, <code>push</code> and <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code>.</p>
+<code class="sourceCode R"><span><span class="va">buf</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 1 0 1 2 1</span></span></code></pre>
+<p>Now, rewriting again, this time with the step function taking the
+buffer itself. This simplifies the implementation, with most of the
+details being handled by the S3 methods for <code>length</code>,
+<code>push</code> and <code>[</code>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.5</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">0.5</span>
-  <span class="op">}</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">p</span><span class="op">)</span> <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span> <span class="op">-</span> <span class="fl">1L</span> <span class="kw">else</span> <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1L</span>
-<span class="op">}</span>
-
-<span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring_vector</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">integer</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0L</span>
-
-<span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span>
-<span class="va">h</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html">step</a></span><span class="op">(</span><span class="va">buf</span><span class="op">)</span>
-  <span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span>
-  <span class="va">h</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span>
-<span class="op">}</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">h</span>, type<span class="op">=</span><span class="st">"l"</span>, xlab<span class="op">=</span><span class="st">"step"</span>, ylab<span class="op">=</span><span class="st">"y"</span>, las<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.5</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">p</span><span class="op">)</span> <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span> <span class="op">-</span> <span class="fl">1L</span> <span class="kw">else</span> <span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span> <span class="op">+</span> <span class="fl">1L</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring_vector</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">integer</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0L</span></span>
+<span></span>
+<span><span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span></span>
+<span><span class="va">h</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html" class="external-link">step</a></span><span class="op">(</span><span class="va">buf</span><span class="op">)</span></span>
+<span>  <span class="fu">push</span><span class="op">(</span><span class="va">buf</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="va">h</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">h</span>, type<span class="op">=</span><span class="st">"l"</span>, xlab<span class="op">=</span><span class="st">"step"</span>, ylab<span class="op">=</span><span class="st">"y"</span>, las<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ring_applications_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
 </div>
-<div id="ring-matrix-with-ring_matrix" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ring-matrix-with-ring_matrix" class="anchor"></a>Ring matrix with <code>ring_matrix</code>
+<div class="section level2">
+<h2 id="ring-matrix-with-ring_matrix">Ring matrix with <code>ring_matrix</code><a class="anchor" aria-label="anchor" href="#ring-matrix-with-ring_matrix"></a>
 </h2>
-<p>The <code>ring_matrix</code> data structure generalises the <code>ring_vector</code>; it is a buffer that looks to R like a matrix that grows by adding rows at the bottom and shrinks by consuming rows at the top.</p>
+<p>The <code>ring_matrix</code> data structure generalises the
+<code>ring_vector</code>; it is a buffer that looks to R like a matrix
+that grows by adding rows at the bottom and shrinks by consuming rows at
+the top.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">## * `nr_max`: The maximum number of rows</span>
-<span class="co">## * `nc`: The number of columns in the matrix</span>
-<span class="va">ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nr_max</span>, <span class="va">nc</span>, <span class="va">type</span>, <span class="va">environment</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">type</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html">match.arg</a></span><span class="op">(</span><span class="va">type</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu">ring</span><span class="fu">:::</span><span class="va">sizes</span><span class="op">)</span><span class="op">)</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_env.html">ring_buffer_env</a></span><span class="op">(</span><span class="va">nr_max</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_bytes_typed.html">ring_buffer_bytes_typed</a></span><span class="op">(</span><span class="va">nr_max</span>, <span class="va">type</span>, <span class="va">nc</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>buf <span class="op">=</span> <span class="va">buf</span>, nr_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">nr_max</span><span class="op">)</span>, nc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span>,
-              type <span class="op">=</span> <span class="va">type</span>, environment <span class="op">=</span> <span class="va">environment</span><span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"ring_matrix"</span>
-  <span class="va">ret</span>
-<span class="op">}</span>
-
-<span class="va">ring_matrix_push</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span>, <span class="va">check</span> <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">check</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu">ring_matrix_compatible</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">buffer</span><span class="op">$</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">is.matrix</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-        <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="va">data</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span>, <span class="cn">FALSE</span><span class="op">)</span>
-      <span class="op">}</span>
-    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-      <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="va">data</span>, <span class="cn">FALSE</span><span class="op">)</span>
-    <span class="op">}</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">is.matrix</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="kw">else</span> <span class="va">data</span><span class="op">)</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-
-<span class="va">ring_matrix_compatible</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mode.html">storage.mode</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Expected storage.mode of "</span>, <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">is.matrix</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"Expected a matrix of '%d' columns"</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span>
-    <span class="op">}</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"Expected a matrix of '%d' columns"</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span>
-    <span class="op">}</span>
-  <span class="op">}</span>
-  <span class="cn">TRUE</span>
-<span class="op">}</span>
-
-<span class="va">ring_matrix_get</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">read</span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span>
-        <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="op">)</span>
-      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-        <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
-      <span class="op">}</span>
-    <span class="op">}</span>
-    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">dat</span>, ncol <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">len</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span>
-    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu">ring_vector_index</span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span>
-    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">*</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span>
-    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-      <span class="va">k</span> <span class="op">&lt;-</span> <span class="va">i</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span>
-      <span class="va">ret</span><span class="op">[</span><span class="va">j</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">&lt;=</span> <span class="va">len</span><span class="op">)</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">tail_offset</span><span class="op">(</span><span class="va">k</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span> <span class="kw">else</span> <span class="cn">NA</span>
-    <span class="op">}</span>
-  <span class="op">}</span>
-
-  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">colnames</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">colnames</span>
-  <span class="op">}</span>
-
-  <span class="va">ret</span>
-<span class="op">}</span>
-
-<span class="co">## S3 support</span>
-<span class="va">push.ring_matrix</span> <span class="op">&lt;-</span> <span class="va">ring_matrix_push</span>
-
-<span class="va">dim.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">head.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">6L</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head.matrix</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span>, <span class="va">...</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">tail.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">6L</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">tail.matrix</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span>, <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">`[.ring_matrix`</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span>, <span class="va">j</span>, <span class="va">...</span>, <span class="va">drop</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html">missing</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html">missing</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-      <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span>
-    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-      <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span><span class="op">[</span>, <span class="va">j</span>, drop <span class="op">=</span> <span class="va">drop</span><span class="op">]</span>
-    <span class="op">}</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">is.matrix</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html">missing</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"subscript out of bounds"</span><span class="op">)</span> <span class="co"># same error as [.matrix</span>
-    <span class="op">}</span>
-    <span class="va">j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">i</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>
-    <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="va">j</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">i</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span>, <span class="va">j</span><span class="op">)</span>, <span class="va">i</span><span class="op">[</span>, <span class="fl">2L</span><span class="op">]</span><span class="op">)</span><span class="op">]</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span><span class="op">[</span>, <span class="va">j</span>, drop <span class="op">=</span> <span class="va">drop</span><span class="op">]</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-
-<span class="va">dimnames.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">colnames</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="cn">NULL</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="va">x</span><span class="op">$</span><span class="va">colnames</span><span class="op">)</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-
-<span class="va">`dimnames&lt;-.ring_matrix`</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">value</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">x</span><span class="op">$</span><span class="va">colnames</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">is.list</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">!=</span> <span class="fl">2L</span><span class="op">)</span> <span class="op">{</span>
-    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Invalid input for dimnames"</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">value</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Cannot set rownames of a ring matrix"</span><span class="op">)</span>
-    <span class="op">}</span>
-    <span class="va">val</span> <span class="op">&lt;-</span> <span class="va">value</span><span class="op">[[</span><span class="fl">2L</span><span class="op">]</span><span class="op">]</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html">is.null</a></span><span class="op">(</span><span class="va">val</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">val</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span> <span class="op">{</span>
-      <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Invalid length dimnames"</span><span class="op">)</span>
-    <span class="op">}</span>
-    <span class="va">x</span><span class="op">$</span><span class="va">colnames</span> <span class="op">&lt;-</span> <span class="va">val</span>
-  <span class="op">}</span>
-  <span class="va">x</span>
-<span class="op">}</span>
-
-<span class="va">as.matrix.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">cbind.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"It is not possible to cbind() ring_matrices (use as.matrix first?)"</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">rbind.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html">inherits</a></span><span class="op">(</span><span class="va">..1</span>, <span class="st">"ring_matrix"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>
-    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">vapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">inherits</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="st">"ring_matrix"</span><span class="op">)</span>
-    <span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">as.matrix</span><span class="op">)</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/call.html">as.call</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html">quote</a></span><span class="op">(</span><span class="va">rbind</span><span class="op">)</span>, <span class="va">args</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">..1</span>
-    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">ring_matrix_compatible</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span>
-    <span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="va">args</span><span class="op">)</span> <span class="op">{</span>
-      <span class="fu">ring_matrix_push</span><span class="op">(</span><span class="va">x</span>, <span class="va">m</span><span class="op">)</span>
-    <span class="op">}</span>
-    <span class="va">x</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-
-<span class="va">length.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span> <span class="op">*</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span>
-<span class="op">}</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"["</span>, <span class="st">"ring_matrix"</span>, <span class="va">`[.ring_matrix`</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"dim"</span>, <span class="st">"ring_matrix"</span>, <span class="va">dim.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"dimnames"</span>, <span class="st">"ring_matrix"</span>, <span class="va">dimnames.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"dimnames&lt;-"</span>, <span class="st">"ring_matrix"</span>, <span class="va">`dimnames&lt;-.ring_matrix`</span>,
-                 <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"as.matrix"</span>, <span class="st">"ring_matrix"</span>, <span class="va">cbind.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"cbind"</span>, <span class="st">"ring_matrix"</span>, <span class="va">cbind.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html">registerS3method</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="st">"ring_matrix"</span>, <span class="va">rbind.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>This is even more contrived than above, but consider simultaneously simulating the movement of <code>n</code> random particles with the same reflecting random walk as above. First create a 10 x 5 ring matrix:</p>
+<code class="sourceCode R"><span><span class="co">## * `nr_max`: The maximum number of rows</span></span>
+<span><span class="co">## * `nc`: The number of columns in the matrix</span></span>
+<span><span class="va">ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nr_max</span>, <span class="va">nc</span>, <span class="va">type</span>, <span class="va">environment</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">type</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">match.arg</a></span><span class="op">(</span><span class="va">type</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">ring</span><span class="fu">:::</span><span class="va">sizes</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_env.html">ring_buffer_env</a></span><span class="op">(</span><span class="va">nr_max</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">buf</span> <span class="op">&lt;-</span> <span class="fu">ring</span><span class="fu">::</span><span class="fu"><a href="../reference/ring_buffer_bytes_typed.html">ring_buffer_bytes_typed</a></span><span class="op">(</span><span class="va">nr_max</span>, <span class="va">type</span>, <span class="va">nc</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>buf <span class="op">=</span> <span class="va">buf</span>, nr_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">nr_max</span><span class="op">)</span>, nc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span>,</span>
+<span>              type <span class="op">=</span> <span class="va">type</span>, environment <span class="op">=</span> <span class="va">environment</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"ring_matrix"</span></span>
+<span>  <span class="va">ret</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ring_matrix_push</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span>, <span class="va">check</span> <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">check</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">ring_matrix_compatible</span><span class="op">(</span><span class="va">buffer</span>, <span class="va">data</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">buffer</span><span class="op">$</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">is.matrix</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="va">data</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="va">data</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">buffer</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">is.matrix</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="kw">else</span> <span class="va">data</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ring_matrix_compatible</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mode.html" class="external-link">storage.mode</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Expected storage.mode of "</span>, <span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">is.matrix</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Expected a matrix of '%d' columns"</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Expected a matrix of '%d' columns"</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="cn">TRUE</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ring_matrix_get</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span> <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">read</span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">environment</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="op">)</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">dat</span>, ncol <span class="op">=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">len</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu">ring_vector_index</span><span class="op">(</span><span class="va">i</span>, <span class="va">len</span><span class="op">)</span></span>
+<span>    <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">create</span><span class="op">[[</span><span class="va">x</span><span class="op">$</span><span class="va">type</span><span class="op">]</span><span class="op">]</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">*</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">k</span> <span class="op">&lt;-</span> <span class="va">i</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span></span>
+<span>      <span class="va">ret</span><span class="op">[</span><span class="va">j</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">&lt;=</span> <span class="va">len</span><span class="op">)</span> <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">tail_offset</span><span class="op">(</span><span class="va">k</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span> <span class="kw">else</span> <span class="cn">NA</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">colnames</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">ret</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">$</span><span class="va">colnames</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="va">ret</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">## S3 support</span></span>
+<span><span class="va">push.ring_matrix</span> <span class="op">&lt;-</span> <span class="va">ring_matrix_push</span></span>
+<span></span>
+<span><span class="va">dim.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span>, <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">head.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">6L</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head.matrix</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">tail.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span> <span class="op">=</span> <span class="fl">6L</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">tail.matrix</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span>, <span class="cn">FALSE</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">`[.ring_matrix`</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span>, <span class="va">j</span>, <span class="va">...</span>, <span class="va">drop</span> <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span><span class="op">[</span>, <span class="va">j</span>, drop <span class="op">=</span> <span class="va">drop</span><span class="op">]</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">is.matrix</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing</a></span><span class="op">(</span><span class="va">j</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"subscript out of bounds"</span><span class="op">)</span> <span class="co"># same error as [.matrix</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">i</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="va">j</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">i</span><span class="op">[</span>, <span class="fl">1L</span><span class="op">]</span>, <span class="va">j</span><span class="op">)</span>, <span class="va">i</span><span class="op">[</span>, <span class="fl">2L</span><span class="op">]</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span><span class="op">[</span>, <span class="va">j</span>, drop <span class="op">=</span> <span class="va">drop</span><span class="op">]</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">dimnames.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">colnames</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="cn">NULL</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="va">x</span><span class="op">$</span><span class="va">colnames</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">`dimnames&lt;-.ring_matrix`</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">value</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">colnames</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">is.list</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span> <span class="op">!=</span> <span class="fl">2L</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Invalid input for dimnames"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">value</span><span class="op">[[</span><span class="fl">1L</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Cannot set rownames of a ring matrix"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">val</span> <span class="op">&lt;-</span> <span class="va">value</span><span class="op">[[</span><span class="fl">2L</span><span class="op">]</span><span class="op">]</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">val</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">val</span><span class="op">)</span> <span class="op">!=</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Invalid length dimnames"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">colnames</span> <span class="op">&lt;-</span> <span class="va">val</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">x</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">as.matrix.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">ring_matrix_get</span><span class="op">(</span><span class="va">x</span>, <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">cbind.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"It is not possible to cbind() ring_matrices (use as.matrix first?)"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">rbind.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">..1</span>, <span class="st">"ring_matrix"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">inherits</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, <span class="st">"ring_matrix"</span><span class="op">)</span></span>
+<span>    <span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">args</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">as.matrix</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/call.html" class="external-link">as.call</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/substitute.html" class="external-link">quote</a></span><span class="op">(</span><span class="va">rbind</span><span class="op">)</span>, <span class="va">args</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="va">..1</span></span>
+<span>    <span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">args</span>, <span class="va">ring_matrix_compatible</span>, x <span class="op">=</span> <span class="va">x</span><span class="op">)</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">m</span> <span class="kw">in</span> <span class="va">args</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu">ring_matrix_push</span><span class="op">(</span><span class="va">x</span>, <span class="va">m</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">x</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">length.ring_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span><span class="op">$</span><span class="va">buf</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span> <span class="op">*</span> <span class="va">x</span><span class="op">$</span><span class="va">nc</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"["</span>, <span class="st">"ring_matrix"</span>, <span class="va">`[.ring_matrix`</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"dim"</span>, <span class="st">"ring_matrix"</span>, <span class="va">dim.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"dimnames"</span>, <span class="st">"ring_matrix"</span>, <span class="va">dimnames.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"dimnames&lt;-"</span>, <span class="st">"ring_matrix"</span>, <span class="va">`dimnames&lt;-.ring_matrix`</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"as.matrix"</span>, <span class="st">"ring_matrix"</span>, <span class="va">cbind.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"cbind"</span>, <span class="st">"ring_matrix"</span>, <span class="va">cbind.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ns-internal.html" class="external-link">registerS3method</a></span><span class="op">(</span><span class="st">"rbind"</span>, <span class="st">"ring_matrix"</span>, <span class="va">rbind.ring_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>This is even more contrived than above, but consider simultaneously
+simulating the movement of <code>n</code> random particles with the same
+reflecting random walk as above. First create a 10 x 5 ring matrix:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">10</span>
-<span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">ring_matrix</span><span class="op">(</span><span class="fl">5</span>, <span class="va">n</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">ring_matrix</span><span class="op">(</span><span class="fl">5</span>, <span class="va">n</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>The current state of the matrix is:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">m</span><span class="op">[</span><span class="op">]</span></code></pre></div>
-<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</code></pre>
+<code class="sourceCode R"><span><span class="va">m</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></span></code></pre>
 <p>We can set the initial state as:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">push</span><span class="op">(</span><span class="va">m</span>, <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">1</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span>
-<span class="va">m</span><span class="op">[</span><span class="op">]</span></code></pre></div>
-<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]
-## [1,]    0    0    0    0    0    0    0    0    0     0</code></pre>
+<code class="sourceCode R"><span><span class="fu">push</span><span class="op">(</span><span class="va">m</span>, <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="fl">1</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">m</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
+<pre><code><span><span class="co">##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></span>
+<span><span class="co">## [1,]    0    0    0    0    0    0    0    0    0     0</span></span></code></pre>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.5</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">}</span>
-  <span class="va">m</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span>, <span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">p</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1L</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">ring_matrix</span><span class="op">(</span><span class="fl">5</span>, <span class="va">n</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="va">n</span><span class="op">)</span>
-<span class="fu">push</span><span class="op">(</span><span class="va">m</span>, <span class="va">x</span><span class="op">)</span>
-
-<span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">200</span>, <span class="va">n</span><span class="op">)</span>
-<span class="va">h</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html">step</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span>
-  <span class="fu">push</span><span class="op">(</span><span class="va">m</span>, <span class="va">x</span><span class="op">)</span>
-  <span class="va">h</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span>
-<span class="op">}</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html">matplot</a></span><span class="op">(</span><span class="va">h</span>, type<span class="op">=</span><span class="st">"l"</span>, lty<span class="op">=</span><span class="fl">1</span>, las<span class="op">=</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">0.5</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">m</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span>, <span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">p</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu">ring_matrix</span><span class="op">(</span><span class="fl">5</span>, <span class="va">n</span>, <span class="st">"integer"</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0L</span>, <span class="va">n</span><span class="op">)</span></span>
+<span><span class="fu">push</span><span class="op">(</span><span class="va">m</span>, <span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">200</span>, <span class="va">n</span><span class="op">)</span></span>
+<span><span class="va">h</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">h</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/step.html" class="external-link">step</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span></span>
+<span>  <span class="fu">push</span><span class="op">(</span><span class="va">m</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="va">h</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">.5</span>, <span class="fl">.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">h</span>, type<span class="op">=</span><span class="st">"l"</span>, lty<span class="op">=</span><span class="fl">1</span>, las<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ring_applications_files/figure-html/unnamed-chunk-16-1.png" width="672"></p>
 </div>
   </div>
@@ -560,11 +575,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Rich FitzJohn.</p>
+  <p></p>
+<p>Developed by Rich FitzJohn.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
@@ -572,6 +589,8 @@
 
   
 
+
+  
 
   </body>
 </html>
