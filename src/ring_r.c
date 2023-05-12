@@ -1,4 +1,5 @@
 #include "ring_r.h"
+#include <float.h>
 
 // Internal prototypes:
 SEXP R_ring_buffer_alloc(ring_buffer *buffer);

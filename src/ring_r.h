@@ -1,3 +1,4 @@
+#define STRICT_R_HEADERS
 #include <ring/ring.h>
 #include <R.h>
 #include <Rinternals.h>
