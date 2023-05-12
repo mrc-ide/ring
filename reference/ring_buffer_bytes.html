@@ -377,8 +377,8 @@ the differences between implementations will be a bit more apparent.</p>
 <span class="r-in"><span><span class="co"># here are 30 random bytes:</span></span></span>
 <span class="r-in"><span><span class="va">bytes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/raw.html" class="external-link">as.raw</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">256</span>, <span class="fl">30</span>, <span class="cn">TRUE</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1L</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">bytes</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] f4 c1 2f 3c 26 5c ce 8a b5 f3 83 ad 2d 3c 65 a2 15 18 88 f9 e5 13 aa 08 05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 6e d0 c4 12 6a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] af d5 ff 47 66 6a c9 59 1b 56 58 1d 38 4e 6e 58 45 fd e3 be 0d 74 19 12 9a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] fb ef 6d 1b 7b</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Push these onto the bytes buffer:</span></span></span>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">push</span><span class="op">(</span><span class="va">bytes</span><span class="op">)</span></span></span>
@@ -387,29 +387,29 @@ the differences between implementations will be a bit more apparent.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The head of the buffer points at the most recently added item</span></span></span>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">head</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7b</span>
 <span class="r-in"><span><span class="va">bytes</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">bytes</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7b</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># ...and the tail at the oldest (first added in this case)</span></span></span>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">tail</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] f4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] af</span>
 <span class="r-in"><span><span class="va">bytes</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] f4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] af</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Elements are taken from the tail; these will be the oldest items:</span></span></span>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">take</span><span class="op">(</span><span class="fl">8</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] f4 c1 2f 3c 26 5c ce 8a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] af d5 ff 47 66 6a c9 59</span>
 <span class="r-in"><span><span class="va">bytes</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] f4 c1 2f 3c 26 5c ce 8a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] af d5 ff 47 66 6a c9 59</span>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 22</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># To read from the buffer without removing elements, use read:</span></span></span>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">read</span><span class="op">(</span><span class="fl">8</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] b5 f3 83 ad 2d 3c 65 a2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1b 56 58 1d 38 4e 6e 58</span>
 <span class="r-in"><span><span class="va">bytes</span><span class="op">[</span><span class="fl">9</span><span class="op">:</span><span class="fl">16</span><span class="op">]</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] b5 f3 83 ad 2d 3c 65 a2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1b 56 58 1d 38 4e 6e 58</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># It is not possible to take or read more elements than are</span></span></span>
 <span class="r-in"><span><span class="co"># present in the buffer; it will throw an error:</span></span></span>
@@ -422,7 +422,7 @@ the differences between implementations will be a bit more apparent.</p>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 72</span>
 <span class="r-in"><span><span class="va">b</span><span class="op">$</span><span class="fu">read</span><span class="op">(</span><span class="va">b</span><span class="op">$</span><span class="fu">used</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] b5 f3 83 ad 2d 3c 65 a2 15 18 88 f9 e5 13 aa 08 05 6e d0 c4 12 6a 00 00 00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1b 56 58 1d 38 4e 6e 58 45 fd e3 be 0d 74 19 12 9a fb ef 6d 1b 7b 00 00 00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [26] 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [51] 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span>
 <span class="r-in"><span></span></span>
