@@ -557,7 +557,7 @@ bool ring_buffer_handle_overflow(ring_buffer *buffer, size_t n) {
       break;
 #ifdef USING_R
     case OVERFLOW_ERROR:
-      Rf_error("Buffer overflow (adding %d elements, but %d available)",
+      Rf_error("Buffer overflow (adding %zu elements, but %zu available)",
                n, ring_buffer_free(buffer, false));
       break;
 #endif
