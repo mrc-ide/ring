@@ -38,10 +38,10 @@ grow the buffer to accept the new elements (this uses an
 approximately golden ratio approach; see details below).}
 }
 \description{
-This ring buffer is based on \code{\link{ring_buffer_bytes}} but
+This ring buffer is based on \link{ring_buffer_bytes} but
 performs conversion to/from bytes to something useful as data is
 stored/retrieved from the buffer.  This is the interface through
-which \code{\link{ring_buffer_bytes_typed}} is implemented.
+which \link{ring_buffer_bytes_typed} is implemented.
 }
 \details{
 The idea here is that manually working with raw vectors can get
@@ -63,391 +63,399 @@ the differences between implementations will be a bit more apparent.
 
 \describe{
 \item{\code{reset}}{
-  Reset the state of the buffer.  This "zeros" the head and tail pointer (and may or may not actually reset the data) so that the buffer can be used as if fresh.
+Reset the state of the buffer.  This "zeros" the head and tail pointer (and may or may not actually reset the data) so that the buffer can be used as if fresh.
 
-  \emph{Usage:}
-  \code{reset(clear = FALSE)}
+\emph{Usage:}
+\code{reset(clear = FALSE)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{clear}:   Logical, indicating if the memory should also be cleared. Generally this is not necessary, but with environment buffers this can let the garbage collector clean up large elements.  For the bytes buffer this zeros the memory.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{clear}:   Logical, indicating if the memory should also be cleared. Generally this is not necessary, but with environment buffers this can let the garbage collector clean up large elements.  For the bytes buffer this zeros the memory.
+}
+}
 
-  \emph{Return value}:
-  Nothing; called for the side effect only.
+\emph{Return value}:
+Nothing; called for the side effect only.
 }
 \item{\code{duplicate}}{
-  Clone the ring buffer, creating a copy.  Copies both the underlying data and the position of the head and tail.
+Clone the ring buffer, creating a copy.  Copies both the underlying data and the position of the head and tail.
 
-  \emph{Usage:}
-  \code{duplicate()}
+\emph{Usage:}
+\code{duplicate()}
 
-  \emph{Return value}:
-  A new ring buffer object
+\emph{Return value}:
+A new ring buffer object
 }
 \item{\code{grow}}{
-  Increase the size of the buffer by \code{n} elements.
+Increase the size of the buffer by \code{n} elements.
 
-  \emph{Usage:}
-  \itemize{
-    \item{bytes, typed: \code{grow(n)}}
-    \item{env: \code{grow(n, exact = FALSE)}}
-  }
+\emph{Usage:}
+\itemize{
+\item{bytes, typed: \code{grow(n)}}
+\item{env: \code{grow(n, exact = FALSE)}}
+}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{n}:   The number of additional elements that space should be reserved for (scalar non-negative integer).
-    }
+\emph{Arguments:}
+\itemize{
+\item{\code{n}:   The number of additional elements that space should be reserved for (scalar non-negative integer).
+}
 
-    \item{\code{exact}:   (For bytes buffer only) Logical scalar indicating if growth should increase the size by \emph{exactly} \code{n} elements (if \code{TRUE}) or so that \emph{at least} \code{n} additional elements will fit (growing the buffer geometrically if needed).
-    }
-  }
+\if{html}{\out{<div class="sourceCode">}}\preformatted{\\item\{\code{exact}:   (For bytes buffer only) Logical scalar indicating if growth should increase the size by \\emph\{exactly\} \code{n} elements (if \code{TRUE}) or so that \\emph\{at least\} \code{n} additional elements will fit (growing the buffer geometrically if needed).
+\}
+}\if{html}{\out{</div>}}
 
-  \emph{Return value}:
-  Nothing; called for the side effect only.
+}
+
+\emph{Return value}:
+Nothing; called for the side effect only.
 }
 \item{\code{size}}{
-  Return the capacity (maximum size) of the ring buffer
+Return the capacity (maximum size) of the ring buffer
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \code{size()}}
-    \item{bytes, typed: \code{size(bytes = FALSE)}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \code{size()}}
+\item{bytes, typed: \code{size(bytes = FALSE)}}
+}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
+}
+}
 
-  \emph{Return value}:
-  A scalar integer
+\emph{Return value}:
+A scalar integer
 }
 \item{\code{bytes_data}}{
-  Return the total size of the data storage used in this object.
+Return the total size of the data storage used in this object.
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \emph{(not supported)}}
-    \item{bytes, typed: \code{bytes_data()}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \emph{(not supported)}}
+\item{bytes, typed: \code{bytes_data()}}
+}
 
-  \emph{Return value}:
-  A scalar integer
+\emph{Return value}:
+A scalar integer
 }
 \item{\code{stride}}{
-  Length of each element in the ring buffer, in bytes.  Only implemented (and meaningful) for the bytes buffer; the environment buffer does not support this function as it makes no sense there.
+Length of each element in the ring buffer, in bytes.  Only implemented (and meaningful) for the bytes buffer; the environment buffer does not support this function as it makes no sense there.
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \emph{(not supported)}}
-    \item{bytes, typed: \code{stride()}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \emph{(not supported)}}
+\item{bytes, typed: \code{stride()}}
+}
 
-  \emph{Return value}:
-  A scalar integer
+\emph{Return value}:
+A scalar integer
 }
 \item{\code{used}}{
-  Return the amount of space used in the ring buffer.
+Return the amount of space used in the ring buffer.
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \code{used()}}
-    \item{bytes, typed: \code{used(bytes = FALSE)}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \code{used()}}
+\item{bytes, typed: \code{used(bytes = FALSE)}}
+}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
+}
+}
 
-  \emph{Return value}:
-  A scalar integer
+\emph{Return value}:
+A scalar integer
 }
 \item{\code{free}}{
-  Return the amount of space free in the ring buffer.
+Return the amount of space free in the ring buffer.
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \code{free()}}
-    \item{bytes, typed: \code{free(bytes = FALSE)}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \code{free()}}
+\item{bytes, typed: \code{free(bytes = FALSE)}}
+}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the size should be returned in bytes (rather than logical entries, which is the default).
+}
+}
 
-  \emph{Return value}:
-  A scalar integer
+\emph{Return value}:
+A scalar integer
 }
 \item{\code{is_empty}}{
-  Test if the ring buffer is empty
+Test if the ring buffer is empty
 
-  \emph{Usage:}
-  \code{is_empty()}
+\emph{Usage:}
+\code{is_empty()}
 
-  \emph{Return value}:
-  A scalar logical
+\emph{Return value}:
+A scalar logical
 }
 \item{\code{is_full}}{
-  Test if the ring buffer is full
+Test if the ring buffer is full
 
-  \emph{Usage:}
-  \code{is_full()}
+\emph{Usage:}
+\code{is_full()}
 
-  \emph{Return value}:
-  A scalar logical
+\emph{Return value}:
+A scalar logical
 }
 \item{\code{head_pos}}{
-  Return the number of entries from the "start" of the ring buffer the head is.  This is mostly useful for debugging.
+Return the number of entries from the "start" of the ring buffer the head is.  This is mostly useful for debugging.
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \code{head_pos()}}
-    \item{bytes, typed: \code{head_pos(bytes = FALSE)}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \code{head_pos()}}
+\item{bytes, typed: \code{head_pos(bytes = FALSE)}}
+}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
+}
+}
 
-  \emph{Return value}:
-  A scalar integer
+\emph{Return value}:
+A scalar integer
 }
 \item{\code{tail_pos}}{
-  Return the number of entries from the "start" of the ring buffer the tail is.  This is mostly useful for debugging.
+Return the number of entries from the "start" of the ring buffer the tail is.  This is mostly useful for debugging.
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \code{tail_pos()}}
-    \item{bytes, typed: \code{tail_pos(bytes = FALSE)}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \code{tail_pos()}}
+\item{bytes, typed: \code{tail_pos(bytes = FALSE)}}
+}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{bytes}:   (for \code{ring_buffer_bytes} only) Logical, indicating if the position should be returned in bytes (rather than logical entries, which is the default).
+}
+}
 
-  \emph{Return value}:
-  A scalar integer
+\emph{Return value}:
+A scalar integer
 }
 \item{\code{head}}{
-  Return the contents of the head (the most recently written element in the ring buffer).
+Return the contents of the head (the most recently written element in the ring buffer).
 
-  \emph{Usage:}
-  \code{head()}
+\emph{Usage:}
+\code{head()}
 
-  \emph{Return value}:
-  It depends a little here.  For \code{ring_buffer_env} this is a single R object.  For \code{ring_buffer_bytes} it is a raw vector, the same length as the stride of the ring buffer.  For \code{ring_buffer_bytes_typed}, a single R object that has been translated from raw.
+\emph{Return value}:
+It depends a little here.  For \code{ring_buffer_env} this is a single R object.  For \code{ring_buffer_bytes} it is a raw vector, the same length as the stride of the ring buffer.  For \code{ring_buffer_bytes_typed}, a single R object that has been translated from raw.
 }
 \item{\code{tail}}{
-  Return the contents of the tail (the least recently written element in the ring buffer).
+Return the contents of the tail (the least recently written element in the ring buffer).
 
-  \emph{Usage:}
-  \code{tail()}
+\emph{Usage:}
+\code{tail()}
 
-  \emph{Return value}:
-  As for \code{head}
+\emph{Return value}:
+As for \code{head}
 }
 \item{\code{set}}{
-  Set a number of ring entries to the same value.  The exact behaviour here varies depending on the type of ring buffer.  This function may overflow the ring buffer; in this case the tail will be moved.
+Set a number of ring entries to the same value.  The exact behaviour here varies depending on the type of ring buffer.  This function may overflow the ring buffer; in this case the tail will be moved.
 
-  \emph{Usage:}
-  \code{set(data, n)}
+\emph{Usage:}
+\code{set(data, n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{data}:   The data to set each ring element to.  For an environment buffer, this may be any R object.  For a bytes buffer it may be either a single byte (in which case each ring element will be set to that byte, repeated \code{stride} times), or a raw vector of length \code{stride}.
-    }
+\emph{Arguments:}
+\itemize{
+\item{\code{data}:   The data to set each ring element to.  For an environment buffer, this may be any R object.  For a bytes buffer it may be either a single byte (in which case each ring element will be set to that byte, repeated \code{stride} times), or a raw vector of length \code{stride}.
+}
 
-    \item{\code{n}:   The number of entries to set to \code{data}
-    }
-  }
+\if{html}{\out{<div class="sourceCode">}}\preformatted{\\item\{\code{n}:   The number of entries to set to \code{data}
+\}
+}\if{html}{\out{</div>}}
 
-  \emph{Return value}:
-  Invisibly returns the number of elements actually written (which may be less than \code{n} if the buffer overflows).  Primarily called for its side effect.
+}
+
+\emph{Return value}:
+Invisibly returns the number of elements actually written (which may be less than \code{n} if the buffer overflows).  Primarily called for its side effect.
 }
 \item{\code{push}}{
-  Push elements onto the ring buffer head.  This may overflow the ring buffer, destroying the oldest elements in the buffer (and moving the position of the tail).
+Push elements onto the ring buffer head.  This may overflow the ring buffer, destroying the oldest elements in the buffer (and moving the position of the tail).
 
-  \emph{Usage:}
-  \itemize{
-    \item{env: \code{push(data, iterate = TRUE)}}
-    \item{bytes, typed: \code{push(data)}}
-  }
+\emph{Usage:}
+\itemize{
+\item{env: \code{push(data, iterate = TRUE)}}
+\item{bytes, typed: \code{push(data)}}
+}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{data}:   Data to push onto the ring buffer.  For \code{ring_buffer_bytes}, this must be a raw vector with a length that is a multiple of the buffer stride.  For \code{ring_buffer_bytes_typed} it must be a vector of the appropriate type.  For \code{ring_buffer_env} it may be an arbitrary R object (but see \code{iterate} .
-    }
+\emph{Arguments:}
+\itemize{
+\item{\code{data}:   Data to push onto the ring buffer.  For \code{ring_buffer_bytes}, this must be a raw vector with a length that is a multiple of the buffer stride.  For \code{ring_buffer_bytes_typed} it must be a vector of the appropriate type.  For \code{ring_buffer_env} it may be an arbitrary R object (but see \code{iterate} .
+}
 
-    \item{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate = FALSE}, then the entire object is pushed at once, so always updating only by a single element.
-    }
-  }
+\if{html}{\out{<div class="sourceCode">}}\preformatted{\\item\{\code{iterate}:   For \code{ring_buffer_env} only, changes the behaviour with vectors and lists.  Because each element of a \code{ring_buffer_env} can b an arbitrary R object, for a list \code{x} it is ambiguous if \code{push(x)} should push one object onto the buffer, or \code{length(x)} objects (i.e. equivalent to \code{push(x[[1]])}, \code{push(x[[2]])}, etc.  The \code{iterate} argument switches between interpretations; if \code{TRUE} (the default) the push will iterate over the object using \code{for (el in x)} (with appropriate S3 dispatch).  If \code{iterate = FALSE}, then the entire object is pushed at once, so always updating only by a single element.
+\}
+}\if{html}{\out{</div>}}
 
-  \emph{Return value}:
-  For \code{ring_buffer_bytes}, the data invisibly.  For \code{ring_buffer_bytes} and \code{ring_buffer_bytes_typed}, the position of the head pointer (relative to the beginning of the storage region).
+}
+
+\emph{Return value}:
+For \code{ring_buffer_bytes}, the data invisibly.  For \code{ring_buffer_bytes} and \code{ring_buffer_bytes_typed}, the position of the head pointer (relative to the beginning of the storage region).
 }
 \item{\code{take}}{
-  Destructively take elements from the ring buffer.  This consumes from the tail (the least recently added elements).  It is not possibly to underflow the buffer; if more elements are requested than can be supplied then an error will be thrown and the state of the buffer unmodified.
+Destructively take elements from the ring buffer.  This consumes from the tail (the least recently added elements).  It is not possibly to underflow the buffer; if more elements are requested than can be supplied then an error will be thrown and the state of the buffer unmodified.
 
-  \emph{Usage:}
-  \code{take(n)}
+\emph{Usage:}
+\code{take(n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{n}:   The number of elements to take.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{n}:   The number of elements to take.
+}
+}
 
-  \emph{Return value}:
-  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
+\emph{Return value}:
+For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
 }
 \item{\code{read}}{
-  Nondestructively read elements from the ring buffer.  This is identical to \code{take} except that the state of the buffer is not modified.
+Nondestructively read elements from the ring buffer.  This is identical to \code{take} except that the state of the buffer is not modified.
 
-  \emph{Usage:}
-  \code{read(n)}
+\emph{Usage:}
+\code{read(n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{n}:   The number of elements to read.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{n}:   The number of elements to read.
+}
+}
 
-  \emph{Return value}:
-  For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
+\emph{Return value}:
+For \code{ring_buffer_env} a \code{list} of \code{n} elements. For \code{ring_buffer_bytes}, a raw vector of \code{n * stride} bytes.  For \code{ring_buffer_bytes_typed}, an vector of \code{n} elements of the storage mode of the ring.
 }
 \item{\code{copy}}{
-  Copy from \emph{this} ring buffer into a different ring buffer. This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.
+Copy from \emph{this} ring buffer into a different ring buffer. This is destructive with respect to both ring buffers; the tail pointer will be moved in this ring buffer as data are taken, and if the destination ring buffer overflows, the tail pointer will be moved too.
 
-  \emph{Usage:}
-  \code{copy(dest, n)}
+\emph{Usage:}
+\code{copy(dest, n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{dest}:   The destination ring buffer - will be modified by this call.
-    }
+\emph{Arguments:}
+\itemize{
+\item{\code{dest}:   The destination ring buffer - will be modified by this call.
+}
 
-    \item{\code{n}:   The number of elements to copy
-    }
-  }
+\if{html}{\out{<div class="sourceCode">}}\preformatted{\\item\{\code{n}:   The number of elements to copy
+\}
+}\if{html}{\out{</div>}}
+
+}
 }
 \item{\code{mirror}}{
-  Mirror the contents of \emph{this} ring buffer into a different ring buffer.  This differs from \code{copy} in that \emph{this} ring buffer is unaffected and in that \emph{all} of this ring buffer is copied over (including head/tail positions).  This provides an alternative way of duplicating state to \code{duplicate} if you already have an appropriately sized ring buffer handy.  No allocations will be done.
+Mirror the contents of \emph{this} ring buffer into a different ring buffer.  This differs from \code{copy} in that \emph{this} ring buffer is unaffected and in that \emph{all} of this ring buffer is copied over (including head/tail positions).  This provides an alternative way of duplicating state to \code{duplicate} if you already have an appropriately sized ring buffer handy.  No allocations will be done.
 
-  \emph{Usage:}
-  \code{mirror(dest)}
+\emph{Usage:}
+\code{mirror(dest)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{dest}:   The destination ring buffer - will be modified by this call.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{dest}:   The destination ring buffer - will be modified by this call.
+}
+}
 
-  \emph{Return value}:
-  Nothing; called for the side effect only.
+\emph{Return value}:
+Nothing; called for the side effect only.
 }
 \item{\code{head_offset}}{
-  Nondestructively read the contents of the \code{head} of the buffer, offset by \code{n} entries.
+Nondestructively read the contents of the \code{head} of the buffer, offset by \code{n} entries.
 
-  \emph{Usage:}
-  \code{head_offset(n)}
+\emph{Usage:}
+\code{head_offset(n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{n}:   Head offset.  This moves away from the most recently added item. An offset of 0 reads the most recently added element, 1 reads the element added before that.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{n}:   Head offset.  This moves away from the most recently added item. An offset of 0 reads the most recently added element, 1 reads the element added before that.
+}
+}
 
-  \emph{Return value}:
-  As for \code{head}
+\emph{Return value}:
+As for \code{head}
 }
 \item{\code{tail_offset}}{
-  Nondestructively read the contents of the \code{tail} of the buffer, offset by \code{n} entries.
+Nondestructively read the contents of the \code{tail} of the buffer, offset by \code{n} entries.
 
-  \emph{Usage:}
-  \code{tail_offset(n)}
+\emph{Usage:}
+\code{tail_offset(n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{n}:   Tail offset.  This moves away from the oldest item.  An offset of 0 reads the oldest element, 1 reads the element added after that.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{n}:   Tail offset.  This moves away from the oldest item.  An offset of 0 reads the oldest element, 1 reads the element added after that.
+}
+}
 
-  \emph{Return value}:
-  As for \code{tail} (see \code{head})
+\emph{Return value}:
+As for \code{tail} (see \code{head})
 }
 \item{\code{take_head}}{
-  As for \code{take}, but operating on the head rather than the tail.  This is destructive with respect to the head.
+As for \code{take}, but operating on the head rather than the tail.  This is destructive with respect to the head.
 
-  \emph{Usage:}
-  \code{take_head(n)}
+\emph{Usage:}
+\code{take_head(n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{n}:   Number of elements to take.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{n}:   Number of elements to take.
+}
+}
 
-  \emph{Return value}:
-  As for \code{take}
+\emph{Return value}:
+As for \code{take}
 }
 \item{\code{read_head}}{
-  As for \code{read}, but operating on the head rather than the tail.  This is not destructive with respect to the tail.
+As for \code{read}, but operating on the head rather than the tail.  This is not destructive with respect to the tail.
 
-  \emph{Usage:}
-  \code{read_head(n)}
+\emph{Usage:}
+\code{read_head(n)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{n}:   Number of elements to read.
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{n}:   Number of elements to read.
+}
+}
 
-  \emph{Return value}:
-  As for \code{read}
+\emph{Return value}:
+As for \code{read}
 }
 \item{\code{head_set}}{
-  Set data to the head \emph{without advancing}.  This is useful in cases where the head data will be set and advanced separately (with \code{head_advance}).  This is unlikely to be useful for all users.  It is used extensively in dde (but called from C).
+Set data to the head \emph{without advancing}.  This is useful in cases where the head data will be set and advanced separately (with \code{head_advance}).  This is unlikely to be useful for all users.  It is used extensively in dde (but called from C).
 
-  \emph{Usage:}
-  \code{head_set(data)}
+\emph{Usage:}
+\code{head_set(data)}
 
-  \emph{Arguments:}
-  \itemize{
-    \item{\code{data}:   Data to set into the head.  For the bytes buffer this must be exactly \code{stride} bytes long, and for the environment buffer it corresponds to a single "element".
-    }
-  }
+\emph{Arguments:}
+\itemize{
+\item{\code{data}:   Data to set into the head.  For the bytes buffer this must be exactly \code{stride} bytes long, and for the environment buffer it corresponds to a single "element".
+}
+}
 
-  \emph{Return value}:
-  Nothing; called for the side effect only.
+\emph{Return value}:
+Nothing; called for the side effect only.
 }
 \item{\code{head_data}}{
-  Retrieve the current data stored in the head but not advanced. For many cases this may be junk - if the byte buffer has looped then it will be the bytes that will be overwritten on the next write.  However, when using \code{head_set} it will be the data that have been set into the buffer but not yet committed with \code{head_advance}.
+Retrieve the current data stored in the head but not advanced. For many cases this may be junk - if the byte buffer has looped then it will be the bytes that will be overwritten on the next write.  However, when using \code{head_set} it will be the data that have been set into the buffer but not yet committed with \code{head_advance}.
 
-  \emph{Usage:}
-  \code{head_data()}
+\emph{Usage:}
+\code{head_data()}
 
-  \emph{Return value}:
-  As for \code{head}
+\emph{Return value}:
+As for \code{head}
 }
 \item{\code{head_advance}}{
-  Shift the head around one position.  This commits any data written by \code{head_set}.
+Shift the head around one position.  This commits any data written by \code{head_set}.
 
-  \emph{Usage:}
-  \code{head_advance()}
+\emph{Usage:}
+\code{head_advance()}
 
-  \emph{Return value}:
-  Nothing; called for the side effect only.
+\emph{Return value}:
+Nothing; called for the side effect only.
 }
 }
 }

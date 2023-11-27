@@ -5,7 +5,7 @@
 ##' limitation that any data transfer to or from R will always involve
 ##' copies.
 ##'
-##' In contrast with \code{\link{ring_buffer_env}}, every element of
+##' In contrast with [`ring_buffer_env`], every element of
 ##' this buffer has the same size; this makes it less flexible
 ##' (because you have to decide ahead of time what you will be
 ##' storing), but at the same time this can make using the buffer
@@ -13,44 +13,47 @@
 ##' are storing).
 ##'
 ##' If you want to use this to store fixed-size arrays of integers,
-##' numerics, etc, see \code{\link{ring_buffer_bytes_typed}} which
+##' numerics, etc, see [`ring_buffer_bytes_typed`] which
 ##' wraps this with fast conversion functions.
 ##'
-##' If the \code{on_overflow} action is \code{"grow"} and the buffer
-##' overflows, then the size of the buffer will grow geometrically
-##' (this is also the case if you manually \code{$grow()} the buffer
-##' with \code{exact = FALSE}).  When used this way, let \code{n} is
-##' the number of \emph{additional} elements that space is needed for;
-##' \code{ring} then looks at the total needed capacity (used plus
-##' \code{n} relative to \code{size()}).  \emph{If} the buffer needs
-##' to be made larger to fit \code{n} elements in then it is grown by
-##' a factor of phi (the golden ratio, approximately 1.6).  So if to
-##' fit \code{n} elements in the buffer needs to be increased in size
-##' by \code{m} then the smallest of \code{size * phi}, \code{size *
-##' phi^2}, \code{size * phi^3}, ... will be used as the new size.
+##' If the `on_overflow` action is `"grow"` and the buffer overflows,
+##' then the size of the buffer will grow geometrically (this is also
+##' the case if you manually `$grow()` the buffer with `exact =
+##' FALSE`.  When used this way, let `n` is the number of *additional*
+##' elements that space is needed for; `ring` then looks at the total
+##' needed capacity (used plus `n` relative to `size()`).  *If* the
+##' buffer needs to be made larger to fit `n` elements in then it is
+##' grown by a factor of phi (the golden ratio, approximately 1.6).
+##' So if to fit `n` elements in the buffer needs to be increased in
+##' size by `m` then the smallest of `size * phi`, `size * phi^2`,
+##' `size * phi^3`, ... will be used as the new size.
 ##'
-##' In contrast, using the \code{grow()} method with \code{exact =
-##' TRUE} will \emph{always} increase the size of the buffer so long
-##' as \code{n} is positive.
+##' In contrast, using the `grow()` method with `exact = TRUE` will
+##' *always* increase the size of the buffer so long as `n` is
+##' positive.
 ##'
 ##' @template ring_ref
 ##'
 ##' @title Byte array based ring buffer
+##'
 ##' @param size Number of elements in the buffer, each of which will
-##'   be \code{stride} bytes long.
+##'   be `stride` bytes long.
+##'
 ##' @param stride Number of bytes per buffer element.  Defaults to 1
 ##'   byte.  If you want to store anything other than a bytestream in
 ##'   the buffer, you will probably want more than one byte per
 ##'   element; for example, on most R platforms an integer takes 4
-##'   bytes and a double takes 8 (see \code{\link{.Machine}}, and also
-##'   \code{\link{ring_buffer_bytes_typed}}).
+##'   bytes and a double takes 8 (see [`.Machine`], and also
+##'   [`ring_buffer_bytes_typed`]).
+##'
 ##' @param on_overflow Behaviour on buffer overflow.  The default is
 ##'   to overwrite the oldest elements in the buffer
-##'   (\code{"overwrite"}).  Alternative actions are \code{"error"}
+##'   (`"overwrite"`).  Alternative actions are `"error"`
 ##'   which will throw an error if a function tries to add more
-##'   elements than there are space for, or \code{"grow"} which will
+##'   elements than there are space for, or `"grow"` which will
 ##'   grow the buffer to accept the new elements (this uses an
 ##'   approximately golden ratio approach; see details below).
+##'
 ##' @export
 ##' @examples
 ##' # Create a ring buffer of 100 bytes
@@ -204,10 +207,10 @@ R6_ring_buffer_bytes <- R6::R6Class(
     }
   ))
 
-##' This ring buffer is based on \code{\link{ring_buffer_bytes}} but
+##' This ring buffer is based on [ring_buffer_bytes] but
 ##' performs conversion to/from bytes to something useful as data is
 ##' stored/retrieved from the buffer.  This is the interface through
-##' which \code{\link{ring_buffer_bytes_typed}} is implemented.
+##' which [ring_buffer_bytes_typed] is implemented.
 ##'
 ##' The idea here is that manually working with raw vectors can get
 ##' tedious, and if you are planning on using a bytes-based buffer
@@ -220,15 +223,15 @@ R6_ring_buffer_bytes <- R6::R6Class(
 ##' @title Translating bytes ring buffer
 ##' @inheritParams ring_buffer_bytes
 ##' @param to Function to convert an R object to a set of exactly
-##'   \code{stride} bytes.  It must take one argument (being an R
+##'   `stride` bytes.  It must take one argument (being an R
 ##'   object) and return a raw vector of a length that is a multiple
-##'   of \code{stride} (including zero).  It may throw an error if it
+##'   of `stride` (including zero).  It may throw an error if it
 ##'   is not possible to convert an object to a bytes vector.
 ##' @param from Function to convert a set of bytes to an R object.  It
 ##'   must take one argument (being a raw vector of a length that is a
-##'   multiple of \code{stride}, including zero).  It should not throw
+##'   multiple of `stride`, including zero).  It should not throw
 ##'   an error as all data added to the buffer will have passed
-##'   through \code{to} on the way in to the buffer.
+##'   through `to` on the way in to the buffer.
 ##' @export
 ##' @author Rich FitzJohn
 ##' @examples

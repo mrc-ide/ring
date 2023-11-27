@@ -1,25 +1,25 @@
 ##' An environment based ring buffer.  In contrast with
-##' \code{\link{ring_buffer_bytes}}, this ring buffer is truly
+##' [`ring_buffer_bytes`], this ring buffer is truly
 ##' circular, implemented as a doubly linked list that loops back on
 ##' itself.  Each element of the ring buffer can hold an arbitrary R
 ##' object, and no checking is done to make sure that objects are
 ##' similar types; in this way they are most similar to a circular
-##' version of an R \code{\link{list}}.
+##' version of an R [`list`].
 ##'
 ##' When pushing objects onto the buffer, you must be careful about
-##' the \code{iterate} argument.  By default if the object has a
-##' \code{length()} greater than 1 then \code{$push()} will iterate
-##' over the object (equivalent to \code{$push(data[[1]],
-##' iterate=FALSE)}, \code{$push(data[[2]], iterate=FALSE)}, and so
+##' the `iterate` argument.  By default if the object has a
+##' `length()` greater than 1 then `$push()` will iterate
+##' over the object (equivalent to `$push(data[[1]],
+##' iterate=FALSE)`, `$push(data[[2]], iterate=FALSE)`, and so
 ##' on).
 ##'
 ##' For more information and usage examples, see the vignette
-##' (\code{vignette("ring")}).
+##' (`vignette("ring")`).
 ##'
-##' On underflow (and overflow if \code{on_overflow = "error"})
-##' \code{ring} will raise custom exceptions that can be caught
-##' specially by \code{tryCatch}.  These will have class
-##' \code{ring_underflow} (and \code{ring_overflow} for overflow).  This
+##' On underflow (and overflow if `on_overflow = "error"`)
+##' `ring` will raise custom exceptions that can be caught
+##' specially by `tryCatch`.  These will have class
+##' `ring_underflow` (and `ring_overflow` for overflow).  This
 ##' is not supported in the bytes buffer yet.  See the examples for
 ##' usage.
 ##'
@@ -30,9 +30,9 @@
 ##'
 ##' @param on_overflow Behaviour on buffer overflow.  The default is
 ##'   to overwrite the oldest elements in the buffer
-##'   (\code{"overwrite"}).  Alternative actions are \code{"error"}
+##'   (`"overwrite"`).  Alternative actions are `"error"`
 ##'   which will throw an error if a function tries to add more
-##'   elements than there are space for, or \code{"grow"} which will
+##'   elements than there are space for, or `"grow"` which will
 ##'   grow the buffer to accept the new elements.
 ##'
 ##' @template ring_ref

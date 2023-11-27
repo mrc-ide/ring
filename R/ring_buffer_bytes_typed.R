@@ -1,4 +1,4 @@
-##' Create a ring buffer, backed by a \code{\link{ring_buffer_bytes}},
+##' Create a ring buffer, backed by a [`ring_buffer_bytes`],
 ##' where each element corresponds to a fixed-size vector of one of
 ##' R's atomic numeric types (logical, integer, double, and complex).
 ##'
@@ -14,17 +14,21 @@
 ##' @template ring_ref
 ##'
 ##' @title Typed bytes ring buffer
+##'
 ##' @param size The maximum number of elements the buffer can hold.
 ##'   Each element will be multiple bytes long.
-##' @param what Either a vector on the style of \code{\link{vapply}}
-##'   (e.g., \code{integer(4)} to indicate that each element of the
-##'   buffer is a 4-element integer, or the \code{name} of a storage
-##'   mode if \code{len} is also provided.
+##'
+##' @param what Either a vector on the style of [`vapply`] (e.g.,
+##'   `integer(4)` to indicate that each element of the buffer is a
+##'   4-element integer, or the `name` of a storage mode if `len` is
+##'   also provided.
+##'
 ##' @param len If given, then the length of the storage.  If it is
-##'   given, then if \code{length(what)} is zero, the storage mode of
-##'   \code{what} is used as the type.  Otherwise \code{what} is
-##'   interpreted as the \emph{name} of the storage mode (one of
-##'   "logical", "integer", "double" or "complex".
+##'   given, then if `length(what)` is zero, the storage mode of
+##'   `what` is used as the type.  Otherwise `what` is interpreted as
+##'   the *name* of the storage mode (one of "logical", "integer",
+##'   "double" or "complex".
+##'
 ##' @inheritParams ring_buffer_bytes
 ##' @export
 ##' @author Rich FitzJohn
