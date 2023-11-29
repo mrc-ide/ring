@@ -137,8 +137,7 @@ SEXP R_ring_buffer_push(SEXP extPtr, SEXP r_data) {
   ring_buffer *buffer = ring_buffer_get(extPtr, true);
   size_t len = LENGTH(r_data), stride = buffer->stride;
   if (len % stride != 0) {
-    Rf_error("Incorrect size data (%d bytes); expected multiple of %d bytes",
-             len, stride);
+    Rf_error("Incorrect size data; expected multiple of %d bytes", (int)stride);
   }
   size_t n = len / stride;
   const data_t *data = get_raw(r_data);
@@ -234,7 +233,7 @@ SEXP R_ring_buffer_copy(SEXP srcPtr, SEXP destPtr, SEXP r_n) {
       Rf_error("Can't copy a buffer into itself");
     } else if (src->stride != dest->stride) {
       Rf_error("Can't copy as buffers differ in their stride (%d vs %d)",
-               src->stride, dest->stride);
+               (int)src->stride, (int)dest->stride);
     } else {
       throw_underflow(src, n);
     }
@@ -251,10 +250,10 @@ SEXP R_ring_buffer_mirror(SEXP srcPtr, SEXP destPtr) {
       Rf_error("Can't mirror a buffer into itself");
     } else if (src->stride != dest->stride) {
       Rf_error("Can't mirror as buffers differ in their stride (%d vs %d)",
-               src->stride, dest->stride);
+               (int)src->stride, (int)dest->stride);
     } else if (src->size != dest->size) {
       Rf_error("Can't mirror as buffers differ in their size (%d vs %d)",
-               src->size, dest->size);
+               (int)src->size, (int)dest->size);
     } else {
       Rf_error("Unknown error [ring bug]"); // #nocov
     }
@@ -267,7 +266,7 @@ SEXP R_ring_buffer_head_set(SEXP extPtr, SEXP r_data) {
   const size_t len = LENGTH(r_data), stride = buffer->stride;
   if (len != stride) {
     Rf_error("Incorrect size data (%d bytes); expected exactly %d bytes",
-             len, stride);
+             (int)len, (int)stride);
   }
   const data_t *data = get_raw(r_data);
   memcpy(buffer->head, data, stride);
@@ -358,7 +357,7 @@ SEXP scalar_size_sexp(size_t x) {
 
 void throw_underflow(ring_buffer *buffer, size_t n) {
   Rf_error("Buffer underflow (requested %d elements but %d available)",
-           n, ring_buffer_used(buffer, false));
+           (int)n, (int)ring_buffer_used(buffer, false));
 } // #nocov
 
 const data_t * get_raw(SEXP data) {

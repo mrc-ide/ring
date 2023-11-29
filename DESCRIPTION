@@ -1,6 +1,6 @@
 Package: ring
 Title: Circular / Ring Buffers
-Version: 1.0.4
+Version: 1.0.5
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Imperial College of Science, Technology and Medicine",
@@ -17,7 +17,8 @@ Suggests:
     knitr,
     rmarkdown,
     testthat
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Language: en-GB
 Encoding: UTF-8
