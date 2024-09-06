@@ -46,7 +46,7 @@ SEXP test_search_linear(SEXP r_buffer, SEXP r_value) {
   double value = REAL(r_value)[0];
   data_t *x = (data_t*)
     ring_buffer_search_linear(buffer, pred_find_double, &value);
-  return ScalarInteger(ring_buffer_compute_offset(buffer, x));
+  return Rf_ScalarInteger(ring_buffer_compute_offset(buffer, x));
 }
 
 SEXP test_search_bisect(SEXP r_buffer, SEXP r_value, SEXP r_i) {
@@ -55,7 +55,7 @@ SEXP test_search_bisect(SEXP r_buffer, SEXP r_value, SEXP r_i) {
   int i = INTEGER(r_i)[0];
   data_t *x = (data_t*)
     ring_buffer_search_bisect(buffer, i, pred_find_double, &value);
-  return ScalarInteger(ring_buffer_compute_offset(buffer, x));
+  return Rf_ScalarInteger(ring_buffer_compute_offset(buffer, x));
 }
 
 // This is a totally stupid function that will copy some bytes onto
@@ -68,5 +68,5 @@ SEXP test_advance_head(SEXP r_buffer, SEXP r_value) {
   memcpy(h, RAW(r_value), buffer->stride);
   data_t *h2 = (data_t*) ring_buffer_head_advance(buffer);
   data_t *h3 = (data_t*) ring_buffer_head(buffer);
-  return ScalarLogical((h != h2) && (h2 == h3));
+  return Rf_ScalarLogical((h != h2) && (h2 == h3));
 }

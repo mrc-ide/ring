@@ -107,7 +107,7 @@ void ring_buffer_grow(ring_buffer *buffer, size_t n, bool exact) {
   }
 #else
   // R will handle the crash here for us:
-  buffer->data = (data_t*) Realloc(buffer->data, bytes_data, data_t);
+  buffer->data = (data_t*) R_Realloc(buffer->data, bytes_data, data_t);
 #endif
   // Ensure that all newly allocated data is zeroed
   const size_t len = (curr_size + 1) * buffer->stride;

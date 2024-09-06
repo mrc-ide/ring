@@ -7,7 +7,7 @@
 // forced causing a big slowdown.
 SEXP assert_scalar_size(SEXP x, SEXP r_name) {
   const char * name = CHAR(STRING_ELT(r_name, 0));
-  if (length(x) != 1) {
+  if (Rf_length(x) != 1) {
     Rf_error("%s must be a scalar", name);
   }
   int ix;
