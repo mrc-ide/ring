@@ -4,92 +4,67 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>ring • ring</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="ring">
-<meta property="og:description" content="ring">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="ring">
 </head>
-<body data-spy="scroll" data-target="#toc">
-    
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">ring</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.5</span>
-      </span>
-    </div>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../articles/ring.html">Get started</a>
-</li>
-<li>
-  <a href="../reference/index.html">Reference</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/ring_applications.html">ring applications</a>
-    </li>
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+
+    <a class="navbar-brand me-2" href="../index.html">ring</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.7</small>
+
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="active nav-item"><a class="nav-link" href="../articles/ring.html">Get started</a></li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/ring_applications.html">ring applications</a></li>
   </ul>
 </li>
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/mrc-ide/ring/" class="external-link">
-    <span class="fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
+<ul class="navbar-nav">
+<li class="nav-item"><form class="form-inline" role="search">
+ <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
+</form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mrc-ide/ring/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
-      
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>ring</h1>
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+
+      <h1>ring</h1>
                         <h4 data-toc-skip class="author">Rich
 FitzJohn</h4>
             
-            <h4 data-toc-skip class="date">2023-11-29</h4>
+            <h4 data-toc-skip class="date">2024-09-20</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/mrc-ide/ring/blob/HEAD/vignettes/ring.Rmd" class="external-link"><code>vignettes/ring.Rmd</code></a></small>
-      <div class="hidden name"><code>ring.Rmd</code></div>
-
+      <small class="dont-index">Source: <a href="https://github.com/mrc-ide/ring/blob/master/vignettes/ring.Rmd" class="external-link"><code>vignettes/ring.Rmd</code></a></small>
+      <div class="d-none name"><code>ring.Rmd</code></div>
     </div>
 
     
@@ -561,440 +536,440 @@ though; probably best to make a package.)</p>
 <p>The C API is documented only in the header file, and it should be
 fairly straightforward to use (with reference to the docs above; this is
 the code underlying the <code>ring_buffer_bytes</code> interface).</p>
-<div class="sourceCode" id="cb107"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef _RING_H_</span></span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define _RING_H_</span></span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stddef.h&gt;</span></span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdbool.h&gt;</span></span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef RING_USE_STDLIB_ALLOC</span></span>
-<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef USING_R</span></span>
-<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#define USING_R</span></span>
-<span id="cb107-9"><a href="#cb107-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
-<span id="cb107-10"><a href="#cb107-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
-<span id="cb107-11"><a href="#cb107-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-12"><a href="#cb107-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Allow use from C++</span></span>
-<span id="cb107-13"><a href="#cb107-13" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef __cplusplus</span></span>
-<span id="cb107-14"><a href="#cb107-14" aria-hidden="true" tabindex="-1"></a><span class="kw">extern</span> <span class="st">"C"</span> <span class="op">{</span></span>
-<span id="cb107-15"><a href="#cb107-15" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
-<span id="cb107-16"><a href="#cb107-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-17"><a href="#cb107-17" aria-hidden="true" tabindex="-1"></a><span class="co">// What to do on overflow.</span></span>
-<span id="cb107-18"><a href="#cb107-18" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-19"><a href="#cb107-19" aria-hidden="true" tabindex="-1"></a><span class="co">// The OVERFLOW_ERROR action (which calls R's error function) is only</span></span>
-<span id="cb107-20"><a href="#cb107-20" aria-hidden="true" tabindex="-1"></a><span class="co">// available when using R, which is detected by the &lt;R.h&gt; header</span></span>
-<span id="cb107-21"><a href="#cb107-21" aria-hidden="true" tabindex="-1"></a><span class="co">// included.  If you are using RING_USE_STDLIB_ALLOC (see below) but</span></span>
-<span id="cb107-22"><a href="#cb107-22" aria-hidden="true" tabindex="-1"></a><span class="co">// want to use OVERFLOW_ERROR then you'll need to include &lt;R.h&gt; as</span></span>
-<span id="cb107-23"><a href="#cb107-23" aria-hidden="true" tabindex="-1"></a><span class="co">// well, and be willing to deal with an R error and the longjmp that</span></span>
-<span id="cb107-24"><a href="#cb107-24" aria-hidden="true" tabindex="-1"></a><span class="co">// it causes.</span></span>
-<span id="cb107-25"><a href="#cb107-25" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">enum</span> overflow_action <span class="op">{</span></span>
-<span id="cb107-26"><a href="#cb107-26" aria-hidden="true" tabindex="-1"></a>  OVERFLOW_OVERWRITE<span class="op">,</span></span>
-<span id="cb107-27"><a href="#cb107-27" aria-hidden="true" tabindex="-1"></a>  OVERFLOW_GROW</span>
-<span id="cb107-28"><a href="#cb107-28" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef USING_R</span></span>
-<span id="cb107-29"><a href="#cb107-29" aria-hidden="true" tabindex="-1"></a>  <span class="op">,</span> OVERFLOW_ERROR</span>
-<span id="cb107-30"><a href="#cb107-30" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
-<span id="cb107-31"><a href="#cb107-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> overflow_action<span class="op">;</span></span>
-<span id="cb107-32"><a href="#cb107-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-33"><a href="#cb107-33" aria-hidden="true" tabindex="-1"></a><span class="co">// The underlying data structure.  None of the fields here should be</span></span>
-<span id="cb107-34"><a href="#cb107-34" aria-hidden="true" tabindex="-1"></a><span class="co">// directly accessed in normal use; use the accessor functions</span></span>
-<span id="cb107-35"><a href="#cb107-35" aria-hidden="true" tabindex="-1"></a><span class="co">// instead.</span></span>
-<span id="cb107-36"><a href="#cb107-36" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-37"><a href="#cb107-37" aria-hidden="true" tabindex="-1"></a><span class="co">// The ring buffer is a FIFO (first-in-first-out) queue.  It is</span></span>
-<span id="cb107-38"><a href="#cb107-38" aria-hidden="true" tabindex="-1"></a><span class="co">// implemented as a single block of memory (data) and a pair of</span></span>
-<span id="cb107-39"><a href="#cb107-39" aria-hidden="true" tabindex="-1"></a><span class="co">// pointers:</span></span>
-<span id="cb107-40"><a href="#cb107-40" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-41"><a href="#cb107-41" aria-hidden="true" tabindex="-1"></a><span class="co">//   head: the starting location where data should be written when</span></span>
-<span id="cb107-42"><a href="#cb107-42" aria-hidden="true" tabindex="-1"></a><span class="co">//         copying data *into* the buffer.</span></span>
-<span id="cb107-43"><a href="#cb107-43" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-44"><a href="#cb107-44" aria-hidden="true" tabindex="-1"></a><span class="co">//   tail: the starting location where data should be read when</span></span>
-<span id="cb107-45"><a href="#cb107-45" aria-hidden="true" tabindex="-1"></a><span class="co">//         copying data *from* the buffer.</span></span>
-<span id="cb107-46"><a href="#cb107-46" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-47"><a href="#cb107-47" aria-hidden="true" tabindex="-1"></a><span class="co">// The buffer has a concept of a stride; the number of bytes per</span></span>
-<span id="cb107-48"><a href="#cb107-48" aria-hidden="true" tabindex="-1"></a><span class="co">// buffer entry.  This is fixed across the entire ring.  As such, some</span></span>
-<span id="cb107-49"><a href="#cb107-49" aria-hidden="true" tabindex="-1"></a><span class="co">// functions that return size_t have a booleanargument "bytes" that</span></span>
-<span id="cb107-50"><a href="#cb107-50" aria-hidden="true" tabindex="-1"></a><span class="co">// switches between measuring in bytes and measuring in logical</span></span>
-<span id="cb107-51"><a href="#cb107-51" aria-hidden="true" tabindex="-1"></a><span class="co">// elements.  In the case where stride=1, these are identical.</span></span>
-<span id="cb107-52"><a href="#cb107-52" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-53"><a href="#cb107-53" aria-hidden="true" tabindex="-1"></a><span class="co">// In general, the ring buffer is totally happy to overflow; if you</span></span>
-<span id="cb107-54"><a href="#cb107-54" aria-hidden="true" tabindex="-1"></a><span class="co">// write too much into the ring buffer it will destructively erase</span></span>
-<span id="cb107-55"><a href="#cb107-55" aria-hidden="true" tabindex="-1"></a><span class="co">// data (i.e., your tail will move).  The ring buffer will never</span></span>
-<span id="cb107-56"><a href="#cb107-56" aria-hidden="true" tabindex="-1"></a><span class="co">// underflow, but functions may return `NULL` on underflow - read the</span></span>
-<span id="cb107-57"><a href="#cb107-57" aria-hidden="true" tabindex="-1"></a><span class="co">// documentation below carefully.</span></span>
-<span id="cb107-58"><a href="#cb107-58" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">unsigned</span> <span class="dt">char</span> data_t<span class="op">;</span></span>
-<span id="cb107-59"><a href="#cb107-59" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> ring_buffer <span class="op">{</span></span>
-<span id="cb107-60"><a href="#cb107-60" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> size<span class="op">;</span></span>
-<span id="cb107-61"><a href="#cb107-61" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> stride<span class="op">;</span></span>
-<span id="cb107-62"><a href="#cb107-62" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> bytes_data<span class="op">;</span></span>
-<span id="cb107-63"><a href="#cb107-63" aria-hidden="true" tabindex="-1"></a>  overflow_action on_overflow<span class="op">;</span></span>
-<span id="cb107-64"><a href="#cb107-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-65"><a href="#cb107-65" aria-hidden="true" tabindex="-1"></a>  data_t <span class="op">*</span>data<span class="op">;</span></span>
-<span id="cb107-66"><a href="#cb107-66" aria-hidden="true" tabindex="-1"></a>  data_t <span class="op">*</span>head<span class="op">;</span></span>
-<span id="cb107-67"><a href="#cb107-67" aria-hidden="true" tabindex="-1"></a>  data_t <span class="op">*</span>tail<span class="op">;</span></span>
-<span id="cb107-68"><a href="#cb107-68" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> ring_buffer<span class="op">;</span></span>
-<span id="cb107-69"><a href="#cb107-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-70"><a href="#cb107-70" aria-hidden="true" tabindex="-1"></a><span class="co">//// Creation, deletion, etc: ////</span></span>
-<span id="cb107-71"><a href="#cb107-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-72"><a href="#cb107-72" aria-hidden="true" tabindex="-1"></a><span class="co">// Create a ring buffer.  After creating, be sure to free the memory</span></span>
-<span id="cb107-73"><a href="#cb107-73" aria-hidden="true" tabindex="-1"></a><span class="co">// with `ring_buffer_destroy`.</span></span>
-<span id="cb107-74"><a href="#cb107-74" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-75"><a href="#cb107-75" aria-hidden="true" tabindex="-1"></a><span class="co">//   size: (maximum) number of elements that the ring buffer may contain</span></span>
-<span id="cb107-76"><a href="#cb107-76" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-77"><a href="#cb107-77" aria-hidden="true" tabindex="-1"></a><span class="co">//   stride: number of *bytes* per ring buffer element</span></span>
-<span id="cb107-78"><a href="#cb107-78" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-79"><a href="#cb107-79" aria-hidden="true" tabindex="-1"></a><span class="co">// See the note above the struct for details on size/stride.</span></span>
-<span id="cb107-80"><a href="#cb107-80" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-81"><a href="#cb107-81" aria-hidden="true" tabindex="-1"></a><span class="co">// If the buffer cannot be allocated (e.g., too big a buffer is</span></span>
-<span id="cb107-82"><a href="#cb107-82" aria-hidden="true" tabindex="-1"></a><span class="co">// requested) then an R error will be thrown as this uses `Calloc`.</span></span>
-<span id="cb107-83"><a href="#cb107-83" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-84"><a href="#cb107-84" aria-hidden="true" tabindex="-1"></a><span class="co">// This may not always be desirable (e.g., if using from within C++,</span></span>
-<span id="cb107-85"><a href="#cb107-85" aria-hidden="true" tabindex="-1"></a><span class="co">// or in a project that does not actually use R).  To use plain C</span></span>
-<span id="cb107-86"><a href="#cb107-86" aria-hidden="true" tabindex="-1"></a><span class="co">// stdlib calloc/free, in the ring.c use:</span></span>
-<span id="cb107-87"><a href="#cb107-87" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-88"><a href="#cb107-88" aria-hidden="true" tabindex="-1"></a><span class="co">//     #define RING_USE_STDLIB_ALLOC 1</span></span>
-<span id="cb107-89"><a href="#cb107-89" aria-hidden="true" tabindex="-1"></a><span class="co">//     #include &lt;ring/ring.c&gt;</span></span>
-<span id="cb107-90"><a href="#cb107-90" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-91"><a href="#cb107-91" aria-hidden="true" tabindex="-1"></a><span class="co">// which will not depend on *any* R code and use stdlib calloc/free</span></span>
-<span id="cb107-92"><a href="#cb107-92" aria-hidden="true" tabindex="-1"></a><span class="co">// (except for the issue with USING_R/OVERFLOW_ERROR above).  With</span></span>
-<span id="cb107-93"><a href="#cb107-93" aria-hidden="true" tabindex="-1"></a><span class="co">// RING_USE_STDLIB_ALLOC defined, if an allocation fails, then</span></span>
-<span id="cb107-94"><a href="#cb107-94" aria-hidden="true" tabindex="-1"></a><span class="co">// ring_buffer_create (and ring_buffer_duplicate below) will return</span></span>
-<span id="cb107-95"><a href="#cb107-95" aria-hidden="true" tabindex="-1"></a><span class="co">// NULL.  So if using this approach be sure to check the return value!</span></span>
-<span id="cb107-96"><a href="#cb107-96" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-97"><a href="#cb107-97" aria-hidden="true" tabindex="-1"></a><span class="co">// The main wrinkle to using RING_USE_STDLIB_ALLOC 1 is that the</span></span>
-<span id="cb107-98"><a href="#cb107-98" aria-hidden="true" tabindex="-1"></a><span class="co">// `overflow_action` `OVERFLOW_ERROR` will not work.  At present this</span></span>
-<span id="cb107-99"><a href="#cb107-99" aria-hidden="true" tabindex="-1"></a><span class="co">// will fail to compile, but in future I may add an error handler.</span></span>
-<span id="cb107-100"><a href="#cb107-100" aria-hidden="true" tabindex="-1"></a>ring_buffer <span class="op">*</span> ring_buffer_create<span class="op">(</span><span class="dt">size_t</span> size<span class="op">,</span> <span class="dt">size_t</span> stride<span class="op">,</span></span>
-<span id="cb107-101"><a href="#cb107-101" aria-hidden="true" tabindex="-1"></a>                                 overflow_action on_overflow<span class="op">);</span></span>
-<span id="cb107-102"><a href="#cb107-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-103"><a href="#cb107-103" aria-hidden="true" tabindex="-1"></a><span class="co">// Destroy a ring buffer.  Frees the memory</span></span>
-<span id="cb107-104"><a href="#cb107-104" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-105"><a href="#cb107-105" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to copy; after calling this function all</span></span>
-<span id="cb107-106"><a href="#cb107-106" aria-hidden="true" tabindex="-1"></a><span class="co">//           memory associated with the buffer is freed.</span></span>
-<span id="cb107-107"><a href="#cb107-107" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ring_buffer_destroy<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-108"><a href="#cb107-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-109"><a href="#cb107-109" aria-hidden="true" tabindex="-1"></a><span class="co">// Duplicate (copy) a ring buffer.  Copies both the underlying data and</span></span>
-<span id="cb107-110"><a href="#cb107-110" aria-hidden="true" tabindex="-1"></a><span class="co">// the position of the head and tail.  A new buffer will be allocated</span></span>
-<span id="cb107-111"><a href="#cb107-111" aria-hidden="true" tabindex="-1"></a><span class="co">// and must be freed when finished with, using `ring_buffer_destroy`</span></span>
-<span id="cb107-112"><a href="#cb107-112" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-113"><a href="#cb107-113" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: a ring buffer to copy from; will not be modified</span></span>
-<span id="cb107-114"><a href="#cb107-114" aria-hidden="true" tabindex="-1"></a>ring_buffer <span class="op">*</span> ring_buffer_duplicate<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-115"><a href="#cb107-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-116"><a href="#cb107-116" aria-hidden="true" tabindex="-1"></a><span class="co">// Increase the size of the ring buffer so that it can hold additional</span></span>
-<span id="cb107-117"><a href="#cb107-117" aria-hidden="true" tabindex="-1"></a><span class="co">// elements.  This does not alter existing elements but increases the</span></span>
-<span id="cb107-118"><a href="#cb107-118" aria-hidden="true" tabindex="-1"></a><span class="co">// capacity (similar to he `reserve` method in the C++ standard</span></span>
-<span id="cb107-119"><a href="#cb107-119" aria-hidden="true" tabindex="-1"></a><span class="co">// library).</span></span>
-<span id="cb107-120"><a href="#cb107-120" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-121"><a href="#cb107-121" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: a ring buffer to increase the size of</span></span>
-<span id="cb107-122"><a href="#cb107-122" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-123"><a href="#cb107-123" aria-hidden="true" tabindex="-1"></a><span class="co">//   n: the number of elements to increase the buffer by</span></span>
-<span id="cb107-124"><a href="#cb107-124" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-125"><a href="#cb107-125" aria-hidden="true" tabindex="-1"></a><span class="co">//   exact: boolean, indicating if the buffer should be increased by</span></span>
-<span id="cb107-126"><a href="#cb107-126" aria-hidden="true" tabindex="-1"></a><span class="co">//          exactly `n` elements (if true) or by at least `n` elements</span></span>
-<span id="cb107-127"><a href="#cb107-127" aria-hidden="true" tabindex="-1"></a><span class="co">//          (if false).  If using the inexact method, the buffer is</span></span>
-<span id="cb107-128"><a href="#cb107-128" aria-hidden="true" tabindex="-1"></a><span class="co">//          increased in size using geometric growth using the golden</span></span>
-<span id="cb107-129"><a href="#cb107-129" aria-hidden="true" tabindex="-1"></a><span class="co">//          ratio.</span></span>
-<span id="cb107-130"><a href="#cb107-130" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-131"><a href="#cb107-131" aria-hidden="true" tabindex="-1"></a><span class="co">// After using this function, all references to the head or tail are</span></span>
-<span id="cb107-132"><a href="#cb107-132" aria-hidden="true" tabindex="-1"></a><span class="co">// broken and the memory may have been freed and the contents moved</span></span>
-<span id="cb107-133"><a href="#cb107-133" aria-hidden="true" tabindex="-1"></a><span class="co">// elsewhere.</span></span>
-<span id="cb107-134"><a href="#cb107-134" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-135"><a href="#cb107-135" aria-hidden="true" tabindex="-1"></a><span class="co">// If RING_USE_STDLIB_ALLOC is defined, and if an allocation fails,</span></span>
-<span id="cb107-136"><a href="#cb107-136" aria-hidden="true" tabindex="-1"></a><span class="co">// then this may leave things in an undesirable state (this is</span></span>
-<span id="cb107-137"><a href="#cb107-137" aria-hidden="true" tabindex="-1"></a><span class="co">// particularly a problem when using on_overflow = OVERFLOW_GROW).</span></span>
-<span id="cb107-138"><a href="#cb107-138" aria-hidden="true" tabindex="-1"></a><span class="co">// Currently, if R is used an R error will be thrown (possibly not a</span></span>
-<span id="cb107-139"><a href="#cb107-139" aria-hidden="true" tabindex="-1"></a><span class="co">// good idea if running under Rcpp) and if running as a standalone</span></span>
-<span id="cb107-140"><a href="#cb107-140" aria-hidden="true" tabindex="-1"></a><span class="co">// application then the data will be set to NULL, probably causing a</span></span>
-<span id="cb107-141"><a href="#cb107-141" aria-hidden="true" tabindex="-1"></a><span class="co">// crash pretty quickly (improvements welcome).</span></span>
-<span id="cb107-142"><a href="#cb107-142" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ring_buffer_grow<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">,</span> <span class="dt">bool</span> exact<span class="op">);</span></span>
-<span id="cb107-143"><a href="#cb107-143" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-144"><a href="#cb107-144" aria-hidden="true" tabindex="-1"></a><span class="co">// Reset the state of the buffer.  This "zeros" the head and tail</span></span>
-<span id="cb107-145"><a href="#cb107-145" aria-hidden="true" tabindex="-1"></a><span class="co">// pointer (and may or may not actually reset the data) so that the</span></span>
-<span id="cb107-146"><a href="#cb107-146" aria-hidden="true" tabindex="-1"></a><span class="co">// buffer can be used as if fresh.</span></span>
-<span id="cb107-147"><a href="#cb107-147" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-148"><a href="#cb107-148" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: a ring buffer to reset</span></span>
-<span id="cb107-149"><a href="#cb107-149" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-150"><a href="#cb107-150" aria-hidden="true" tabindex="-1"></a><span class="co">//   clear: boolean, indicating if memory should also be zeroed</span></span>
-<span id="cb107-151"><a href="#cb107-151" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ring_buffer_reset<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> clear<span class="op">);</span></span>
-<span id="cb107-152"><a href="#cb107-152" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-153"><a href="#cb107-153" aria-hidden="true" tabindex="-1"></a><span class="co">//// Basic querying: ////</span></span>
-<span id="cb107-154"><a href="#cb107-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-155"><a href="#cb107-155" aria-hidden="true" tabindex="-1"></a><span class="co">// Return the maximum size of the ring buffer</span></span>
-<span id="cb107-156"><a href="#cb107-156" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-157"><a href="#cb107-157" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to test (will not be modified)</span></span>
-<span id="cb107-158"><a href="#cb107-158" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-159"><a href="#cb107-159" aria-hidden="true" tabindex="-1"></a><span class="co">//   bytes: indicates if size should be in bytes (if true) or elements</span></span>
-<span id="cb107-160"><a href="#cb107-160" aria-hidden="true" tabindex="-1"></a><span class="co">//          (if false)</span></span>
-<span id="cb107-161"><a href="#cb107-161" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_size<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
-<span id="cb107-162"><a href="#cb107-162" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-163"><a href="#cb107-163" aria-hidden="true" tabindex="-1"></a><span class="co">// Report the free and used space in the ring buffer</span></span>
-<span id="cb107-164"><a href="#cb107-164" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-165"><a href="#cb107-165" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to test (will not be modified)</span></span>
-<span id="cb107-166"><a href="#cb107-166" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-167"><a href="#cb107-167" aria-hidden="true" tabindex="-1"></a><span class="co">//   bytes: indicates if used/free space should be in bytes (if true)</span></span>
-<span id="cb107-168"><a href="#cb107-168" aria-hidden="true" tabindex="-1"></a><span class="co">//          or elements (if false)</span></span>
-<span id="cb107-169"><a href="#cb107-169" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_free<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
-<span id="cb107-170"><a href="#cb107-170" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_used<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
-<span id="cb107-171"><a href="#cb107-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-172"><a href="#cb107-172" aria-hidden="true" tabindex="-1"></a><span class="co">// Report the number of bytes of data that have been allocated.  Note</span></span>
-<span id="cb107-173"><a href="#cb107-173" aria-hidden="true" tabindex="-1"></a><span class="co">// that this is likely `stride` more bytes than was requested as this</span></span>
-<span id="cb107-174"><a href="#cb107-174" aria-hidden="true" tabindex="-1"></a><span class="co">// avoids a lot of awkward bookkeeping later, allowing the "full"</span></span>
-<span id="cb107-175"><a href="#cb107-175" aria-hidden="true" tabindex="-1"></a><span class="co">// state to be distinguished from the "empty" state.</span></span>
-<span id="cb107-176"><a href="#cb107-176" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_bytes_data<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-177"><a href="#cb107-177" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-178"><a href="#cb107-178" aria-hidden="true" tabindex="-1"></a><span class="co">// Report if the ring buffer is full or empty</span></span>
-<span id="cb107-179"><a href="#cb107-179" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> ring_buffer_is_full<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-180"><a href="#cb107-180" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> ring_buffer_is_empty<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-181"><a href="#cb107-181" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-182"><a href="#cb107-182" aria-hidden="true" tabindex="-1"></a><span class="co">//// Additional querying: ////</span></span>
-<span id="cb107-183"><a href="#cb107-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-184"><a href="#cb107-184" aria-hidden="true" tabindex="-1"></a><span class="co">// Return the position of the head and tail pointers relative to the</span></span>
-<span id="cb107-185"><a href="#cb107-185" aria-hidden="true" tabindex="-1"></a><span class="co">// data pointer (this is an offset, so 0 means the pointer is at the</span></span>
-<span id="cb107-186"><a href="#cb107-186" aria-hidden="true" tabindex="-1"></a><span class="co">// start of the data array).</span></span>
-<span id="cb107-187"><a href="#cb107-187" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-188"><a href="#cb107-188" aria-hidden="true" tabindex="-1"></a><span class="co">//   bytes: indicates if offset should be bytes (if true) or elements (if false)</span></span>
-<span id="cb107-189"><a href="#cb107-189" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_head_pos<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
-<span id="cb107-190"><a href="#cb107-190" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_tail_pos<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
-<span id="cb107-191"><a href="#cb107-191" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-192"><a href="#cb107-192" aria-hidden="true" tabindex="-1"></a><span class="co">// Return pointers to the the data, head and tail members of the ring</span></span>
-<span id="cb107-193"><a href="#cb107-193" aria-hidden="true" tabindex="-1"></a><span class="co">// buffer.  These are preferred over directly accessing the "data",</span></span>
-<span id="cb107-194"><a href="#cb107-194" aria-hidden="true" tabindex="-1"></a><span class="co">// "head" and "tail" elements of the ring buffer structure itself</span></span>
-<span id="cb107-195"><a href="#cb107-195" aria-hidden="true" tabindex="-1"></a><span class="co">// because with these the compiler will enforce read-only access for</span></span>
-<span id="cb107-196"><a href="#cb107-196" aria-hidden="true" tabindex="-1"></a><span class="co">// you.</span></span>
-<span id="cb107-197"><a href="#cb107-197" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-198"><a href="#cb107-198" aria-hidden="true" tabindex="-1"></a><span class="co">// </span><span class="al">WARNING</span><span class="co">: the head buffer is *not* the most recently added element,</span></span>
-<span id="cb107-199"><a href="#cb107-199" aria-hidden="true" tabindex="-1"></a><span class="co">// but instead the bit of memory that will be written to next; it's</span></span>
-<span id="cb107-200"><a href="#cb107-200" aria-hidden="true" tabindex="-1"></a><span class="co">// generally not terribly useful and a better way of getting the last</span></span>
-<span id="cb107-201"><a href="#cb107-201" aria-hidden="true" tabindex="-1"></a><span class="co">// written element is to use:</span></span>
-<span id="cb107-202"><a href="#cb107-202" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-203"><a href="#cb107-203" aria-hidden="true" tabindex="-1"></a><span class="co">//   ring_buffer_head_offset(buffer, 0);</span></span>
-<span id="cb107-204"><a href="#cb107-204" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-205"><a href="#cb107-205" aria-hidden="true" tabindex="-1"></a><span class="co">// which will look after wrapping the ring buffer appropriately.</span></span>
-<span id="cb107-206"><a href="#cb107-206" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_data<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-207"><a href="#cb107-207" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_head<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-208"><a href="#cb107-208" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_tail<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-209"><a href="#cb107-209" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-210"><a href="#cb107-210" aria-hidden="true" tabindex="-1"></a><span class="co">//// Setting repeated values: ////</span></span>
-<span id="cb107-211"><a href="#cb107-211" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-212"><a href="#cb107-212" aria-hidden="true" tabindex="-1"></a><span class="co">// Set all bytes of a length of the buffer to 'c'.  Here, 'len' is the</span></span>
-<span id="cb107-213"><a href="#cb107-213" aria-hidden="true" tabindex="-1"></a><span class="co">// number of *entries*, so stride * len bytes will be set.  This will</span></span>
-<span id="cb107-214"><a href="#cb107-214" aria-hidden="true" tabindex="-1"></a><span class="co">// mostly be uesful with c=0.</span></span>
-<span id="cb107-215"><a href="#cb107-215" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-216"><a href="#cb107-216" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to set data into</span></span>
-<span id="cb107-217"><a href="#cb107-217" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-218"><a href="#cb107-218" aria-hidden="true" tabindex="-1"></a><span class="co">//   c: value (0-255) to set all bytes to</span></span>
-<span id="cb107-219"><a href="#cb107-219" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-220"><a href="#cb107-220" aria-hidden="true" tabindex="-1"></a><span class="co">//   n: number of elements to set</span></span>
-<span id="cb107-221"><a href="#cb107-221" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-222"><a href="#cb107-222" aria-hidden="true" tabindex="-1"></a><span class="co">// This starts adding data at `head`.  If the buffer will overflow, at</span></span>
-<span id="cb107-223"><a href="#cb107-223" aria-hidden="true" tabindex="-1"></a><span class="co">// most `bytes_data` bytes will be written (i.e., each element will be</span></span>
-<span id="cb107-224"><a href="#cb107-224" aria-hidden="true" tabindex="-1"></a><span class="co">// written to once).</span></span>
-<span id="cb107-225"><a href="#cb107-225" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-226"><a href="#cb107-226" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns the number of bytes actually written to the buffer (so if</span></span>
-<span id="cb107-227"><a href="#cb107-227" aria-hidden="true" tabindex="-1"></a><span class="co">// the buffer overflows this may be less than `len`).</span></span>
-<span id="cb107-228"><a href="#cb107-228" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_set<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> data_t c<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-229"><a href="#cb107-229" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-230"><a href="#cb107-230" aria-hidden="true" tabindex="-1"></a><span class="co">// Set a number of the elements of the buffer to a particular byte</span></span>
-<span id="cb107-231"><a href="#cb107-231" aria-hidden="true" tabindex="-1"></a><span class="co">// pattern.  In contrast with `ring_buffer_set`, this does not set</span></span>
-<span id="cb107-232"><a href="#cb107-232" aria-hidden="true" tabindex="-1"></a><span class="co">// individual bytes, but instead complete elements.</span></span>
-<span id="cb107-233"><a href="#cb107-233" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-234"><a href="#cb107-234" aria-hidden="true" tabindex="-1"></a><span class="co">//    buffer: the ring buffer to set data into</span></span>
-<span id="cb107-235"><a href="#cb107-235" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-236"><a href="#cb107-236" aria-hidden="true" tabindex="-1"></a><span class="co">//    x: pointer to a set of data to copy into the ring buffer.  This</span></span>
-<span id="cb107-237"><a href="#cb107-237" aria-hidden="true" tabindex="-1"></a><span class="co">//            must be (at least) stride bytes long.</span></span>
-<span id="cb107-238"><a href="#cb107-238" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-239"><a href="#cb107-239" aria-hidden="true" tabindex="-1"></a><span class="co">//    n: number of elements to set</span></span>
-<span id="cb107-240"><a href="#cb107-240" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-241"><a href="#cb107-241" aria-hidden="true" tabindex="-1"></a><span class="co">// This starts adding data at `head`.  If the buffer will overflow, at</span></span>
-<span id="cb107-242"><a href="#cb107-242" aria-hidden="true" tabindex="-1"></a><span class="co">// most `bytes_data` bytes will be written (i.e., each element will be</span></span>
-<span id="cb107-243"><a href="#cb107-243" aria-hidden="true" tabindex="-1"></a><span class="co">// written to once).</span></span>
-<span id="cb107-244"><a href="#cb107-244" aria-hidden="true" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_set_stride<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>x<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-245"><a href="#cb107-245" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-246"><a href="#cb107-246" aria-hidden="true" tabindex="-1"></a><span class="co">//// Read and write ////</span></span>
-<span id="cb107-247"><a href="#cb107-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-248"><a href="#cb107-248" aria-hidden="true" tabindex="-1"></a><span class="co">// Copy `n` entries, each of `stride` bytes from a contiguous memory</span></span>
-<span id="cb107-249"><a href="#cb107-249" aria-hidden="true" tabindex="-1"></a><span class="co">// area src into the ring `buffer`. Returns the ring buffer's new head</span></span>
-<span id="cb107-250"><a href="#cb107-250" aria-hidden="true" tabindex="-1"></a><span class="co">// pointer.</span></span>
-<span id="cb107-251"><a href="#cb107-251" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-252"><a href="#cb107-252" aria-hidden="true" tabindex="-1"></a><span class="co">// It is possible to overflow the buffer with this function</span></span>
-<span id="cb107-253"><a href="#cb107-253" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-254"><a href="#cb107-254" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to copy data into</span></span>
-<span id="cb107-255"><a href="#cb107-255" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-256"><a href="#cb107-256" aria-hidden="true" tabindex="-1"></a><span class="co">//   src: the source memory to copy from (make sure this is big enough</span></span>
-<span id="cb107-257"><a href="#cb107-257" aria-hidden="true" tabindex="-1"></a><span class="co">//           or you will get crashes and other terrible things).</span></span>
-<span id="cb107-258"><a href="#cb107-258" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-259"><a href="#cb107-259" aria-hidden="true" tabindex="-1"></a><span class="co">//   n: the number of entries to copy from `src` into `buffer` (each</span></span>
-<span id="cb107-260"><a href="#cb107-260" aria-hidden="true" tabindex="-1"></a><span class="co">//           of which is `stride` bytes long).</span></span>
-<span id="cb107-261"><a href="#cb107-261" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_push<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>src<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-262"><a href="#cb107-262" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-263"><a href="#cb107-263" aria-hidden="true" tabindex="-1"></a><span class="co">// Destructively copy `n` entries (each of which is `stride` bytes)</span></span>
-<span id="cb107-264"><a href="#cb107-264" aria-hidden="true" tabindex="-1"></a><span class="co">// from a ring buffer `buffer` into contiguous memory region `dest`.</span></span>
-<span id="cb107-265"><a href="#cb107-265" aria-hidden="true" tabindex="-1"></a><span class="co">// This updates the `tail` pointers in the ring buffer and returns the</span></span>
-<span id="cb107-266"><a href="#cb107-266" aria-hidden="true" tabindex="-1"></a><span class="co">// new tail pointer.</span></span>
-<span id="cb107-267"><a href="#cb107-267" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-268"><a href="#cb107-268" aria-hidden="true" tabindex="-1"></a><span class="co">// The `n` entries will no longer be available in the ring buffer.</span></span>
-<span id="cb107-269"><a href="#cb107-269" aria-hidden="true" tabindex="-1"></a><span class="co">// To do a nondestructive read, use `ring_buffer_read()`.</span></span>
-<span id="cb107-270"><a href="#cb107-270" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-271"><a href="#cb107-271" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to copy data from</span></span>
-<span id="cb107-272"><a href="#cb107-272" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-273"><a href="#cb107-273" aria-hidden="true" tabindex="-1"></a><span class="co">//   dest: the destination memory to copy into (make sure this is big enough</span></span>
-<span id="cb107-274"><a href="#cb107-274" aria-hidden="true" tabindex="-1"></a><span class="co">//           or you will get crashes and other terrible things).</span></span>
-<span id="cb107-275"><a href="#cb107-275" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-276"><a href="#cb107-276" aria-hidden="true" tabindex="-1"></a><span class="co">//   n: the number of entries to copy from `src` into `buffer` (each</span></span>
-<span id="cb107-277"><a href="#cb107-277" aria-hidden="true" tabindex="-1"></a><span class="co">//           of which is `stride` bytes long).</span></span>
-<span id="cb107-278"><a href="#cb107-278" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-279"><a href="#cb107-279" aria-hidden="true" tabindex="-1"></a><span class="co">// This function will not allow the ring buffer to underflow.  If</span></span>
-<span id="cb107-280"><a href="#cb107-280" aria-hidden="true" tabindex="-1"></a><span class="co">// `n` is greater than the number of available entries, then</span></span>
-<span id="cb107-281"><a href="#cb107-281" aria-hidden="true" tabindex="-1"></a><span class="co">// nothing is copied (and the ring buffer remains unmodified) and NULL</span></span>
-<span id="cb107-282"><a href="#cb107-282" aria-hidden="true" tabindex="-1"></a><span class="co">// is returned.</span></span>
-<span id="cb107-283"><a href="#cb107-283" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_take<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-284"><a href="#cb107-284" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-285"><a href="#cb107-285" aria-hidden="true" tabindex="-1"></a><span class="co">// Nondestructively read from a ring buffer.  This function is</span></span>
-<span id="cb107-286"><a href="#cb107-286" aria-hidden="true" tabindex="-1"></a><span class="co">// essentially identical to `ring_buffer_take` but does not alter the</span></span>
-<span id="cb107-287"><a href="#cb107-287" aria-hidden="true" tabindex="-1"></a><span class="co">// tail pointer.</span></span>
-<span id="cb107-288"><a href="#cb107-288" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_read<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-289"><a href="#cb107-289" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-290"><a href="#cb107-290" aria-hidden="true" tabindex="-1"></a><span class="co">// ring_buffer_take_head and ring_buffer_read_head are like</span></span>
-<span id="cb107-291"><a href="#cb107-291" aria-hidden="true" tabindex="-1"></a><span class="co">// ring_buffer_take and ring_buffer_read (respectively) but operate on</span></span>
-<span id="cb107-292"><a href="#cb107-292" aria-hidden="true" tabindex="-1"></a><span class="co">// the *head* of the ring (i.e., removing the most recently added</span></span>
-<span id="cb107-293"><a href="#cb107-293" aria-hidden="true" tabindex="-1"></a><span class="co">// elements rather than the oldest elements).</span></span>
-<span id="cb107-294"><a href="#cb107-294" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-295"><a href="#cb107-295" aria-hidden="true" tabindex="-1"></a><span class="co">// Neither will underflow, returning NULL if there are not enough</span></span>
-<span id="cb107-296"><a href="#cb107-296" aria-hidden="true" tabindex="-1"></a><span class="co">// elements, and without copying anything.</span></span>
-<span id="cb107-297"><a href="#cb107-297" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_take_head<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-298"><a href="#cb107-298" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_read_head<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span></span>
-<span id="cb107-299"><a href="#cb107-299" aria-hidden="true" tabindex="-1"></a>                                   <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-300"><a href="#cb107-300" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-301"><a href="#cb107-301" aria-hidden="true" tabindex="-1"></a><span class="co">// Copy `n` entries (each of `stride` bytes) from one ring buffer</span></span>
-<span id="cb107-302"><a href="#cb107-302" aria-hidden="true" tabindex="-1"></a><span class="co">// `src` into another `dest`.  The copy starts at the tail of this</span></span>
-<span id="cb107-303"><a href="#cb107-303" aria-hidden="true" tabindex="-1"></a><span class="co">// ring buffer, pushing onto the head of the destination buffer.</span></span>
-<span id="cb107-304"><a href="#cb107-304" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-305"><a href="#cb107-305" aria-hidden="true" tabindex="-1"></a><span class="co">//   src: A ring buffer to copy data from</span></span>
-<span id="cb107-306"><a href="#cb107-306" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-307"><a href="#cb107-307" aria-hidden="true" tabindex="-1"></a><span class="co">//   dest: A ring buffer to copy data into</span></span>
-<span id="cb107-308"><a href="#cb107-308" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-309"><a href="#cb107-309" aria-hidden="true" tabindex="-1"></a><span class="co">//   n: the number of entries to copy (each of which is `stride` bytes)</span></span>
-<span id="cb107-310"><a href="#cb107-310" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-311"><a href="#cb107-311" aria-hidden="true" tabindex="-1"></a><span class="co">// This is destructive to both buffers as pointers will be updated in</span></span>
-<span id="cb107-312"><a href="#cb107-312" aria-hidden="true" tabindex="-1"></a><span class="co">// both.</span></span>
-<span id="cb107-313"><a href="#cb107-313" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-314"><a href="#cb107-314" aria-hidden="true" tabindex="-1"></a><span class="co">// This function returns the new head pointer of the destination buffer.</span></span>
-<span id="cb107-315"><a href="#cb107-315" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-316"><a href="#cb107-316" aria-hidden="true" tabindex="-1"></a><span class="co">// It is not possible to underflow `src`; if too few entries are</span></span>
-<span id="cb107-317"><a href="#cb107-317" aria-hidden="true" tabindex="-1"></a><span class="co">// available, then nothing is copied, `src` and `dest` are not</span></span>
-<span id="cb107-318"><a href="#cb107-318" aria-hidden="true" tabindex="-1"></a><span class="co">// modified, and the function returns NULL</span></span>
-<span id="cb107-319"><a href="#cb107-319" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-320"><a href="#cb107-320" aria-hidden="true" tabindex="-1"></a><span class="co">// It is possible to overflow `dest` and the tail pointer will be</span></span>
-<span id="cb107-321"><a href="#cb107-321" aria-hidden="true" tabindex="-1"></a><span class="co">// updated appropriately if so.</span></span>
-<span id="cb107-322"><a href="#cb107-322" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-323"><a href="#cb107-323" aria-hidden="true" tabindex="-1"></a><span class="co">// Warning: the two buffers must have the same stride.  If the buffers</span></span>
-<span id="cb107-324"><a href="#cb107-324" aria-hidden="true" tabindex="-1"></a><span class="co">// do not have the same stride, the function will return NULL (this</span></span>
-<span id="cb107-325"><a href="#cb107-325" aria-hidden="true" tabindex="-1"></a><span class="co">// means if the function returns NULL it could either be an underflow</span></span>
-<span id="cb107-326"><a href="#cb107-326" aria-hidden="true" tabindex="-1"></a><span class="co">// or an incompatible buffer).</span></span>
-<span id="cb107-327"><a href="#cb107-327" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_copy<span class="op">(</span>ring_buffer <span class="op">*</span>src<span class="op">,</span> ring_buffer <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb107-328"><a href="#cb107-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-329"><a href="#cb107-329" aria-hidden="true" tabindex="-1"></a><span class="co">// Mirror the contents of ring buffer `src` into ring buffer `dest`.</span></span>
-<span id="cb107-330"><a href="#cb107-330" aria-hidden="true" tabindex="-1"></a><span class="co">// This differs from `ring_buffer_copy` in that the `src` buffer is</span></span>
-<span id="cb107-331"><a href="#cb107-331" aria-hidden="true" tabindex="-1"></a><span class="co">// not modified and that the *entire* state of the ring buffer is</span></span>
-<span id="cb107-332"><a href="#cb107-332" aria-hidden="true" tabindex="-1"></a><span class="co">// duplicated.</span></span>
-<span id="cb107-333"><a href="#cb107-333" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-334"><a href="#cb107-334" aria-hidden="true" tabindex="-1"></a><span class="co">// The function requires (and checks) that `src` and `dest` agree on</span></span>
-<span id="cb107-335"><a href="#cb107-335" aria-hidden="true" tabindex="-1"></a><span class="co">// size and stride (and therefore total bytes).  It returns `true` if</span></span>
-<span id="cb107-336"><a href="#cb107-336" aria-hidden="true" tabindex="-1"></a><span class="co">// the mirror was done, and `false` if the buffers are incompatible.</span></span>
-<span id="cb107-337"><a href="#cb107-337" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-338"><a href="#cb107-338" aria-hidden="true" tabindex="-1"></a><span class="co">// This function will destroy all data in `dest`, but not allocate any</span></span>
-<span id="cb107-339"><a href="#cb107-339" aria-hidden="true" tabindex="-1"></a><span class="co">// memory.</span></span>
-<span id="cb107-340"><a href="#cb107-340" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-341"><a href="#cb107-341" aria-hidden="true" tabindex="-1"></a><span class="co">// Warning: the two buffers must have the same stride *and* the same</span></span>
-<span id="cb107-342"><a href="#cb107-342" aria-hidden="true" tabindex="-1"></a><span class="co">// size.  If they do not, the function will return NULL (this means if</span></span>
-<span id="cb107-343"><a href="#cb107-343" aria-hidden="true" tabindex="-1"></a><span class="co">// the function returns NULL it could either be an underflow or an</span></span>
-<span id="cb107-344"><a href="#cb107-344" aria-hidden="true" tabindex="-1"></a><span class="co">// incompatible buffer).</span></span>
-<span id="cb107-345"><a href="#cb107-345" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> ring_buffer_mirror<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>src<span class="op">,</span> ring_buffer <span class="op">*</span>dest<span class="op">);</span></span>
-<span id="cb107-346"><a href="#cb107-346" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-347"><a href="#cb107-347" aria-hidden="true" tabindex="-1"></a><span class="co">// Returns a pointer to the tail (reading end) of the buffer, offset</span></span>
-<span id="cb107-348"><a href="#cb107-348" aria-hidden="true" tabindex="-1"></a><span class="co">// by `offset` entries.  When used as `ring_buffer_tail_offset(x, 0)`</span></span>
-<span id="cb107-349"><a href="#cb107-349" aria-hidden="true" tabindex="-1"></a><span class="co">// this is equivalent to `ring_buffer_tail(x)` except that it will do</span></span>
-<span id="cb107-350"><a href="#cb107-350" aria-hidden="true" tabindex="-1"></a><span class="co">// underflow checking.</span></span>
-<span id="cb107-351"><a href="#cb107-351" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-352"><a href="#cb107-352" aria-hidden="true" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to use</span></span>
-<span id="cb107-353"><a href="#cb107-353" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-354"><a href="#cb107-354" aria-hidden="true" tabindex="-1"></a><span class="co">//   offset: the number of entries (each of which are `stride` bytes)</span></span>
-<span id="cb107-355"><a href="#cb107-355" aria-hidden="true" tabindex="-1"></a><span class="co">//           to offset by</span></span>
-<span id="cb107-356"><a href="#cb107-356" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-357"><a href="#cb107-357" aria-hidden="true" tabindex="-1"></a><span class="co">// It is not possible to underflow the buffer here; if `offset` is so</span></span>
-<span id="cb107-358"><a href="#cb107-358" aria-hidden="true" tabindex="-1"></a><span class="co">// large that it would underflow, then NULL will be returned.</span></span>
-<span id="cb107-359"><a href="#cb107-359" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_tail_offset<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> offset<span class="op">);</span></span>
-<span id="cb107-360"><a href="#cb107-360" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-361"><a href="#cb107-361" aria-hidden="true" tabindex="-1"></a><span class="co">// As for `ring_buffer_tail_offset`, but offsetting the *head*</span></span>
-<span id="cb107-362"><a href="#cb107-362" aria-hidden="true" tabindex="-1"></a><span class="co">// pointer.  This offsets in the opposite direction (moving from the</span></span>
-<span id="cb107-363"><a href="#cb107-363" aria-hidden="true" tabindex="-1"></a><span class="co">// most recently added element towards the oldest element).</span></span>
-<span id="cb107-364"><a href="#cb107-364" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_head_offset<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> offset<span class="op">);</span></span>
-<span id="cb107-365"><a href="#cb107-365" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-366"><a href="#cb107-366" aria-hidden="true" tabindex="-1"></a><span class="co">//// For advanced use: ////</span></span>
-<span id="cb107-367"><a href="#cb107-367" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-368"><a href="#cb107-368" aria-hidden="true" tabindex="-1"></a><span class="co">// Advance the ring buffer by one entry and return a pointer to the</span></span>
-<span id="cb107-369"><a href="#cb107-369" aria-hidden="true" tabindex="-1"></a><span class="co">// memory *without writing anything to it*.  In this case, the calling</span></span>
-<span id="cb107-370"><a href="#cb107-370" aria-hidden="true" tabindex="-1"></a><span class="co">// function is responsible for setting the memory to something</span></span>
-<span id="cb107-371"><a href="#cb107-371" aria-hidden="true" tabindex="-1"></a><span class="co">// sensible.  This is currently used in the dde package where we want</span></span>
-<span id="cb107-372"><a href="#cb107-372" aria-hidden="true" tabindex="-1"></a><span class="co">// to write directly to the head.</span></span>
-<span id="cb107-373"><a href="#cb107-373" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-374"><a href="#cb107-374" aria-hidden="true" tabindex="-1"></a><span class="co">// This is (roughly) equivalent to:</span></span>
-<span id="cb107-375"><a href="#cb107-375" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-376"><a href="#cb107-376" aria-hidden="true" tabindex="-1"></a><span class="co">//    ring_buffer_set(buffer, 0, 1);</span></span>
-<span id="cb107-377"><a href="#cb107-377" aria-hidden="true" tabindex="-1"></a><span class="co">//    return buffer-&gt;head;</span></span>
-<span id="cb107-378"><a href="#cb107-378" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-379"><a href="#cb107-379" aria-hidden="true" tabindex="-1"></a><span class="co">// but does not actually copy any data.</span></span>
-<span id="cb107-380"><a href="#cb107-380" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-381"><a href="#cb107-381" aria-hidden="true" tabindex="-1"></a><span class="co">// Note that the pointer returned is *not* const; this is always used</span></span>
-<span id="cb107-382"><a href="#cb107-382" aria-hidden="true" tabindex="-1"></a><span class="co">// in a case where the aim is to write to the head directly!</span></span>
-<span id="cb107-383"><a href="#cb107-383" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="op">*</span> ring_buffer_head_advance<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
-<span id="cb107-384"><a href="#cb107-384" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-385"><a href="#cb107-385" aria-hidden="true" tabindex="-1"></a><span class="co">//// Search: ////</span></span>
-<span id="cb107-386"><a href="#cb107-386" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-387"><a href="#cb107-387" aria-hidden="true" tabindex="-1"></a><span class="co">// There are two functions for searching for data within a ring buffer</span></span>
-<span id="cb107-388"><a href="#cb107-388" aria-hidden="true" tabindex="-1"></a><span class="co">// that consists of *sorted* entries.  This might be the case if</span></span>
-<span id="cb107-389"><a href="#cb107-389" aria-hidden="true" tabindex="-1"></a><span class="co">// entries are added sequentially with (say) a timestamp.</span></span>
-<span id="cb107-390"><a href="#cb107-390" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-391"><a href="#cb107-391" aria-hidden="true" tabindex="-1"></a><span class="co">// To locate an entry, a predicate function (pointer) must be</span></span>
-<span id="cb107-392"><a href="#cb107-392" aria-hidden="true" tabindex="-1"></a><span class="co">// provided.  This must be a function taking two void pointers as</span></span>
-<span id="cb107-393"><a href="#cb107-393" aria-hidden="true" tabindex="-1"></a><span class="co">// arguments; the first will be the pointer to an entry in the ring</span></span>
-<span id="cb107-394"><a href="#cb107-394" aria-hidden="true" tabindex="-1"></a><span class="co">// buffer, the second will be any data that *you* provide (may be</span></span>
-<span id="cb107-395"><a href="#cb107-395" aria-hidden="true" tabindex="-1"></a><span class="co">// NULL).  This function must return "true" if the value is *less</span></span>
-<span id="cb107-396"><a href="#cb107-396" aria-hidden="true" tabindex="-1"></a><span class="co">// than* the target value (i.e. true if we should search *earlier* in</span></span>
-<span id="cb107-397"><a href="#cb107-397" aria-hidden="true" tabindex="-1"></a><span class="co">// the buffer).  The "x" argument must be treated as read-only.</span></span>
-<span id="cb107-398"><a href="#cb107-398" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-399"><a href="#cb107-399" aria-hidden="true" tabindex="-1"></a><span class="co">// For example, a predictate function that would find an entry where</span></span>
-<span id="cb107-400"><a href="#cb107-400" aria-hidden="true" tabindex="-1"></a><span class="co">// the first 8 bytes of a ring buffer entry represent doubles could be</span></span>
-<span id="cb107-401"><a href="#cb107-401" aria-hidden="true" tabindex="-1"></a><span class="co">// written as:</span></span>
-<span id="cb107-402"><a href="#cb107-402" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-403"><a href="#cb107-403" aria-hidden="true" tabindex="-1"></a><span class="co">//     bool test_find_double(const void *x, void *data) {</span></span>
-<span id="cb107-404"><a href="#cb107-404" aria-hidden="true" tabindex="-1"></a><span class="co">//       double x_value = *((double*) x);</span></span>
-<span id="cb107-405"><a href="#cb107-405" aria-hidden="true" tabindex="-1"></a><span class="co">//       double data_value = *((double*) data);</span></span>
-<span id="cb107-406"><a href="#cb107-406" aria-hidden="true" tabindex="-1"></a><span class="co">//       return x_value &lt;= data_value;</span></span>
-<span id="cb107-407"><a href="#cb107-407" aria-hidden="true" tabindex="-1"></a><span class="co">//     }</span></span>
-<span id="cb107-408"><a href="#cb107-408" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-409"><a href="#cb107-409" aria-hidden="true" tabindex="-1"></a><span class="co">// Where the "data" argument will be passed through as the number to</span></span>
-<span id="cb107-410"><a href="#cb107-410" aria-hidden="true" tabindex="-1"></a><span class="co">// search for.</span></span>
-<span id="cb107-411"><a href="#cb107-411" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-412"><a href="#cb107-412" aria-hidden="true" tabindex="-1"></a><span class="co">// These functions return NULL if no entry is found, otherwise they</span></span>
-<span id="cb107-413"><a href="#cb107-413" aria-hidden="true" tabindex="-1"></a><span class="co">// return the pointer to the largest entry in the buffer that the</span></span>
-<span id="cb107-414"><a href="#cb107-414" aria-hidden="true" tabindex="-1"></a><span class="co">// predicate returns false.</span></span>
-<span id="cb107-415"><a href="#cb107-415" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-416"><a href="#cb107-416" aria-hidden="true" tabindex="-1"></a><span class="co">// The _linear search does a naive linear search from the tail of the</span></span>
-<span id="cb107-417"><a href="#cb107-417" aria-hidden="true" tabindex="-1"></a><span class="co">// buffer (i.e., the last entry that was added) towards the beginning.</span></span>
-<span id="cb107-418"><a href="#cb107-418" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-419"><a href="#cb107-419" aria-hidden="true" tabindex="-1"></a><span class="co">// The _bisect search tries to be more clever and does a bisect</span></span>
-<span id="cb107-420"><a href="#cb107-420" aria-hidden="true" tabindex="-1"></a><span class="co">// search.  It requires an initial guess "i" to the location of the</span></span>
-<span id="cb107-421"><a href="#cb107-421" aria-hidden="true" tabindex="-1"></a><span class="co">// data.  You can provide '0' as 'i' to start at the tail.</span></span>
-<span id="cb107-422"><a href="#cb107-422" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb107-423"><a href="#cb107-423" aria-hidden="true" tabindex="-1"></a><span class="co">// The "data" argument to both functions will be passed through to the</span></span>
-<span id="cb107-424"><a href="#cb107-424" aria-hidden="true" tabindex="-1"></a><span class="co">// predicate function.</span></span>
-<span id="cb107-425"><a href="#cb107-425" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">bool</span> ring_predicate<span class="op">(</span><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>x<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>data<span class="op">);</span></span>
-<span id="cb107-426"><a href="#cb107-426" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_search_linear<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span></span>
-<span id="cb107-427"><a href="#cb107-427" aria-hidden="true" tabindex="-1"></a>                                       ring_predicate pred<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>data<span class="op">);</span></span>
-<span id="cb107-428"><a href="#cb107-428" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_search_bisect<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> i<span class="op">,</span></span>
-<span id="cb107-429"><a href="#cb107-429" aria-hidden="true" tabindex="-1"></a>                                       ring_predicate pred<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>data<span class="op">);</span></span>
-<span id="cb107-430"><a href="#cb107-430" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-431"><a href="#cb107-431" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef __cplusplus</span></span>
-<span id="cb107-432"><a href="#cb107-432" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb107-433"><a href="#cb107-433" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
-<span id="cb107-434"><a href="#cb107-434" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb107-1"><a href="#cb107-1" tabindex="-1"></a><span class="pp">#ifndef _RING_H_</span></span>
+<span id="cb107-2"><a href="#cb107-2" tabindex="-1"></a><span class="pp">#define _RING_H_</span></span>
+<span id="cb107-3"><a href="#cb107-3" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stddef.h&gt;</span></span>
+<span id="cb107-4"><a href="#cb107-4" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdbool.h&gt;</span></span>
+<span id="cb107-5"><a href="#cb107-5" tabindex="-1"></a></span>
+<span id="cb107-6"><a href="#cb107-6" tabindex="-1"></a><span class="pp">#ifndef RING_USE_STDLIB_ALLOC</span></span>
+<span id="cb107-7"><a href="#cb107-7" tabindex="-1"></a><span class="pp">#ifndef USING_R</span></span>
+<span id="cb107-8"><a href="#cb107-8" tabindex="-1"></a><span class="pp">#define USING_R</span></span>
+<span id="cb107-9"><a href="#cb107-9" tabindex="-1"></a><span class="pp">#endif</span></span>
+<span id="cb107-10"><a href="#cb107-10" tabindex="-1"></a><span class="pp">#endif</span></span>
+<span id="cb107-11"><a href="#cb107-11" tabindex="-1"></a></span>
+<span id="cb107-12"><a href="#cb107-12" tabindex="-1"></a><span class="co">// Allow use from C++</span></span>
+<span id="cb107-13"><a href="#cb107-13" tabindex="-1"></a><span class="pp">#ifdef __cplusplus</span></span>
+<span id="cb107-14"><a href="#cb107-14" tabindex="-1"></a><span class="kw">extern</span> <span class="st">"C"</span> <span class="op">{</span></span>
+<span id="cb107-15"><a href="#cb107-15" tabindex="-1"></a><span class="pp">#endif</span></span>
+<span id="cb107-16"><a href="#cb107-16" tabindex="-1"></a></span>
+<span id="cb107-17"><a href="#cb107-17" tabindex="-1"></a><span class="co">// What to do on overflow.</span></span>
+<span id="cb107-18"><a href="#cb107-18" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-19"><a href="#cb107-19" tabindex="-1"></a><span class="co">// The OVERFLOW_ERROR action (which calls R's error function) is only</span></span>
+<span id="cb107-20"><a href="#cb107-20" tabindex="-1"></a><span class="co">// available when using R, which is detected by the &lt;R.h&gt; header</span></span>
+<span id="cb107-21"><a href="#cb107-21" tabindex="-1"></a><span class="co">// included.  If you are using RING_USE_STDLIB_ALLOC (see below) but</span></span>
+<span id="cb107-22"><a href="#cb107-22" tabindex="-1"></a><span class="co">// want to use OVERFLOW_ERROR then you'll need to include &lt;R.h&gt; as</span></span>
+<span id="cb107-23"><a href="#cb107-23" tabindex="-1"></a><span class="co">// well, and be willing to deal with an R error and the longjmp that</span></span>
+<span id="cb107-24"><a href="#cb107-24" tabindex="-1"></a><span class="co">// it causes.</span></span>
+<span id="cb107-25"><a href="#cb107-25" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">enum</span> overflow_action <span class="op">{</span></span>
+<span id="cb107-26"><a href="#cb107-26" tabindex="-1"></a>  OVERFLOW_OVERWRITE<span class="op">,</span></span>
+<span id="cb107-27"><a href="#cb107-27" tabindex="-1"></a>  OVERFLOW_GROW</span>
+<span id="cb107-28"><a href="#cb107-28" tabindex="-1"></a><span class="pp">#ifdef USING_R</span></span>
+<span id="cb107-29"><a href="#cb107-29" tabindex="-1"></a>  <span class="op">,</span> OVERFLOW_ERROR</span>
+<span id="cb107-30"><a href="#cb107-30" tabindex="-1"></a><span class="pp">#endif</span></span>
+<span id="cb107-31"><a href="#cb107-31" tabindex="-1"></a><span class="op">}</span> overflow_action<span class="op">;</span></span>
+<span id="cb107-32"><a href="#cb107-32" tabindex="-1"></a></span>
+<span id="cb107-33"><a href="#cb107-33" tabindex="-1"></a><span class="co">// The underlying data structure.  None of the fields here should be</span></span>
+<span id="cb107-34"><a href="#cb107-34" tabindex="-1"></a><span class="co">// directly accessed in normal use; use the accessor functions</span></span>
+<span id="cb107-35"><a href="#cb107-35" tabindex="-1"></a><span class="co">// instead.</span></span>
+<span id="cb107-36"><a href="#cb107-36" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-37"><a href="#cb107-37" tabindex="-1"></a><span class="co">// The ring buffer is a FIFO (first-in-first-out) queue.  It is</span></span>
+<span id="cb107-38"><a href="#cb107-38" tabindex="-1"></a><span class="co">// implemented as a single block of memory (data) and a pair of</span></span>
+<span id="cb107-39"><a href="#cb107-39" tabindex="-1"></a><span class="co">// pointers:</span></span>
+<span id="cb107-40"><a href="#cb107-40" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-41"><a href="#cb107-41" tabindex="-1"></a><span class="co">//   head: the starting location where data should be written when</span></span>
+<span id="cb107-42"><a href="#cb107-42" tabindex="-1"></a><span class="co">//         copying data *into* the buffer.</span></span>
+<span id="cb107-43"><a href="#cb107-43" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-44"><a href="#cb107-44" tabindex="-1"></a><span class="co">//   tail: the starting location where data should be read when</span></span>
+<span id="cb107-45"><a href="#cb107-45" tabindex="-1"></a><span class="co">//         copying data *from* the buffer.</span></span>
+<span id="cb107-46"><a href="#cb107-46" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-47"><a href="#cb107-47" tabindex="-1"></a><span class="co">// The buffer has a concept of a stride; the number of bytes per</span></span>
+<span id="cb107-48"><a href="#cb107-48" tabindex="-1"></a><span class="co">// buffer entry.  This is fixed across the entire ring.  As such, some</span></span>
+<span id="cb107-49"><a href="#cb107-49" tabindex="-1"></a><span class="co">// functions that return size_t have a booleanargument "bytes" that</span></span>
+<span id="cb107-50"><a href="#cb107-50" tabindex="-1"></a><span class="co">// switches between measuring in bytes and measuring in logical</span></span>
+<span id="cb107-51"><a href="#cb107-51" tabindex="-1"></a><span class="co">// elements.  In the case where stride=1, these are identical.</span></span>
+<span id="cb107-52"><a href="#cb107-52" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-53"><a href="#cb107-53" tabindex="-1"></a><span class="co">// In general, the ring buffer is totally happy to overflow; if you</span></span>
+<span id="cb107-54"><a href="#cb107-54" tabindex="-1"></a><span class="co">// write too much into the ring buffer it will destructively erase</span></span>
+<span id="cb107-55"><a href="#cb107-55" tabindex="-1"></a><span class="co">// data (i.e., your tail will move).  The ring buffer will never</span></span>
+<span id="cb107-56"><a href="#cb107-56" tabindex="-1"></a><span class="co">// underflow, but functions may return `NULL` on underflow - read the</span></span>
+<span id="cb107-57"><a href="#cb107-57" tabindex="-1"></a><span class="co">// documentation below carefully.</span></span>
+<span id="cb107-58"><a href="#cb107-58" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">unsigned</span> <span class="dt">char</span> data_t<span class="op">;</span></span>
+<span id="cb107-59"><a href="#cb107-59" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> ring_buffer <span class="op">{</span></span>
+<span id="cb107-60"><a href="#cb107-60" tabindex="-1"></a>  <span class="dt">size_t</span> size<span class="op">;</span></span>
+<span id="cb107-61"><a href="#cb107-61" tabindex="-1"></a>  <span class="dt">size_t</span> stride<span class="op">;</span></span>
+<span id="cb107-62"><a href="#cb107-62" tabindex="-1"></a>  <span class="dt">size_t</span> bytes_data<span class="op">;</span></span>
+<span id="cb107-63"><a href="#cb107-63" tabindex="-1"></a>  overflow_action on_overflow<span class="op">;</span></span>
+<span id="cb107-64"><a href="#cb107-64" tabindex="-1"></a></span>
+<span id="cb107-65"><a href="#cb107-65" tabindex="-1"></a>  data_t <span class="op">*</span>data<span class="op">;</span></span>
+<span id="cb107-66"><a href="#cb107-66" tabindex="-1"></a>  data_t <span class="op">*</span>head<span class="op">;</span></span>
+<span id="cb107-67"><a href="#cb107-67" tabindex="-1"></a>  data_t <span class="op">*</span>tail<span class="op">;</span></span>
+<span id="cb107-68"><a href="#cb107-68" tabindex="-1"></a><span class="op">}</span> ring_buffer<span class="op">;</span></span>
+<span id="cb107-69"><a href="#cb107-69" tabindex="-1"></a></span>
+<span id="cb107-70"><a href="#cb107-70" tabindex="-1"></a><span class="co">//// Creation, deletion, etc: ////</span></span>
+<span id="cb107-71"><a href="#cb107-71" tabindex="-1"></a></span>
+<span id="cb107-72"><a href="#cb107-72" tabindex="-1"></a><span class="co">// Create a ring buffer.  After creating, be sure to free the memory</span></span>
+<span id="cb107-73"><a href="#cb107-73" tabindex="-1"></a><span class="co">// with `ring_buffer_destroy`.</span></span>
+<span id="cb107-74"><a href="#cb107-74" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-75"><a href="#cb107-75" tabindex="-1"></a><span class="co">//   size: (maximum) number of elements that the ring buffer may contain</span></span>
+<span id="cb107-76"><a href="#cb107-76" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-77"><a href="#cb107-77" tabindex="-1"></a><span class="co">//   stride: number of *bytes* per ring buffer element</span></span>
+<span id="cb107-78"><a href="#cb107-78" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-79"><a href="#cb107-79" tabindex="-1"></a><span class="co">// See the note above the struct for details on size/stride.</span></span>
+<span id="cb107-80"><a href="#cb107-80" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-81"><a href="#cb107-81" tabindex="-1"></a><span class="co">// If the buffer cannot be allocated (e.g., too big a buffer is</span></span>
+<span id="cb107-82"><a href="#cb107-82" tabindex="-1"></a><span class="co">// requested) then an R error will be thrown as this uses `Calloc`.</span></span>
+<span id="cb107-83"><a href="#cb107-83" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-84"><a href="#cb107-84" tabindex="-1"></a><span class="co">// This may not always be desirable (e.g., if using from within C++,</span></span>
+<span id="cb107-85"><a href="#cb107-85" tabindex="-1"></a><span class="co">// or in a project that does not actually use R).  To use plain C</span></span>
+<span id="cb107-86"><a href="#cb107-86" tabindex="-1"></a><span class="co">// stdlib calloc/free, in the ring.c use:</span></span>
+<span id="cb107-87"><a href="#cb107-87" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-88"><a href="#cb107-88" tabindex="-1"></a><span class="co">//     #define RING_USE_STDLIB_ALLOC 1</span></span>
+<span id="cb107-89"><a href="#cb107-89" tabindex="-1"></a><span class="co">//     #include &lt;ring/ring.c&gt;</span></span>
+<span id="cb107-90"><a href="#cb107-90" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-91"><a href="#cb107-91" tabindex="-1"></a><span class="co">// which will not depend on *any* R code and use stdlib calloc/free</span></span>
+<span id="cb107-92"><a href="#cb107-92" tabindex="-1"></a><span class="co">// (except for the issue with USING_R/OVERFLOW_ERROR above).  With</span></span>
+<span id="cb107-93"><a href="#cb107-93" tabindex="-1"></a><span class="co">// RING_USE_STDLIB_ALLOC defined, if an allocation fails, then</span></span>
+<span id="cb107-94"><a href="#cb107-94" tabindex="-1"></a><span class="co">// ring_buffer_create (and ring_buffer_duplicate below) will return</span></span>
+<span id="cb107-95"><a href="#cb107-95" tabindex="-1"></a><span class="co">// NULL.  So if using this approach be sure to check the return value!</span></span>
+<span id="cb107-96"><a href="#cb107-96" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-97"><a href="#cb107-97" tabindex="-1"></a><span class="co">// The main wrinkle to using RING_USE_STDLIB_ALLOC 1 is that the</span></span>
+<span id="cb107-98"><a href="#cb107-98" tabindex="-1"></a><span class="co">// `overflow_action` `OVERFLOW_ERROR` will not work.  At present this</span></span>
+<span id="cb107-99"><a href="#cb107-99" tabindex="-1"></a><span class="co">// will fail to compile, but in future I may add an error handler.</span></span>
+<span id="cb107-100"><a href="#cb107-100" tabindex="-1"></a>ring_buffer <span class="op">*</span> ring_buffer_create<span class="op">(</span><span class="dt">size_t</span> size<span class="op">,</span> <span class="dt">size_t</span> stride<span class="op">,</span></span>
+<span id="cb107-101"><a href="#cb107-101" tabindex="-1"></a>                                 overflow_action on_overflow<span class="op">);</span></span>
+<span id="cb107-102"><a href="#cb107-102" tabindex="-1"></a></span>
+<span id="cb107-103"><a href="#cb107-103" tabindex="-1"></a><span class="co">// Destroy a ring buffer.  Frees the memory</span></span>
+<span id="cb107-104"><a href="#cb107-104" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-105"><a href="#cb107-105" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to copy; after calling this function all</span></span>
+<span id="cb107-106"><a href="#cb107-106" tabindex="-1"></a><span class="co">//           memory associated with the buffer is freed.</span></span>
+<span id="cb107-107"><a href="#cb107-107" tabindex="-1"></a><span class="dt">void</span> ring_buffer_destroy<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-108"><a href="#cb107-108" tabindex="-1"></a></span>
+<span id="cb107-109"><a href="#cb107-109" tabindex="-1"></a><span class="co">// Duplicate (copy) a ring buffer.  Copies both the underlying data and</span></span>
+<span id="cb107-110"><a href="#cb107-110" tabindex="-1"></a><span class="co">// the position of the head and tail.  A new buffer will be allocated</span></span>
+<span id="cb107-111"><a href="#cb107-111" tabindex="-1"></a><span class="co">// and must be freed when finished with, using `ring_buffer_destroy`</span></span>
+<span id="cb107-112"><a href="#cb107-112" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-113"><a href="#cb107-113" tabindex="-1"></a><span class="co">//   buffer: a ring buffer to copy from; will not be modified</span></span>
+<span id="cb107-114"><a href="#cb107-114" tabindex="-1"></a>ring_buffer <span class="op">*</span> ring_buffer_duplicate<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-115"><a href="#cb107-115" tabindex="-1"></a></span>
+<span id="cb107-116"><a href="#cb107-116" tabindex="-1"></a><span class="co">// Increase the size of the ring buffer so that it can hold additional</span></span>
+<span id="cb107-117"><a href="#cb107-117" tabindex="-1"></a><span class="co">// elements.  This does not alter existing elements but increases the</span></span>
+<span id="cb107-118"><a href="#cb107-118" tabindex="-1"></a><span class="co">// capacity (similar to he `reserve` method in the C++ standard</span></span>
+<span id="cb107-119"><a href="#cb107-119" tabindex="-1"></a><span class="co">// library).</span></span>
+<span id="cb107-120"><a href="#cb107-120" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-121"><a href="#cb107-121" tabindex="-1"></a><span class="co">//   buffer: a ring buffer to increase the size of</span></span>
+<span id="cb107-122"><a href="#cb107-122" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-123"><a href="#cb107-123" tabindex="-1"></a><span class="co">//   n: the number of elements to increase the buffer by</span></span>
+<span id="cb107-124"><a href="#cb107-124" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-125"><a href="#cb107-125" tabindex="-1"></a><span class="co">//   exact: boolean, indicating if the buffer should be increased by</span></span>
+<span id="cb107-126"><a href="#cb107-126" tabindex="-1"></a><span class="co">//          exactly `n` elements (if true) or by at least `n` elements</span></span>
+<span id="cb107-127"><a href="#cb107-127" tabindex="-1"></a><span class="co">//          (if false).  If using the inexact method, the buffer is</span></span>
+<span id="cb107-128"><a href="#cb107-128" tabindex="-1"></a><span class="co">//          increased in size using geometric growth using the golden</span></span>
+<span id="cb107-129"><a href="#cb107-129" tabindex="-1"></a><span class="co">//          ratio.</span></span>
+<span id="cb107-130"><a href="#cb107-130" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-131"><a href="#cb107-131" tabindex="-1"></a><span class="co">// After using this function, all references to the head or tail are</span></span>
+<span id="cb107-132"><a href="#cb107-132" tabindex="-1"></a><span class="co">// broken and the memory may have been freed and the contents moved</span></span>
+<span id="cb107-133"><a href="#cb107-133" tabindex="-1"></a><span class="co">// elsewhere.</span></span>
+<span id="cb107-134"><a href="#cb107-134" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-135"><a href="#cb107-135" tabindex="-1"></a><span class="co">// If RING_USE_STDLIB_ALLOC is defined, and if an allocation fails,</span></span>
+<span id="cb107-136"><a href="#cb107-136" tabindex="-1"></a><span class="co">// then this may leave things in an undesirable state (this is</span></span>
+<span id="cb107-137"><a href="#cb107-137" tabindex="-1"></a><span class="co">// particularly a problem when using on_overflow = OVERFLOW_GROW).</span></span>
+<span id="cb107-138"><a href="#cb107-138" tabindex="-1"></a><span class="co">// Currently, if R is used an R error will be thrown (possibly not a</span></span>
+<span id="cb107-139"><a href="#cb107-139" tabindex="-1"></a><span class="co">// good idea if running under Rcpp) and if running as a standalone</span></span>
+<span id="cb107-140"><a href="#cb107-140" tabindex="-1"></a><span class="co">// application then the data will be set to NULL, probably causing a</span></span>
+<span id="cb107-141"><a href="#cb107-141" tabindex="-1"></a><span class="co">// crash pretty quickly (improvements welcome).</span></span>
+<span id="cb107-142"><a href="#cb107-142" tabindex="-1"></a><span class="dt">void</span> ring_buffer_grow<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">,</span> <span class="dt">bool</span> exact<span class="op">);</span></span>
+<span id="cb107-143"><a href="#cb107-143" tabindex="-1"></a></span>
+<span id="cb107-144"><a href="#cb107-144" tabindex="-1"></a><span class="co">// Reset the state of the buffer.  This "zeros" the head and tail</span></span>
+<span id="cb107-145"><a href="#cb107-145" tabindex="-1"></a><span class="co">// pointer (and may or may not actually reset the data) so that the</span></span>
+<span id="cb107-146"><a href="#cb107-146" tabindex="-1"></a><span class="co">// buffer can be used as if fresh.</span></span>
+<span id="cb107-147"><a href="#cb107-147" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-148"><a href="#cb107-148" tabindex="-1"></a><span class="co">//   buffer: a ring buffer to reset</span></span>
+<span id="cb107-149"><a href="#cb107-149" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-150"><a href="#cb107-150" tabindex="-1"></a><span class="co">//   clear: boolean, indicating if memory should also be zeroed</span></span>
+<span id="cb107-151"><a href="#cb107-151" tabindex="-1"></a><span class="dt">void</span> ring_buffer_reset<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> clear<span class="op">);</span></span>
+<span id="cb107-152"><a href="#cb107-152" tabindex="-1"></a></span>
+<span id="cb107-153"><a href="#cb107-153" tabindex="-1"></a><span class="co">//// Basic querying: ////</span></span>
+<span id="cb107-154"><a href="#cb107-154" tabindex="-1"></a></span>
+<span id="cb107-155"><a href="#cb107-155" tabindex="-1"></a><span class="co">// Return the maximum size of the ring buffer</span></span>
+<span id="cb107-156"><a href="#cb107-156" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-157"><a href="#cb107-157" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to test (will not be modified)</span></span>
+<span id="cb107-158"><a href="#cb107-158" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-159"><a href="#cb107-159" tabindex="-1"></a><span class="co">//   bytes: indicates if size should be in bytes (if true) or elements</span></span>
+<span id="cb107-160"><a href="#cb107-160" tabindex="-1"></a><span class="co">//          (if false)</span></span>
+<span id="cb107-161"><a href="#cb107-161" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_size<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
+<span id="cb107-162"><a href="#cb107-162" tabindex="-1"></a></span>
+<span id="cb107-163"><a href="#cb107-163" tabindex="-1"></a><span class="co">// Report the free and used space in the ring buffer</span></span>
+<span id="cb107-164"><a href="#cb107-164" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-165"><a href="#cb107-165" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to test (will not be modified)</span></span>
+<span id="cb107-166"><a href="#cb107-166" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-167"><a href="#cb107-167" tabindex="-1"></a><span class="co">//   bytes: indicates if used/free space should be in bytes (if true)</span></span>
+<span id="cb107-168"><a href="#cb107-168" tabindex="-1"></a><span class="co">//          or elements (if false)</span></span>
+<span id="cb107-169"><a href="#cb107-169" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_free<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
+<span id="cb107-170"><a href="#cb107-170" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_used<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
+<span id="cb107-171"><a href="#cb107-171" tabindex="-1"></a></span>
+<span id="cb107-172"><a href="#cb107-172" tabindex="-1"></a><span class="co">// Report the number of bytes of data that have been allocated.  Note</span></span>
+<span id="cb107-173"><a href="#cb107-173" tabindex="-1"></a><span class="co">// that this is likely `stride` more bytes than was requested as this</span></span>
+<span id="cb107-174"><a href="#cb107-174" tabindex="-1"></a><span class="co">// avoids a lot of awkward bookkeeping later, allowing the "full"</span></span>
+<span id="cb107-175"><a href="#cb107-175" tabindex="-1"></a><span class="co">// state to be distinguished from the "empty" state.</span></span>
+<span id="cb107-176"><a href="#cb107-176" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_bytes_data<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-177"><a href="#cb107-177" tabindex="-1"></a></span>
+<span id="cb107-178"><a href="#cb107-178" tabindex="-1"></a><span class="co">// Report if the ring buffer is full or empty</span></span>
+<span id="cb107-179"><a href="#cb107-179" tabindex="-1"></a><span class="dt">bool</span> ring_buffer_is_full<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-180"><a href="#cb107-180" tabindex="-1"></a><span class="dt">bool</span> ring_buffer_is_empty<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-181"><a href="#cb107-181" tabindex="-1"></a></span>
+<span id="cb107-182"><a href="#cb107-182" tabindex="-1"></a><span class="co">//// Additional querying: ////</span></span>
+<span id="cb107-183"><a href="#cb107-183" tabindex="-1"></a></span>
+<span id="cb107-184"><a href="#cb107-184" tabindex="-1"></a><span class="co">// Return the position of the head and tail pointers relative to the</span></span>
+<span id="cb107-185"><a href="#cb107-185" tabindex="-1"></a><span class="co">// data pointer (this is an offset, so 0 means the pointer is at the</span></span>
+<span id="cb107-186"><a href="#cb107-186" tabindex="-1"></a><span class="co">// start of the data array).</span></span>
+<span id="cb107-187"><a href="#cb107-187" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-188"><a href="#cb107-188" tabindex="-1"></a><span class="co">//   bytes: indicates if offset should be bytes (if true) or elements (if false)</span></span>
+<span id="cb107-189"><a href="#cb107-189" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_head_pos<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
+<span id="cb107-190"><a href="#cb107-190" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_tail_pos<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">bool</span> bytes<span class="op">);</span></span>
+<span id="cb107-191"><a href="#cb107-191" tabindex="-1"></a></span>
+<span id="cb107-192"><a href="#cb107-192" tabindex="-1"></a><span class="co">// Return pointers to the the data, head and tail members of the ring</span></span>
+<span id="cb107-193"><a href="#cb107-193" tabindex="-1"></a><span class="co">// buffer.  These are preferred over directly accessing the "data",</span></span>
+<span id="cb107-194"><a href="#cb107-194" tabindex="-1"></a><span class="co">// "head" and "tail" elements of the ring buffer structure itself</span></span>
+<span id="cb107-195"><a href="#cb107-195" tabindex="-1"></a><span class="co">// because with these the compiler will enforce read-only access for</span></span>
+<span id="cb107-196"><a href="#cb107-196" tabindex="-1"></a><span class="co">// you.</span></span>
+<span id="cb107-197"><a href="#cb107-197" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-198"><a href="#cb107-198" tabindex="-1"></a><span class="co">// </span><span class="al">WARNING</span><span class="co">: the head buffer is *not* the most recently added element,</span></span>
+<span id="cb107-199"><a href="#cb107-199" tabindex="-1"></a><span class="co">// but instead the bit of memory that will be written to next; it's</span></span>
+<span id="cb107-200"><a href="#cb107-200" tabindex="-1"></a><span class="co">// generally not terribly useful and a better way of getting the last</span></span>
+<span id="cb107-201"><a href="#cb107-201" tabindex="-1"></a><span class="co">// written element is to use:</span></span>
+<span id="cb107-202"><a href="#cb107-202" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-203"><a href="#cb107-203" tabindex="-1"></a><span class="co">//   ring_buffer_head_offset(buffer, 0);</span></span>
+<span id="cb107-204"><a href="#cb107-204" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-205"><a href="#cb107-205" tabindex="-1"></a><span class="co">// which will look after wrapping the ring buffer appropriately.</span></span>
+<span id="cb107-206"><a href="#cb107-206" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_data<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-207"><a href="#cb107-207" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_head<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-208"><a href="#cb107-208" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_tail<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-209"><a href="#cb107-209" tabindex="-1"></a></span>
+<span id="cb107-210"><a href="#cb107-210" tabindex="-1"></a><span class="co">//// Setting repeated values: ////</span></span>
+<span id="cb107-211"><a href="#cb107-211" tabindex="-1"></a></span>
+<span id="cb107-212"><a href="#cb107-212" tabindex="-1"></a><span class="co">// Set all bytes of a length of the buffer to 'c'.  Here, 'len' is the</span></span>
+<span id="cb107-213"><a href="#cb107-213" tabindex="-1"></a><span class="co">// number of *entries*, so stride * len bytes will be set.  This will</span></span>
+<span id="cb107-214"><a href="#cb107-214" tabindex="-1"></a><span class="co">// mostly be uesful with c=0.</span></span>
+<span id="cb107-215"><a href="#cb107-215" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-216"><a href="#cb107-216" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to set data into</span></span>
+<span id="cb107-217"><a href="#cb107-217" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-218"><a href="#cb107-218" tabindex="-1"></a><span class="co">//   c: value (0-255) to set all bytes to</span></span>
+<span id="cb107-219"><a href="#cb107-219" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-220"><a href="#cb107-220" tabindex="-1"></a><span class="co">//   n: number of elements to set</span></span>
+<span id="cb107-221"><a href="#cb107-221" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-222"><a href="#cb107-222" tabindex="-1"></a><span class="co">// This starts adding data at `head`.  If the buffer will overflow, at</span></span>
+<span id="cb107-223"><a href="#cb107-223" tabindex="-1"></a><span class="co">// most `bytes_data` bytes will be written (i.e., each element will be</span></span>
+<span id="cb107-224"><a href="#cb107-224" tabindex="-1"></a><span class="co">// written to once).</span></span>
+<span id="cb107-225"><a href="#cb107-225" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-226"><a href="#cb107-226" tabindex="-1"></a><span class="co">// Returns the number of bytes actually written to the buffer (so if</span></span>
+<span id="cb107-227"><a href="#cb107-227" tabindex="-1"></a><span class="co">// the buffer overflows this may be less than `len`).</span></span>
+<span id="cb107-228"><a href="#cb107-228" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_set<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> data_t c<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-229"><a href="#cb107-229" tabindex="-1"></a></span>
+<span id="cb107-230"><a href="#cb107-230" tabindex="-1"></a><span class="co">// Set a number of the elements of the buffer to a particular byte</span></span>
+<span id="cb107-231"><a href="#cb107-231" tabindex="-1"></a><span class="co">// pattern.  In contrast with `ring_buffer_set`, this does not set</span></span>
+<span id="cb107-232"><a href="#cb107-232" tabindex="-1"></a><span class="co">// individual bytes, but instead complete elements.</span></span>
+<span id="cb107-233"><a href="#cb107-233" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-234"><a href="#cb107-234" tabindex="-1"></a><span class="co">//    buffer: the ring buffer to set data into</span></span>
+<span id="cb107-235"><a href="#cb107-235" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-236"><a href="#cb107-236" tabindex="-1"></a><span class="co">//    x: pointer to a set of data to copy into the ring buffer.  This</span></span>
+<span id="cb107-237"><a href="#cb107-237" tabindex="-1"></a><span class="co">//            must be (at least) stride bytes long.</span></span>
+<span id="cb107-238"><a href="#cb107-238" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-239"><a href="#cb107-239" tabindex="-1"></a><span class="co">//    n: number of elements to set</span></span>
+<span id="cb107-240"><a href="#cb107-240" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-241"><a href="#cb107-241" tabindex="-1"></a><span class="co">// This starts adding data at `head`.  If the buffer will overflow, at</span></span>
+<span id="cb107-242"><a href="#cb107-242" tabindex="-1"></a><span class="co">// most `bytes_data` bytes will be written (i.e., each element will be</span></span>
+<span id="cb107-243"><a href="#cb107-243" tabindex="-1"></a><span class="co">// written to once).</span></span>
+<span id="cb107-244"><a href="#cb107-244" tabindex="-1"></a><span class="dt">size_t</span> ring_buffer_set_stride<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>x<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-245"><a href="#cb107-245" tabindex="-1"></a></span>
+<span id="cb107-246"><a href="#cb107-246" tabindex="-1"></a><span class="co">//// Read and write ////</span></span>
+<span id="cb107-247"><a href="#cb107-247" tabindex="-1"></a></span>
+<span id="cb107-248"><a href="#cb107-248" tabindex="-1"></a><span class="co">// Copy `n` entries, each of `stride` bytes from a contiguous memory</span></span>
+<span id="cb107-249"><a href="#cb107-249" tabindex="-1"></a><span class="co">// area src into the ring `buffer`. Returns the ring buffer's new head</span></span>
+<span id="cb107-250"><a href="#cb107-250" tabindex="-1"></a><span class="co">// pointer.</span></span>
+<span id="cb107-251"><a href="#cb107-251" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-252"><a href="#cb107-252" tabindex="-1"></a><span class="co">// It is possible to overflow the buffer with this function</span></span>
+<span id="cb107-253"><a href="#cb107-253" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-254"><a href="#cb107-254" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to copy data into</span></span>
+<span id="cb107-255"><a href="#cb107-255" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-256"><a href="#cb107-256" tabindex="-1"></a><span class="co">//   src: the source memory to copy from (make sure this is big enough</span></span>
+<span id="cb107-257"><a href="#cb107-257" tabindex="-1"></a><span class="co">//           or you will get crashes and other terrible things).</span></span>
+<span id="cb107-258"><a href="#cb107-258" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-259"><a href="#cb107-259" tabindex="-1"></a><span class="co">//   n: the number of entries to copy from `src` into `buffer` (each</span></span>
+<span id="cb107-260"><a href="#cb107-260" tabindex="-1"></a><span class="co">//           of which is `stride` bytes long).</span></span>
+<span id="cb107-261"><a href="#cb107-261" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_push<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>src<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-262"><a href="#cb107-262" tabindex="-1"></a></span>
+<span id="cb107-263"><a href="#cb107-263" tabindex="-1"></a><span class="co">// Destructively copy `n` entries (each of which is `stride` bytes)</span></span>
+<span id="cb107-264"><a href="#cb107-264" tabindex="-1"></a><span class="co">// from a ring buffer `buffer` into contiguous memory region `dest`.</span></span>
+<span id="cb107-265"><a href="#cb107-265" tabindex="-1"></a><span class="co">// This updates the `tail` pointers in the ring buffer and returns the</span></span>
+<span id="cb107-266"><a href="#cb107-266" tabindex="-1"></a><span class="co">// new tail pointer.</span></span>
+<span id="cb107-267"><a href="#cb107-267" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-268"><a href="#cb107-268" tabindex="-1"></a><span class="co">// The `n` entries will no longer be available in the ring buffer.</span></span>
+<span id="cb107-269"><a href="#cb107-269" tabindex="-1"></a><span class="co">// To do a nondestructive read, use `ring_buffer_read()`.</span></span>
+<span id="cb107-270"><a href="#cb107-270" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-271"><a href="#cb107-271" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to copy data from</span></span>
+<span id="cb107-272"><a href="#cb107-272" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-273"><a href="#cb107-273" tabindex="-1"></a><span class="co">//   dest: the destination memory to copy into (make sure this is big enough</span></span>
+<span id="cb107-274"><a href="#cb107-274" tabindex="-1"></a><span class="co">//           or you will get crashes and other terrible things).</span></span>
+<span id="cb107-275"><a href="#cb107-275" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-276"><a href="#cb107-276" tabindex="-1"></a><span class="co">//   n: the number of entries to copy from `src` into `buffer` (each</span></span>
+<span id="cb107-277"><a href="#cb107-277" tabindex="-1"></a><span class="co">//           of which is `stride` bytes long).</span></span>
+<span id="cb107-278"><a href="#cb107-278" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-279"><a href="#cb107-279" tabindex="-1"></a><span class="co">// This function will not allow the ring buffer to underflow.  If</span></span>
+<span id="cb107-280"><a href="#cb107-280" tabindex="-1"></a><span class="co">// `n` is greater than the number of available entries, then</span></span>
+<span id="cb107-281"><a href="#cb107-281" tabindex="-1"></a><span class="co">// nothing is copied (and the ring buffer remains unmodified) and NULL</span></span>
+<span id="cb107-282"><a href="#cb107-282" tabindex="-1"></a><span class="co">// is returned.</span></span>
+<span id="cb107-283"><a href="#cb107-283" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_take<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-284"><a href="#cb107-284" tabindex="-1"></a></span>
+<span id="cb107-285"><a href="#cb107-285" tabindex="-1"></a><span class="co">// Nondestructively read from a ring buffer.  This function is</span></span>
+<span id="cb107-286"><a href="#cb107-286" tabindex="-1"></a><span class="co">// essentially identical to `ring_buffer_take` but does not alter the</span></span>
+<span id="cb107-287"><a href="#cb107-287" tabindex="-1"></a><span class="co">// tail pointer.</span></span>
+<span id="cb107-288"><a href="#cb107-288" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_read<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-289"><a href="#cb107-289" tabindex="-1"></a></span>
+<span id="cb107-290"><a href="#cb107-290" tabindex="-1"></a><span class="co">// ring_buffer_take_head and ring_buffer_read_head are like</span></span>
+<span id="cb107-291"><a href="#cb107-291" tabindex="-1"></a><span class="co">// ring_buffer_take and ring_buffer_read (respectively) but operate on</span></span>
+<span id="cb107-292"><a href="#cb107-292" tabindex="-1"></a><span class="co">// the *head* of the ring (i.e., removing the most recently added</span></span>
+<span id="cb107-293"><a href="#cb107-293" tabindex="-1"></a><span class="co">// elements rather than the oldest elements).</span></span>
+<span id="cb107-294"><a href="#cb107-294" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-295"><a href="#cb107-295" tabindex="-1"></a><span class="co">// Neither will underflow, returning NULL if there are not enough</span></span>
+<span id="cb107-296"><a href="#cb107-296" tabindex="-1"></a><span class="co">// elements, and without copying anything.</span></span>
+<span id="cb107-297"><a href="#cb107-297" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_take_head<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-298"><a href="#cb107-298" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_read_head<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span></span>
+<span id="cb107-299"><a href="#cb107-299" tabindex="-1"></a>                                   <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-300"><a href="#cb107-300" tabindex="-1"></a></span>
+<span id="cb107-301"><a href="#cb107-301" tabindex="-1"></a><span class="co">// Copy `n` entries (each of `stride` bytes) from one ring buffer</span></span>
+<span id="cb107-302"><a href="#cb107-302" tabindex="-1"></a><span class="co">// `src` into another `dest`.  The copy starts at the tail of this</span></span>
+<span id="cb107-303"><a href="#cb107-303" tabindex="-1"></a><span class="co">// ring buffer, pushing onto the head of the destination buffer.</span></span>
+<span id="cb107-304"><a href="#cb107-304" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-305"><a href="#cb107-305" tabindex="-1"></a><span class="co">//   src: A ring buffer to copy data from</span></span>
+<span id="cb107-306"><a href="#cb107-306" tabindex="-1"></a></span>
+<span id="cb107-307"><a href="#cb107-307" tabindex="-1"></a><span class="co">//   dest: A ring buffer to copy data into</span></span>
+<span id="cb107-308"><a href="#cb107-308" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-309"><a href="#cb107-309" tabindex="-1"></a><span class="co">//   n: the number of entries to copy (each of which is `stride` bytes)</span></span>
+<span id="cb107-310"><a href="#cb107-310" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-311"><a href="#cb107-311" tabindex="-1"></a><span class="co">// This is destructive to both buffers as pointers will be updated in</span></span>
+<span id="cb107-312"><a href="#cb107-312" tabindex="-1"></a><span class="co">// both.</span></span>
+<span id="cb107-313"><a href="#cb107-313" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-314"><a href="#cb107-314" tabindex="-1"></a><span class="co">// This function returns the new head pointer of the destination buffer.</span></span>
+<span id="cb107-315"><a href="#cb107-315" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-316"><a href="#cb107-316" tabindex="-1"></a><span class="co">// It is not possible to underflow `src`; if too few entries are</span></span>
+<span id="cb107-317"><a href="#cb107-317" tabindex="-1"></a><span class="co">// available, then nothing is copied, `src` and `dest` are not</span></span>
+<span id="cb107-318"><a href="#cb107-318" tabindex="-1"></a><span class="co">// modified, and the function returns NULL</span></span>
+<span id="cb107-319"><a href="#cb107-319" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-320"><a href="#cb107-320" tabindex="-1"></a><span class="co">// It is possible to overflow `dest` and the tail pointer will be</span></span>
+<span id="cb107-321"><a href="#cb107-321" tabindex="-1"></a><span class="co">// updated appropriately if so.</span></span>
+<span id="cb107-322"><a href="#cb107-322" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-323"><a href="#cb107-323" tabindex="-1"></a><span class="co">// Warning: the two buffers must have the same stride.  If the buffers</span></span>
+<span id="cb107-324"><a href="#cb107-324" tabindex="-1"></a><span class="co">// do not have the same stride, the function will return NULL (this</span></span>
+<span id="cb107-325"><a href="#cb107-325" tabindex="-1"></a><span class="co">// means if the function returns NULL it could either be an underflow</span></span>
+<span id="cb107-326"><a href="#cb107-326" tabindex="-1"></a><span class="co">// or an incompatible buffer).</span></span>
+<span id="cb107-327"><a href="#cb107-327" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_copy<span class="op">(</span>ring_buffer <span class="op">*</span>src<span class="op">,</span> ring_buffer <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb107-328"><a href="#cb107-328" tabindex="-1"></a></span>
+<span id="cb107-329"><a href="#cb107-329" tabindex="-1"></a><span class="co">// Mirror the contents of ring buffer `src` into ring buffer `dest`.</span></span>
+<span id="cb107-330"><a href="#cb107-330" tabindex="-1"></a><span class="co">// This differs from `ring_buffer_copy` in that the `src` buffer is</span></span>
+<span id="cb107-331"><a href="#cb107-331" tabindex="-1"></a><span class="co">// not modified and that the *entire* state of the ring buffer is</span></span>
+<span id="cb107-332"><a href="#cb107-332" tabindex="-1"></a><span class="co">// duplicated.</span></span>
+<span id="cb107-333"><a href="#cb107-333" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-334"><a href="#cb107-334" tabindex="-1"></a><span class="co">// The function requires (and checks) that `src` and `dest` agree on</span></span>
+<span id="cb107-335"><a href="#cb107-335" tabindex="-1"></a><span class="co">// size and stride (and therefore total bytes).  It returns `true` if</span></span>
+<span id="cb107-336"><a href="#cb107-336" tabindex="-1"></a><span class="co">// the mirror was done, and `false` if the buffers are incompatible.</span></span>
+<span id="cb107-337"><a href="#cb107-337" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-338"><a href="#cb107-338" tabindex="-1"></a><span class="co">// This function will destroy all data in `dest`, but not allocate any</span></span>
+<span id="cb107-339"><a href="#cb107-339" tabindex="-1"></a><span class="co">// memory.</span></span>
+<span id="cb107-340"><a href="#cb107-340" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-341"><a href="#cb107-341" tabindex="-1"></a><span class="co">// Warning: the two buffers must have the same stride *and* the same</span></span>
+<span id="cb107-342"><a href="#cb107-342" tabindex="-1"></a><span class="co">// size.  If they do not, the function will return NULL (this means if</span></span>
+<span id="cb107-343"><a href="#cb107-343" tabindex="-1"></a><span class="co">// the function returns NULL it could either be an underflow or an</span></span>
+<span id="cb107-344"><a href="#cb107-344" tabindex="-1"></a><span class="co">// incompatible buffer).</span></span>
+<span id="cb107-345"><a href="#cb107-345" tabindex="-1"></a><span class="dt">bool</span> ring_buffer_mirror<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>src<span class="op">,</span> ring_buffer <span class="op">*</span>dest<span class="op">);</span></span>
+<span id="cb107-346"><a href="#cb107-346" tabindex="-1"></a></span>
+<span id="cb107-347"><a href="#cb107-347" tabindex="-1"></a><span class="co">// Returns a pointer to the tail (reading end) of the buffer, offset</span></span>
+<span id="cb107-348"><a href="#cb107-348" tabindex="-1"></a><span class="co">// by `offset` entries.  When used as `ring_buffer_tail_offset(x, 0)`</span></span>
+<span id="cb107-349"><a href="#cb107-349" tabindex="-1"></a><span class="co">// this is equivalent to `ring_buffer_tail(x)` except that it will do</span></span>
+<span id="cb107-350"><a href="#cb107-350" tabindex="-1"></a><span class="co">// underflow checking.</span></span>
+<span id="cb107-351"><a href="#cb107-351" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-352"><a href="#cb107-352" tabindex="-1"></a><span class="co">//   buffer: the ring buffer to use</span></span>
+<span id="cb107-353"><a href="#cb107-353" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-354"><a href="#cb107-354" tabindex="-1"></a><span class="co">//   offset: the number of entries (each of which are `stride` bytes)</span></span>
+<span id="cb107-355"><a href="#cb107-355" tabindex="-1"></a><span class="co">//           to offset by</span></span>
+<span id="cb107-356"><a href="#cb107-356" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-357"><a href="#cb107-357" tabindex="-1"></a><span class="co">// It is not possible to underflow the buffer here; if `offset` is so</span></span>
+<span id="cb107-358"><a href="#cb107-358" tabindex="-1"></a><span class="co">// large that it would underflow, then NULL will be returned.</span></span>
+<span id="cb107-359"><a href="#cb107-359" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_tail_offset<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> offset<span class="op">);</span></span>
+<span id="cb107-360"><a href="#cb107-360" tabindex="-1"></a></span>
+<span id="cb107-361"><a href="#cb107-361" tabindex="-1"></a><span class="co">// As for `ring_buffer_tail_offset`, but offsetting the *head*</span></span>
+<span id="cb107-362"><a href="#cb107-362" tabindex="-1"></a><span class="co">// pointer.  This offsets in the opposite direction (moving from the</span></span>
+<span id="cb107-363"><a href="#cb107-363" tabindex="-1"></a><span class="co">// most recently added element towards the oldest element).</span></span>
+<span id="cb107-364"><a href="#cb107-364" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_head_offset<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> offset<span class="op">);</span></span>
+<span id="cb107-365"><a href="#cb107-365" tabindex="-1"></a></span>
+<span id="cb107-366"><a href="#cb107-366" tabindex="-1"></a><span class="co">//// For advanced use: ////</span></span>
+<span id="cb107-367"><a href="#cb107-367" tabindex="-1"></a></span>
+<span id="cb107-368"><a href="#cb107-368" tabindex="-1"></a><span class="co">// Advance the ring buffer by one entry and return a pointer to the</span></span>
+<span id="cb107-369"><a href="#cb107-369" tabindex="-1"></a><span class="co">// memory *without writing anything to it*.  In this case, the calling</span></span>
+<span id="cb107-370"><a href="#cb107-370" tabindex="-1"></a><span class="co">// function is responsible for setting the memory to something</span></span>
+<span id="cb107-371"><a href="#cb107-371" tabindex="-1"></a><span class="co">// sensible.  This is currently used in the dde package where we want</span></span>
+<span id="cb107-372"><a href="#cb107-372" tabindex="-1"></a><span class="co">// to write directly to the head.</span></span>
+<span id="cb107-373"><a href="#cb107-373" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-374"><a href="#cb107-374" tabindex="-1"></a><span class="co">// This is (roughly) equivalent to:</span></span>
+<span id="cb107-375"><a href="#cb107-375" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-376"><a href="#cb107-376" tabindex="-1"></a><span class="co">//    ring_buffer_set(buffer, 0, 1);</span></span>
+<span id="cb107-377"><a href="#cb107-377" tabindex="-1"></a><span class="co">//    return buffer-&gt;head;</span></span>
+<span id="cb107-378"><a href="#cb107-378" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-379"><a href="#cb107-379" tabindex="-1"></a><span class="co">// but does not actually copy any data.</span></span>
+<span id="cb107-380"><a href="#cb107-380" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-381"><a href="#cb107-381" tabindex="-1"></a><span class="co">// Note that the pointer returned is *not* const; this is always used</span></span>
+<span id="cb107-382"><a href="#cb107-382" tabindex="-1"></a><span class="co">// in a case where the aim is to write to the head directly!</span></span>
+<span id="cb107-383"><a href="#cb107-383" tabindex="-1"></a><span class="dt">void</span> <span class="op">*</span> ring_buffer_head_advance<span class="op">(</span>ring_buffer <span class="op">*</span>buffer<span class="op">);</span></span>
+<span id="cb107-384"><a href="#cb107-384" tabindex="-1"></a></span>
+<span id="cb107-385"><a href="#cb107-385" tabindex="-1"></a><span class="co">//// Search: ////</span></span>
+<span id="cb107-386"><a href="#cb107-386" tabindex="-1"></a></span>
+<span id="cb107-387"><a href="#cb107-387" tabindex="-1"></a><span class="co">// There are two functions for searching for data within a ring buffer</span></span>
+<span id="cb107-388"><a href="#cb107-388" tabindex="-1"></a><span class="co">// that consists of *sorted* entries.  This might be the case if</span></span>
+<span id="cb107-389"><a href="#cb107-389" tabindex="-1"></a><span class="co">// entries are added sequentially with (say) a timestamp.</span></span>
+<span id="cb107-390"><a href="#cb107-390" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-391"><a href="#cb107-391" tabindex="-1"></a><span class="co">// To locate an entry, a predicate function (pointer) must be</span></span>
+<span id="cb107-392"><a href="#cb107-392" tabindex="-1"></a><span class="co">// provided.  This must be a function taking two void pointers as</span></span>
+<span id="cb107-393"><a href="#cb107-393" tabindex="-1"></a><span class="co">// arguments; the first will be the pointer to an entry in the ring</span></span>
+<span id="cb107-394"><a href="#cb107-394" tabindex="-1"></a><span class="co">// buffer, the second will be any data that *you* provide (may be</span></span>
+<span id="cb107-395"><a href="#cb107-395" tabindex="-1"></a><span class="co">// NULL).  This function must return "true" if the value is *less</span></span>
+<span id="cb107-396"><a href="#cb107-396" tabindex="-1"></a><span class="co">// than* the target value (i.e. true if we should search *earlier* in</span></span>
+<span id="cb107-397"><a href="#cb107-397" tabindex="-1"></a><span class="co">// the buffer).  The "x" argument must be treated as read-only.</span></span>
+<span id="cb107-398"><a href="#cb107-398" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-399"><a href="#cb107-399" tabindex="-1"></a><span class="co">// For example, a predictate function that would find an entry where</span></span>
+<span id="cb107-400"><a href="#cb107-400" tabindex="-1"></a><span class="co">// the first 8 bytes of a ring buffer entry represent doubles could be</span></span>
+<span id="cb107-401"><a href="#cb107-401" tabindex="-1"></a><span class="co">// written as:</span></span>
+<span id="cb107-402"><a href="#cb107-402" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-403"><a href="#cb107-403" tabindex="-1"></a><span class="co">//     bool test_find_double(const void *x, void *data) {</span></span>
+<span id="cb107-404"><a href="#cb107-404" tabindex="-1"></a><span class="co">//       double x_value = *((double*) x);</span></span>
+<span id="cb107-405"><a href="#cb107-405" tabindex="-1"></a><span class="co">//       double data_value = *((double*) data);</span></span>
+<span id="cb107-406"><a href="#cb107-406" tabindex="-1"></a><span class="co">//       return x_value &lt;= data_value;</span></span>
+<span id="cb107-407"><a href="#cb107-407" tabindex="-1"></a><span class="co">//     }</span></span>
+<span id="cb107-408"><a href="#cb107-408" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-409"><a href="#cb107-409" tabindex="-1"></a><span class="co">// Where the "data" argument will be passed through as the number to</span></span>
+<span id="cb107-410"><a href="#cb107-410" tabindex="-1"></a><span class="co">// search for.</span></span>
+<span id="cb107-411"><a href="#cb107-411" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-412"><a href="#cb107-412" tabindex="-1"></a><span class="co">// These functions return NULL if no entry is found, otherwise they</span></span>
+<span id="cb107-413"><a href="#cb107-413" tabindex="-1"></a><span class="co">// return the pointer to the largest entry in the buffer that the</span></span>
+<span id="cb107-414"><a href="#cb107-414" tabindex="-1"></a><span class="co">// predicate returns false.</span></span>
+<span id="cb107-415"><a href="#cb107-415" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-416"><a href="#cb107-416" tabindex="-1"></a><span class="co">// The _linear search does a naive linear search from the tail of the</span></span>
+<span id="cb107-417"><a href="#cb107-417" tabindex="-1"></a><span class="co">// buffer (i.e., the last entry that was added) towards the beginning.</span></span>
+<span id="cb107-418"><a href="#cb107-418" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-419"><a href="#cb107-419" tabindex="-1"></a><span class="co">// The _bisect search tries to be more clever and does a bisect</span></span>
+<span id="cb107-420"><a href="#cb107-420" tabindex="-1"></a><span class="co">// search.  It requires an initial guess "i" to the location of the</span></span>
+<span id="cb107-421"><a href="#cb107-421" tabindex="-1"></a><span class="co">// data.  You can provide '0' as 'i' to start at the tail.</span></span>
+<span id="cb107-422"><a href="#cb107-422" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb107-423"><a href="#cb107-423" tabindex="-1"></a><span class="co">// The "data" argument to both functions will be passed through to the</span></span>
+<span id="cb107-424"><a href="#cb107-424" tabindex="-1"></a><span class="co">// predicate function.</span></span>
+<span id="cb107-425"><a href="#cb107-425" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">bool</span> ring_predicate<span class="op">(</span><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span>x<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>data<span class="op">);</span></span>
+<span id="cb107-426"><a href="#cb107-426" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_search_linear<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span></span>
+<span id="cb107-427"><a href="#cb107-427" tabindex="-1"></a>                                       ring_predicate pred<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>data<span class="op">);</span></span>
+<span id="cb107-428"><a href="#cb107-428" tabindex="-1"></a><span class="dt">const</span> <span class="dt">void</span> <span class="op">*</span> ring_buffer_search_bisect<span class="op">(</span><span class="dt">const</span> ring_buffer <span class="op">*</span>buffer<span class="op">,</span> <span class="dt">size_t</span> i<span class="op">,</span></span>
+<span id="cb107-429"><a href="#cb107-429" tabindex="-1"></a>                                       ring_predicate pred<span class="op">,</span> <span class="dt">void</span> <span class="op">*</span>data<span class="op">);</span></span>
+<span id="cb107-430"><a href="#cb107-430" tabindex="-1"></a></span>
+<span id="cb107-431"><a href="#cb107-431" tabindex="-1"></a><span class="pp">#ifdef __cplusplus</span></span>
+<span id="cb107-432"><a href="#cb107-432" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb107-433"><a href="#cb107-433" tabindex="-1"></a><span class="pp">#endif</span></span>
+<span id="cb107-434"><a href="#cb107-434" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div>
 <p>For a complete real-world example of use, see <a href="https://github.com/mrc-ide/dde" class="external-link">dde</a>, which uses a ring buffer
 to hold the history of a set of differential equations, and uses that to
 implement delay equations. Here, the ring buffer means that the memory
@@ -1006,89 +981,89 @@ allocations. And because <code>ring</code> returns (const) pointers to
 the appropriate place in memory there is little copying.</p>
 <p>A simple application that implements the same mean-reverting
 simulation from above:</p>
-<div class="sourceCode" id="cb108"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;ring/ring.h&gt;</span></span>
-<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;R.h&gt;</span></span>
-<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;Rinternals.h&gt;</span></span>
-<span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-6"><a href="#cb108-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Definition used below (can't be called step() because that may</span></span>
-<span id="cb108-7"><a href="#cb108-7" aria-hidden="true" tabindex="-1"></a><span class="co">// conflict with regexp.h on some platforms).</span></span>
-<span id="cb108-8"><a href="#cb108-8" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> step_x<span class="op">(</span>ring_buffer <span class="op">*</span>r<span class="op">,</span> <span class="dt">int</span> x<span class="op">);</span></span>
-<span id="cb108-9"><a href="#cb108-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-10"><a href="#cb108-10" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> example<span class="op">(</span><span class="dt">size_t</span> nstep<span class="op">,</span> <span class="dt">double</span> <span class="op">*</span>ret<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-11"><a href="#cb108-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Construct a ring buffer of (max) size 5, each element of which is</span></span>
-<span id="cb108-12"><a href="#cb108-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">// big enough to contain an integer (probably 4 bytes).</span></span>
-<span id="cb108-13"><a href="#cb108-13" aria-hidden="true" tabindex="-1"></a>  ring_buffer <span class="op">*</span>r <span class="op">=</span> ring_buffer_create<span class="op">(</span><span class="dv">5</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">),</span> OVERFLOW_OVERWRITE<span class="op">);</span></span>
-<span id="cb108-14"><a href="#cb108-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-15"><a href="#cb108-15" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Starting point of the simulation, as in the R version:</span></span>
-<span id="cb108-16"><a href="#cb108-16" aria-hidden="true" tabindex="-1"></a>  <span class="dt">int</span> x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb108-17"><a href="#cb108-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-18"><a href="#cb108-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Push the initial state into the ring buffer:</span></span>
-<span id="cb108-19"><a href="#cb108-19" aria-hidden="true" tabindex="-1"></a>  ring_buffer_push<span class="op">(</span>r<span class="op">,</span> <span class="op">&amp;</span>x<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
-<span id="cb108-20"><a href="#cb108-20" aria-hidden="true" tabindex="-1"></a>  ret<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> x<span class="op">;</span></span>
-<span id="cb108-21"><a href="#cb108-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-22"><a href="#cb108-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">size_t</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> nstep<span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-23"><a href="#cb108-23" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> step_x<span class="op">(</span>r<span class="op">,</span> x<span class="op">);</span></span>
-<span id="cb108-24"><a href="#cb108-24" aria-hidden="true" tabindex="-1"></a>    ring_buffer_push<span class="op">(</span>r<span class="op">,</span> <span class="op">&amp;</span>x<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
-<span id="cb108-25"><a href="#cb108-25" aria-hidden="true" tabindex="-1"></a>    ret<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> x<span class="op">;</span></span>
-<span id="cb108-26"><a href="#cb108-26" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb108-27"><a href="#cb108-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-28"><a href="#cb108-28" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Cleanup:</span></span>
-<span id="cb108-29"><a href="#cb108-29" aria-hidden="true" tabindex="-1"></a>  ring_buffer_destroy<span class="op">(</span>r<span class="op">);</span></span>
-<span id="cb108-30"><a href="#cb108-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb108-31"><a href="#cb108-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-32"><a href="#cb108-32" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> step_x<span class="op">(</span>ring_buffer <span class="op">*</span>r<span class="op">,</span> <span class="dt">int</span> x<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-33"><a href="#cb108-33" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> n <span class="op">=</span> ring_buffer_used<span class="op">(</span>r<span class="op">,</span> false<span class="op">);</span></span>
-<span id="cb108-34"><a href="#cb108-34" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> p<span class="op">;</span></span>
-<span id="cb108-35"><a href="#cb108-35" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>n <span class="op">&lt;</span> <span class="dv">2</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-36"><a href="#cb108-36" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> <span class="fl">0.5</span><span class="op">;</span></span>
-<span id="cb108-37"><a href="#cb108-37" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb108-38"><a href="#cb108-38" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Oldest non-overflowed element is in the tail.  Note that the</span></span>
-<span id="cb108-39"><a href="#cb108-39" aria-hidden="true" tabindex="-1"></a>    <span class="co">// return value (which is void*) must be first cast to (int*) then</span></span>
-<span id="cb108-40"><a href="#cb108-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">// dereferenced.</span></span>
-<span id="cb108-41"><a href="#cb108-41" aria-hidden="true" tabindex="-1"></a>    <span class="co">///</span></span>
-<span id="cb108-42"><a href="#cb108-42" aria-hidden="true" tabindex="-1"></a>    <span class="co">// </span><span class="al">NOTE</span><span class="co">: In general, check that the return value here is not NULL</span></span>
-<span id="cb108-43"><a href="#cb108-43" aria-hidden="true" tabindex="-1"></a>    <span class="co">// (indicating an underflow); here we're OK because we checked the</span></span>
-<span id="cb108-44"><a href="#cb108-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">// number of used elements at the beginning.</span></span>
-<span id="cb108-45"><a href="#cb108-45" aria-hidden="true" tabindex="-1"></a>    <span class="dt">int</span> x0 <span class="op">=</span> <span class="op">*(</span><span class="dt">int</span><span class="op">*)</span>ring_buffer_tail<span class="op">(</span>r<span class="op">);</span></span>
-<span id="cb108-46"><a href="#cb108-46" aria-hidden="true" tabindex="-1"></a>    <span class="dt">size_t</span> increases <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb108-47"><a href="#cb108-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">size_t</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-48"><a href="#cb108-48" aria-hidden="true" tabindex="-1"></a>      <span class="co">// Moving through the more recently added elements:</span></span>
-<span id="cb108-49"><a href="#cb108-49" aria-hidden="true" tabindex="-1"></a>      <span class="dt">int</span> x1 <span class="op">=</span> <span class="op">*(</span><span class="dt">int</span><span class="op">*)</span>ring_buffer_tail_offset<span class="op">(</span>r<span class="op">,</span> i<span class="op">);</span></span>
-<span id="cb108-50"><a href="#cb108-50" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> <span class="op">(</span>x1 <span class="op">&gt;</span> x0<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-51"><a href="#cb108-51" aria-hidden="true" tabindex="-1"></a>        increases<span class="op">++;</span></span>
-<span id="cb108-52"><a href="#cb108-52" aria-hidden="true" tabindex="-1"></a>      <span class="op">}</span></span>
-<span id="cb108-53"><a href="#cb108-53" aria-hidden="true" tabindex="-1"></a>      x0 <span class="op">=</span> x1<span class="op">;</span></span>
-<span id="cb108-54"><a href="#cb108-54" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb108-55"><a href="#cb108-55" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> <span class="op">((</span><span class="dt">double</span><span class="op">)</span>increases<span class="op">)</span> <span class="op">/</span> <span class="op">(</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
-<span id="cb108-56"><a href="#cb108-56" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb108-57"><a href="#cb108-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-58"><a href="#cb108-58" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>unif_rand<span class="op">()</span> <span class="op">&lt;</span> p<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-59"><a href="#cb108-59" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>x<span class="op">;</span></span>
-<span id="cb108-60"><a href="#cb108-60" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb108-61"><a href="#cb108-61" aria-hidden="true" tabindex="-1"></a>    <span class="op">++</span>x<span class="op">;</span></span>
-<span id="cb108-62"><a href="#cb108-62" aria-hidden="true" tabindex="-1"></a>  <span class="op">}</span></span>
-<span id="cb108-63"><a href="#cb108-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-64"><a href="#cb108-64" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> x<span class="op">;</span></span>
-<span id="cb108-65"><a href="#cb108-65" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb108-66"><a href="#cb108-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-67"><a href="#cb108-67" aria-hidden="true" tabindex="-1"></a><span class="co">// This function collects all the R API bits that deal with</span></span>
-<span id="cb108-68"><a href="#cb108-68" aria-hidden="true" tabindex="-1"></a><span class="co">// communication between C and R.  "Writing R extensions" is the</span></span>
-<span id="cb108-69"><a href="#cb108-69" aria-hidden="true" tabindex="-1"></a><span class="co">// canonical documentation source.</span></span>
-<span id="cb108-70"><a href="#cb108-70" aria-hidden="true" tabindex="-1"></a>SEXP r_example<span class="op">(</span>SEXP r_nstep<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb108-71"><a href="#cb108-71" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> nstep <span class="op">=</span> <span class="op">(</span><span class="dt">size_t</span><span class="op">)</span> INTEGER<span class="op">(</span>r_nstep<span class="op">)[</span><span class="dv">0</span><span class="op">];</span></span>
-<span id="cb108-72"><a href="#cb108-72" aria-hidden="true" tabindex="-1"></a>  SEXP ret <span class="op">=</span> PROTECT<span class="op">(</span>allocVector<span class="op">(</span>REALSXP<span class="op">,</span> nstep<span class="op">));</span></span>
-<span id="cb108-73"><a href="#cb108-73" aria-hidden="true" tabindex="-1"></a>  GetRNGstate<span class="op">();</span> <span class="co">// because we'll work with random numbers</span></span>
-<span id="cb108-74"><a href="#cb108-74" aria-hidden="true" tabindex="-1"></a>  example<span class="op">(</span>nstep<span class="op">,</span> REAL<span class="op">(</span>ret<span class="op">));</span></span>
-<span id="cb108-75"><a href="#cb108-75" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Cleanup:</span></span>
-<span id="cb108-76"><a href="#cb108-76" aria-hidden="true" tabindex="-1"></a>  PutRNGstate<span class="op">();</span></span>
-<span id="cb108-77"><a href="#cb108-77" aria-hidden="true" tabindex="-1"></a>  UNPROTECT<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
-<span id="cb108-78"><a href="#cb108-78" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> ret<span class="op">;</span></span>
-<span id="cb108-79"><a href="#cb108-79" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb108-80"><a href="#cb108-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb108-81"><a href="#cb108-81" aria-hidden="true" tabindex="-1"></a><span class="co">// This can be included in a different file, or, for a single file</span></span>
-<span id="cb108-82"><a href="#cb108-82" aria-hidden="true" tabindex="-1"></a><span class="co">// project like this one, include here.</span></span>
-<span id="cb108-83"><a href="#cb108-83" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;ring/ring.c&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb108-1"><a href="#cb108-1" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;ring/ring.h&gt;</span></span>
+<span id="cb108-2"><a href="#cb108-2" tabindex="-1"></a></span>
+<span id="cb108-3"><a href="#cb108-3" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;R.h&gt;</span></span>
+<span id="cb108-4"><a href="#cb108-4" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;Rinternals.h&gt;</span></span>
+<span id="cb108-5"><a href="#cb108-5" tabindex="-1"></a></span>
+<span id="cb108-6"><a href="#cb108-6" tabindex="-1"></a><span class="co">// Definition used below (can't be called step() because that may</span></span>
+<span id="cb108-7"><a href="#cb108-7" tabindex="-1"></a><span class="co">// conflict with regexp.h on some platforms).</span></span>
+<span id="cb108-8"><a href="#cb108-8" tabindex="-1"></a><span class="dt">int</span> step_x<span class="op">(</span>ring_buffer <span class="op">*</span>r<span class="op">,</span> <span class="dt">int</span> x<span class="op">);</span></span>
+<span id="cb108-9"><a href="#cb108-9" tabindex="-1"></a></span>
+<span id="cb108-10"><a href="#cb108-10" tabindex="-1"></a><span class="dt">void</span> example<span class="op">(</span><span class="dt">size_t</span> nstep<span class="op">,</span> <span class="dt">double</span> <span class="op">*</span>ret<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-11"><a href="#cb108-11" tabindex="-1"></a>  <span class="co">// Construct a ring buffer of (max) size 5, each element of which is</span></span>
+<span id="cb108-12"><a href="#cb108-12" tabindex="-1"></a>  <span class="co">// big enough to contain an integer (probably 4 bytes).</span></span>
+<span id="cb108-13"><a href="#cb108-13" tabindex="-1"></a>  ring_buffer <span class="op">*</span>r <span class="op">=</span> ring_buffer_create<span class="op">(</span><span class="dv">5</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span><span class="dt">int</span><span class="op">),</span> OVERFLOW_OVERWRITE<span class="op">);</span></span>
+<span id="cb108-14"><a href="#cb108-14" tabindex="-1"></a></span>
+<span id="cb108-15"><a href="#cb108-15" tabindex="-1"></a>  <span class="co">// Starting point of the simulation, as in the R version:</span></span>
+<span id="cb108-16"><a href="#cb108-16" tabindex="-1"></a>  <span class="dt">int</span> x <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb108-17"><a href="#cb108-17" tabindex="-1"></a></span>
+<span id="cb108-18"><a href="#cb108-18" tabindex="-1"></a>  <span class="co">// Push the initial state into the ring buffer:</span></span>
+<span id="cb108-19"><a href="#cb108-19" tabindex="-1"></a>  ring_buffer_push<span class="op">(</span>r<span class="op">,</span> <span class="op">&amp;</span>x<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb108-20"><a href="#cb108-20" tabindex="-1"></a>  ret<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> x<span class="op">;</span></span>
+<span id="cb108-21"><a href="#cb108-21" tabindex="-1"></a></span>
+<span id="cb108-22"><a href="#cb108-22" tabindex="-1"></a>  <span class="cf">for</span> <span class="op">(</span><span class="dt">size_t</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> nstep<span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-23"><a href="#cb108-23" tabindex="-1"></a>    x <span class="op">=</span> step_x<span class="op">(</span>r<span class="op">,</span> x<span class="op">);</span></span>
+<span id="cb108-24"><a href="#cb108-24" tabindex="-1"></a>    ring_buffer_push<span class="op">(</span>r<span class="op">,</span> <span class="op">&amp;</span>x<span class="op">,</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb108-25"><a href="#cb108-25" tabindex="-1"></a>    ret<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> x<span class="op">;</span></span>
+<span id="cb108-26"><a href="#cb108-26" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb108-27"><a href="#cb108-27" tabindex="-1"></a></span>
+<span id="cb108-28"><a href="#cb108-28" tabindex="-1"></a>  <span class="co">// Cleanup:</span></span>
+<span id="cb108-29"><a href="#cb108-29" tabindex="-1"></a>  ring_buffer_destroy<span class="op">(</span>r<span class="op">);</span></span>
+<span id="cb108-30"><a href="#cb108-30" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb108-31"><a href="#cb108-31" tabindex="-1"></a></span>
+<span id="cb108-32"><a href="#cb108-32" tabindex="-1"></a><span class="dt">int</span> step_x<span class="op">(</span>ring_buffer <span class="op">*</span>r<span class="op">,</span> <span class="dt">int</span> x<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-33"><a href="#cb108-33" tabindex="-1"></a>  <span class="dt">size_t</span> n <span class="op">=</span> ring_buffer_used<span class="op">(</span>r<span class="op">,</span> <span class="kw">false</span><span class="op">);</span></span>
+<span id="cb108-34"><a href="#cb108-34" tabindex="-1"></a>  <span class="dt">double</span> p<span class="op">;</span></span>
+<span id="cb108-35"><a href="#cb108-35" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>n <span class="op">&lt;</span> <span class="dv">2</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-36"><a href="#cb108-36" tabindex="-1"></a>    p <span class="op">=</span> <span class="fl">0.5</span><span class="op">;</span></span>
+<span id="cb108-37"><a href="#cb108-37" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb108-38"><a href="#cb108-38" tabindex="-1"></a>    <span class="co">// Oldest non-overflowed element is in the tail.  Note that the</span></span>
+<span id="cb108-39"><a href="#cb108-39" tabindex="-1"></a>    <span class="co">// return value (which is void*) must be first cast to (int*) then</span></span>
+<span id="cb108-40"><a href="#cb108-40" tabindex="-1"></a>    <span class="co">// dereferenced.</span></span>
+<span id="cb108-41"><a href="#cb108-41" tabindex="-1"></a>    <span class="co">///</span></span>
+<span id="cb108-42"><a href="#cb108-42" tabindex="-1"></a>    <span class="co">// </span><span class="al">NOTE</span><span class="co">: In general, check that the return value here is not NULL</span></span>
+<span id="cb108-43"><a href="#cb108-43" tabindex="-1"></a>    <span class="co">// (indicating an underflow); here we're OK because we checked the</span></span>
+<span id="cb108-44"><a href="#cb108-44" tabindex="-1"></a>    <span class="co">// number of used elements at the beginning.</span></span>
+<span id="cb108-45"><a href="#cb108-45" tabindex="-1"></a>    <span class="dt">int</span> x0 <span class="op">=</span> <span class="op">*(</span><span class="dt">int</span><span class="op">*)</span>ring_buffer_tail<span class="op">(</span>r<span class="op">);</span></span>
+<span id="cb108-46"><a href="#cb108-46" tabindex="-1"></a>    <span class="dt">size_t</span> increases <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb108-47"><a href="#cb108-47" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(</span><span class="dt">size_t</span> i <span class="op">=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> n<span class="op">;</span> <span class="op">++</span>i<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-48"><a href="#cb108-48" tabindex="-1"></a>      <span class="co">// Moving through the more recently added elements:</span></span>
+<span id="cb108-49"><a href="#cb108-49" tabindex="-1"></a>      <span class="dt">int</span> x1 <span class="op">=</span> <span class="op">*(</span><span class="dt">int</span><span class="op">*)</span>ring_buffer_tail_offset<span class="op">(</span>r<span class="op">,</span> i<span class="op">);</span></span>
+<span id="cb108-50"><a href="#cb108-50" tabindex="-1"></a>      <span class="cf">if</span> <span class="op">(</span>x1 <span class="op">&gt;</span> x0<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-51"><a href="#cb108-51" tabindex="-1"></a>        increases<span class="op">++;</span></span>
+<span id="cb108-52"><a href="#cb108-52" tabindex="-1"></a>      <span class="op">}</span></span>
+<span id="cb108-53"><a href="#cb108-53" tabindex="-1"></a>      x0 <span class="op">=</span> x1<span class="op">;</span></span>
+<span id="cb108-54"><a href="#cb108-54" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb108-55"><a href="#cb108-55" tabindex="-1"></a>    p <span class="op">=</span> <span class="op">((</span><span class="dt">double</span><span class="op">)</span>increases<span class="op">)</span> <span class="op">/</span> <span class="op">(</span>n <span class="op">-</span> <span class="dv">1</span><span class="op">);</span></span>
+<span id="cb108-56"><a href="#cb108-56" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb108-57"><a href="#cb108-57" tabindex="-1"></a></span>
+<span id="cb108-58"><a href="#cb108-58" tabindex="-1"></a>  <span class="cf">if</span> <span class="op">(</span>unif_rand<span class="op">()</span> <span class="op">&lt;</span> p<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-59"><a href="#cb108-59" tabindex="-1"></a>    <span class="op">--</span>x<span class="op">;</span></span>
+<span id="cb108-60"><a href="#cb108-60" tabindex="-1"></a>  <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb108-61"><a href="#cb108-61" tabindex="-1"></a>    <span class="op">++</span>x<span class="op">;</span></span>
+<span id="cb108-62"><a href="#cb108-62" tabindex="-1"></a>  <span class="op">}</span></span>
+<span id="cb108-63"><a href="#cb108-63" tabindex="-1"></a></span>
+<span id="cb108-64"><a href="#cb108-64" tabindex="-1"></a>  <span class="cf">return</span> x<span class="op">;</span></span>
+<span id="cb108-65"><a href="#cb108-65" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb108-66"><a href="#cb108-66" tabindex="-1"></a></span>
+<span id="cb108-67"><a href="#cb108-67" tabindex="-1"></a><span class="co">// This function collects all the R API bits that deal with</span></span>
+<span id="cb108-68"><a href="#cb108-68" tabindex="-1"></a><span class="co">// communication between C and R.  "Writing R extensions" is the</span></span>
+<span id="cb108-69"><a href="#cb108-69" tabindex="-1"></a><span class="co">// canonical documentation source.</span></span>
+<span id="cb108-70"><a href="#cb108-70" tabindex="-1"></a>SEXP r_example<span class="op">(</span>SEXP r_nstep<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb108-71"><a href="#cb108-71" tabindex="-1"></a>  <span class="dt">size_t</span> nstep <span class="op">=</span> <span class="op">(</span><span class="dt">size_t</span><span class="op">)</span> INTEGER<span class="op">(</span>r_nstep<span class="op">)[</span><span class="dv">0</span><span class="op">];</span></span>
+<span id="cb108-72"><a href="#cb108-72" tabindex="-1"></a>  SEXP ret <span class="op">=</span> PROTECT<span class="op">(</span>allocVector<span class="op">(</span>REALSXP<span class="op">,</span> nstep<span class="op">));</span></span>
+<span id="cb108-73"><a href="#cb108-73" tabindex="-1"></a>  GetRNGstate<span class="op">();</span> <span class="co">// because we'll work with random numbers</span></span>
+<span id="cb108-74"><a href="#cb108-74" tabindex="-1"></a>  example<span class="op">(</span>nstep<span class="op">,</span> REAL<span class="op">(</span>ret<span class="op">));</span></span>
+<span id="cb108-75"><a href="#cb108-75" tabindex="-1"></a>  <span class="co">// Cleanup:</span></span>
+<span id="cb108-76"><a href="#cb108-76" tabindex="-1"></a>  PutRNGstate<span class="op">();</span></span>
+<span id="cb108-77"><a href="#cb108-77" tabindex="-1"></a>  UNPROTECT<span class="op">(</span><span class="dv">1</span><span class="op">);</span></span>
+<span id="cb108-78"><a href="#cb108-78" tabindex="-1"></a>  <span class="cf">return</span> ret<span class="op">;</span></span>
+<span id="cb108-79"><a href="#cb108-79" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb108-80"><a href="#cb108-80" tabindex="-1"></a></span>
+<span id="cb108-81"><a href="#cb108-81" tabindex="-1"></a><span class="co">// This can be included in a different file, or, for a single file</span></span>
+<span id="cb108-82"><a href="#cb108-82" tabindex="-1"></a><span class="co">// project like this one, include here.</span></span>
+<span id="cb108-83"><a href="#cb108-83" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;ring/ring.c&gt;</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="a-nontrivial-example">A nontrivial example<a class="anchor" aria-label="anchor" href="#a-nontrivial-example"></a>
 </h3>
@@ -1160,84 +1135,75 @@ C++ as above. Or, there is a class-based approach available:</p>
 the line <code>#include &lt;dde/dde.hpp&gt;</code> to include the class
 definition:</p></li>
 </ul>
-<div class="sourceCode" id="cb109"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef _RING_HPP_</span></span>
-<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define _RING_HPP_</span></span>
-<span id="cb109-3"><a href="#cb109-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb109-4"><a href="#cb109-4" aria-hidden="true" tabindex="-1"></a><span class="co">// </span><span class="al">NOTE</span><span class="co">: the C++ version always uses non-R memory allocation functions</span></span>
-<span id="cb109-5"><a href="#cb109-5" aria-hidden="true" tabindex="-1"></a><span class="co">// because otherwise the R error can jump over destructors causing</span></span>
-<span id="cb109-6"><a href="#cb109-6" aria-hidden="true" tabindex="-1"></a><span class="co">// memory leaks or worse.  Errors will be thrown with "throw", which</span></span>
-<span id="cb109-7"><a href="#cb109-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Rcpp will catch if you use that.</span></span>
-<span id="cb109-8"><a href="#cb109-8" aria-hidden="true" tabindex="-1"></a><span class="co">//</span></span>
-<span id="cb109-9"><a href="#cb109-9" aria-hidden="true" tabindex="-1"></a><span class="co">// However, note that if using overflow_action of anything other than</span></span>
-<span id="cb109-10"><a href="#cb109-10" aria-hidden="true" tabindex="-1"></a><span class="co">// OVERFLOW_OVERWRITE is possibly unsafe; OVERFLOW_GROW is fine so</span></span>
-<span id="cb109-11"><a href="#cb109-11" aria-hidden="true" tabindex="-1"></a><span class="co">// long as you never run out of memory, and OVERFLOW_ERROR is probably</span></span>
-<span id="cb109-12"><a href="#cb109-12" aria-hidden="true" tabindex="-1"></a><span class="co">// never safe.</span></span>
-<span id="cb109-13"><a href="#cb109-13" aria-hidden="true" tabindex="-1"></a><span class="pp">#define RING_USE_STDLIB_ALLOC </span><span class="dv">1</span></span>
-<span id="cb109-14"><a href="#cb109-14" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;ring/ring.h&gt;</span></span>
-<span id="cb109-15"><a href="#cb109-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb109-16"><a href="#cb109-16" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RingBuffer <span class="op">{</span></span>
-<span id="cb109-17"><a href="#cb109-17" aria-hidden="true" tabindex="-1"></a>  ring_buffer <span class="op">*</span> buffer<span class="op">;</span></span>
-<span id="cb109-18"><a href="#cb109-18" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span><span class="op">:</span></span>
-<span id="cb109-19"><a href="#cb109-19" aria-hidden="true" tabindex="-1"></a>  RingBuffer<span class="op">(</span><span class="dt">size_t</span> size<span class="op">,</span> <span class="dt">size_t</span> stride<span class="op">,</span> overflow_action on_overflow<span class="op">);</span></span>
-<span id="cb109-20"><a href="#cb109-20" aria-hidden="true" tabindex="-1"></a>  <span class="op">~</span>RingBuffer<span class="op">();</span></span>
-<span id="cb109-21"><a href="#cb109-21" aria-hidden="true" tabindex="-1"></a>  RingBuffer<span class="op">(</span><span class="at">const</span> RingBuffer<span class="op">&amp;</span> other<span class="op">);</span></span>
-<span id="cb109-22"><a href="#cb109-22" aria-hidden="true" tabindex="-1"></a>  RingBuffer<span class="op">&amp;</span> <span class="kw">operator</span><span class="op">=(</span>RingBuffer other<span class="op">);</span></span>
-<span id="cb109-23"><a href="#cb109-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb109-24"><a href="#cb109-24" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> grow<span class="op">(</span><span class="dt">size_t</span> n<span class="op">,</span> <span class="dt">bool</span> exact<span class="op">);</span></span>
-<span id="cb109-25"><a href="#cb109-25" aria-hidden="true" tabindex="-1"></a>  <span class="dt">void</span> reset<span class="op">(</span><span class="dt">bool</span> clear<span class="op">);</span></span>
-<span id="cb109-26"><a href="#cb109-26" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> size<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-27"><a href="#cb109-27" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> free<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-28"><a href="#cb109-28" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> used<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-29"><a href="#cb109-29" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> bytes_data<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-30"><a href="#cb109-30" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bool</span> is_full<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-31"><a href="#cb109-31" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bool</span> is_empty<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-32"><a href="#cb109-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> data<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-33"><a href="#cb109-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> head<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-34"><a href="#cb109-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> tail<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-35"><a href="#cb109-35" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> head_pos<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-36"><a href="#cb109-36" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> tail_pos<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-37"><a href="#cb109-37" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> set<span class="op">(</span><span class="dt">data_t</span> c<span class="op">,</span> <span class="dt">size_t</span> len<span class="op">);</span></span>
-<span id="cb109-38"><a href="#cb109-38" aria-hidden="true" tabindex="-1"></a>  <span class="dt">size_t</span> set_stride<span class="op">(</span><span class="at">const</span> <span class="dt">void</span> <span class="op">*</span>x<span class="op">,</span> <span class="dt">size_t</span> len<span class="op">);</span></span>
-<span id="cb109-39"><a href="#cb109-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> push<span class="op">(</span><span class="at">const</span> <span class="dt">void</span> <span class="op">*</span>src<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb109-40"><a href="#cb109-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> take<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb109-41"><a href="#cb109-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> read<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-42"><a href="#cb109-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> copy<span class="op">(</span>RingBuffer<span class="op">&amp;</span> dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
-<span id="cb109-43"><a href="#cb109-43" aria-hidden="true" tabindex="-1"></a>  <span class="dt">bool</span> mirror<span class="op">(</span>RingBuffer<span class="op">&amp;</span> dest<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-44"><a href="#cb109-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> tail_offset<span class="op">(</span><span class="dt">size_t</span> offset<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-45"><a href="#cb109-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> head_offset<span class="op">(</span><span class="dt">size_t</span> offset<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
-<span id="cb109-46"><a href="#cb109-46" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
-<span id="cb109-47"><a href="#cb109-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb109-48"><a href="#cb109-48" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb109-1"><a href="#cb109-1" tabindex="-1"></a><span class="pp">#ifndef _RING_HPP_</span></span>
+<span id="cb109-2"><a href="#cb109-2" tabindex="-1"></a><span class="pp">#define _RING_HPP_</span></span>
+<span id="cb109-3"><a href="#cb109-3" tabindex="-1"></a></span>
+<span id="cb109-4"><a href="#cb109-4" tabindex="-1"></a><span class="co">// </span><span class="al">NOTE</span><span class="co">: the C++ version always uses non-R memory allocation functions</span></span>
+<span id="cb109-5"><a href="#cb109-5" tabindex="-1"></a><span class="co">// because otherwise the R error can jump over destructors causing</span></span>
+<span id="cb109-6"><a href="#cb109-6" tabindex="-1"></a><span class="co">// memory leaks or worse.  Errors will be thrown with "throw", which</span></span>
+<span id="cb109-7"><a href="#cb109-7" tabindex="-1"></a><span class="co">// Rcpp will catch if you use that.</span></span>
+<span id="cb109-8"><a href="#cb109-8" tabindex="-1"></a><span class="co">//</span></span>
+<span id="cb109-9"><a href="#cb109-9" tabindex="-1"></a><span class="co">// However, note that if using overflow_action of anything other than</span></span>
+<span id="cb109-10"><a href="#cb109-10" tabindex="-1"></a><span class="co">// OVERFLOW_OVERWRITE is possibly unsafe; OVERFLOW_GROW is fine so</span></span>
+<span id="cb109-11"><a href="#cb109-11" tabindex="-1"></a><span class="co">// long as you never run out of memory, and OVERFLOW_ERROR is probably</span></span>
+<span id="cb109-12"><a href="#cb109-12" tabindex="-1"></a><span class="co">// never safe.</span></span>
+<span id="cb109-13"><a href="#cb109-13" tabindex="-1"></a><span class="pp">#define RING_USE_STDLIB_ALLOC </span><span class="dv">1</span></span>
+<span id="cb109-14"><a href="#cb109-14" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;ring/ring.h&gt;</span></span>
+<span id="cb109-15"><a href="#cb109-15" tabindex="-1"></a></span>
+<span id="cb109-16"><a href="#cb109-16" tabindex="-1"></a><span class="kw">class</span> RingBuffer <span class="op">{</span></span>
+<span id="cb109-17"><a href="#cb109-17" tabindex="-1"></a>  ring_buffer <span class="op">*</span> buffer<span class="op">;</span></span>
+<span id="cb109-18"><a href="#cb109-18" tabindex="-1"></a><span class="kw">public</span><span class="op">:</span></span>
+<span id="cb109-19"><a href="#cb109-19" tabindex="-1"></a>  RingBuffer<span class="op">(</span><span class="dt">size_t</span> size<span class="op">,</span> <span class="dt">size_t</span> stride<span class="op">,</span> overflow_action on_overflow<span class="op">);</span></span>
+<span id="cb109-20"><a href="#cb109-20" tabindex="-1"></a>  <span class="op">~</span>RingBuffer<span class="op">();</span></span>
+<span id="cb109-21"><a href="#cb109-21" tabindex="-1"></a>  RingBuffer<span class="op">(</span><span class="at">const</span> RingBuffer<span class="op">&amp;</span> other<span class="op">);</span></span>
+<span id="cb109-22"><a href="#cb109-22" tabindex="-1"></a>  RingBuffer<span class="op">&amp;</span> <span class="kw">operator</span><span class="op">=(</span>RingBuffer other<span class="op">);</span></span>
+<span id="cb109-23"><a href="#cb109-23" tabindex="-1"></a></span>
+<span id="cb109-24"><a href="#cb109-24" tabindex="-1"></a>  <span class="dt">void</span> grow<span class="op">(</span><span class="dt">size_t</span> n<span class="op">,</span> <span class="dt">bool</span> exact<span class="op">);</span></span>
+<span id="cb109-25"><a href="#cb109-25" tabindex="-1"></a>  <span class="dt">void</span> reset<span class="op">(</span><span class="dt">bool</span> clear<span class="op">);</span></span>
+<span id="cb109-26"><a href="#cb109-26" tabindex="-1"></a>  <span class="dt">size_t</span> size<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-27"><a href="#cb109-27" tabindex="-1"></a>  <span class="dt">size_t</span> free<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-28"><a href="#cb109-28" tabindex="-1"></a>  <span class="dt">size_t</span> used<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-29"><a href="#cb109-29" tabindex="-1"></a>  <span class="dt">size_t</span> bytes_data<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-30"><a href="#cb109-30" tabindex="-1"></a>  <span class="dt">bool</span> is_full<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-31"><a href="#cb109-31" tabindex="-1"></a>  <span class="dt">bool</span> is_empty<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-32"><a href="#cb109-32" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> data<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-33"><a href="#cb109-33" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> head<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-34"><a href="#cb109-34" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> tail<span class="op">()</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-35"><a href="#cb109-35" tabindex="-1"></a>  <span class="dt">size_t</span> head_pos<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-36"><a href="#cb109-36" tabindex="-1"></a>  <span class="dt">size_t</span> tail_pos<span class="op">(</span><span class="dt">bool</span> bytes<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-37"><a href="#cb109-37" tabindex="-1"></a>  <span class="dt">size_t</span> set<span class="op">(</span><span class="dt">data_t</span> c<span class="op">,</span> <span class="dt">size_t</span> len<span class="op">);</span></span>
+<span id="cb109-38"><a href="#cb109-38" tabindex="-1"></a>  <span class="dt">size_t</span> set_stride<span class="op">(</span><span class="at">const</span> <span class="dt">void</span> <span class="op">*</span>x<span class="op">,</span> <span class="dt">size_t</span> len<span class="op">);</span></span>
+<span id="cb109-39"><a href="#cb109-39" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> push<span class="op">(</span><span class="at">const</span> <span class="dt">void</span> <span class="op">*</span>src<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb109-40"><a href="#cb109-40" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> take<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb109-41"><a href="#cb109-41" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> read<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-42"><a href="#cb109-42" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> copy<span class="op">(</span>RingBuffer<span class="op">&amp;</span> dest<span class="op">,</span> <span class="dt">size_t</span> n<span class="op">);</span></span>
+<span id="cb109-43"><a href="#cb109-43" tabindex="-1"></a>  <span class="dt">bool</span> mirror<span class="op">(</span>RingBuffer<span class="op">&amp;</span> dest<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-44"><a href="#cb109-44" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> tail_offset<span class="op">(</span><span class="dt">size_t</span> offset<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-45"><a href="#cb109-45" tabindex="-1"></a>  <span class="at">const</span> <span class="dt">void</span> <span class="op">*</span> head_offset<span class="op">(</span><span class="dt">size_t</span> offset<span class="op">)</span> <span class="at">const</span><span class="op">;</span></span>
+<span id="cb109-46"><a href="#cb109-46" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb109-47"><a href="#cb109-47" tabindex="-1"></a></span>
+<span id="cb109-48"><a href="#cb109-48" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
-  <p></p>
-<p>Developed by Rich FitzJohn.</p>
+    <footer><div class="pkgdown-footer-left">
+  <p>Developed by Rich FitzJohn.</p>
 </div>
 
-<div class="pkgdown">
-  <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<div class="pkgdown-footer-right">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
-  
 
 
-  
+
 
   </body>
 </html>

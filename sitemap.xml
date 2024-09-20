@@ -1,48 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/ring.html</loc>
-  </url>
-  <url>
-    <loc>/articles/ring_applications.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ring_buffer_bytes.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ring_buffer_bytes_translate.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ring_buffer_bytes_typed.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ring_buffer_env.html</loc>
-  </url>
-  <url>
-    <loc>/release.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://mrc-ide.github.io/ring/404.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/CONDUCT.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/LICENSE-text.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/articles/index.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/articles/ring.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/articles/ring_applications.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/authors.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/index.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/news/index.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/reference/index.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/reference/ring_buffer_bytes.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/reference/ring_buffer_bytes_translate.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/reference/ring_buffer_bytes_typed.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/reference/ring_buffer_env.html</loc></url>
+<url><loc>https://mrc-ide.github.io/ring/release.html</loc></url>
 </urlset>
+
