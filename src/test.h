@@ -1,4 +1,3 @@
-#define STRICT_R_HEADERS
 #include <R.h>
 #include <Rinternals.h>
 SEXP test_search_linear(SEXP r_buffer, SEXP r_value);

@@ -51,11 +51,11 @@ SEXP R_ring_buffer_bytes_data(SEXP extPtr) {
 }
 
 SEXP R_ring_buffer_is_full(SEXP extPtr) {
-  return ScalarLogical(ring_buffer_is_full(ring_buffer_get(extPtr, true)));
+  return Rf_ScalarLogical(ring_buffer_is_full(ring_buffer_get(extPtr, true)));
 }
 
 SEXP R_ring_buffer_is_empty(SEXP extPtr) {
-  return ScalarLogical(ring_buffer_is_empty(ring_buffer_get(extPtr, true)));
+  return Rf_ScalarLogical(ring_buffer_is_empty(ring_buffer_get(extPtr, true)));
 }
 
 // NOTE: this is slightly different behaviour than the C API because
@@ -66,7 +66,7 @@ SEXP R_ring_buffer_head(SEXP extPtr) {
   if (ring_buffer_is_empty(buffer)) {
     Rf_error("Buffer is empty");
   }
-  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, buffer->stride));
   data_t *data = (data_t*) ring_buffer_head_offset(buffer, 0);
   memcpy(RAW(ret), data, buffer->stride);
   UNPROTECT(1);
@@ -78,7 +78,7 @@ SEXP R_ring_buffer_tail(SEXP extPtr) {
   if (ring_buffer_is_empty(buffer)) {
     Rf_error("Buffer is empty");
   }
-  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, buffer->stride));
   memcpy(RAW(ret), ring_buffer_tail(buffer), buffer->stride);
   UNPROTECT(1);
   return ret;
@@ -87,7 +87,7 @@ SEXP R_ring_buffer_tail(SEXP extPtr) {
 SEXP R_ring_buffer_data(SEXP extPtr) {
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
   size_t len = buffer->bytes_data;
-  SEXP ret = PROTECT(allocVector(RAWSXP, len));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, len));
   memcpy(RAW(ret), ring_buffer_data(buffer), len);
   UNPROTECT(1);
   return ret;
@@ -120,7 +120,7 @@ SEXP R_ring_buffer_reset(SEXP extPtr, SEXP clear) {
 
 SEXP R_ring_buffer_set(SEXP extPtr, SEXP r_data, SEXP r_n) {
   ring_buffer *buffer = ring_buffer_get(extPtr, true);
-  const size_t n = scalar_size(r_n), n_data = length(r_data);
+  const size_t n = scalar_size(r_n), n_data = Rf_length(r_data);
   const data_t *data = get_raw(r_data);
   if (n_data == 1) {
     size_t ret = ring_buffer_set(buffer, data[0], n) / buffer->stride;
@@ -148,7 +148,7 @@ SEXP R_ring_buffer_push(SEXP extPtr, SEXP r_data) {
 SEXP R_ring_buffer_take(SEXP extPtr, SEXP r_n) {
   size_t n = scalar_size(r_n);
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_take(buffer, RAW(ret), n) == NULL) {
     throw_underflow(buffer, n);
   }
@@ -161,7 +161,7 @@ SEXP R_ring_buffer_take(SEXP extPtr, SEXP r_n) {
 SEXP R_ring_buffer_read(SEXP extPtr, SEXP r_n) {
   size_t n = scalar_size(r_n);
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_read(buffer, RAW(ret), n) == NULL) {
     throw_underflow(buffer, n);
   }
@@ -174,7 +174,7 @@ SEXP R_ring_buffer_read(SEXP extPtr, SEXP r_n) {
 SEXP R_ring_buffer_take_head(SEXP extPtr, SEXP r_n) {
   size_t n = scalar_size(r_n);
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_take_head(buffer, RAW(ret), n) == NULL) {
     throw_underflow(buffer, n);
   }
@@ -187,7 +187,7 @@ SEXP R_ring_buffer_take_head(SEXP extPtr, SEXP r_n) {
 SEXP R_ring_buffer_read_head(SEXP extPtr, SEXP r_n) {
   size_t n = scalar_size(r_n);
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  SEXP ret = PROTECT(allocVector(RAWSXP, n * buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, n * buffer->stride));
   if (ring_buffer_read_head(buffer, RAW(ret), n) == NULL) {
     throw_underflow(buffer, n);
   }
@@ -200,7 +200,7 @@ SEXP R_ring_buffer_read_head(SEXP extPtr, SEXP r_n) {
 SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
   size_t offset = scalar_size(r_offset);
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, buffer->stride));
   data_t *data = (data_t*) ring_buffer_tail_offset(buffer, offset);
   if (data == NULL) {
     throw_underflow(buffer, offset);
@@ -213,7 +213,7 @@ SEXP R_ring_buffer_tail_offset(SEXP extPtr, SEXP r_offset) {
 SEXP R_ring_buffer_head_offset(SEXP extPtr, SEXP r_offset) {
   size_t offset = scalar_size(r_offset);
   ring_buffer * buffer = ring_buffer_get(extPtr, true);
-  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, buffer->stride));
   data_t *data = (data_t*) ring_buffer_head_offset(buffer, offset);
   if (data == NULL) {
     throw_underflow(buffer, offset);
@@ -275,7 +275,7 @@ SEXP R_ring_buffer_head_set(SEXP extPtr, SEXP r_data) {
 
 SEXP R_ring_buffer_head_data(SEXP extPtr) {
   ring_buffer *buffer = ring_buffer_get(extPtr, true);
-  SEXP ret = PROTECT(allocVector(RAWSXP, buffer->stride));
+  SEXP ret = PROTECT(Rf_allocVector(RAWSXP, buffer->stride));
   memcpy(RAW(ret), buffer->head, buffer->stride);
   UNPROTECT(1);
   return ret;
@@ -352,7 +352,7 @@ size_t scalar_size(SEXP x) {
 }
 
 SEXP scalar_size_sexp(size_t x) {
-  return x > INT_MAX ? ScalarReal(x) : ScalarInteger(x);
+  return x > INT_MAX ? Rf_ScalarReal(x) : Rf_ScalarInteger(x);
 }
 
 void throw_underflow(ring_buffer *buffer, size_t n) {

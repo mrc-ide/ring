@@ -1,6 +1,6 @@
 Package: ring
 Title: Circular / Ring Buffers
-Version: 1.0.5
+Version: 1.0.7
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Imperial College of Science, Technology and Medicine",
@@ -9,7 +9,7 @@ Description: Circular / ring buffers in R and C.  There are a couple
     of different buffers here with different implementations that
     represent different trade-offs.
 License: MIT + file LICENSE
-URL: https://github.com/mrc-ide/ring
+URL: https://mrc-ide.gitub.io/ring, https://github.com/mrc-ide/ring
 BugReports: https://github.com/mrc-ide/ring/issues
 Imports:
     R6

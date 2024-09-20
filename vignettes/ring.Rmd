@@ -125,7 +125,7 @@ buf$read(2)
 
 If you try to read too far, then the buffer will underflow and you
 will get an error:
-``` {r error = TRUE}
+``` {r error = TRUE, purl = FALSE}
 buf$read(20)
 ```
 
@@ -342,7 +342,7 @@ buf$push(as.raw(1:8))
 ```
 
 but if you pushed more or less it would be an error:
-``` {r error = TRUE}
+``` {r error = TRUE, purl = FALSE}
 buf$push(as.raw(1:4))
 ```
 
@@ -410,7 +410,7 @@ buf$take(1)
 ```
 
 If you try to take more than is in the buffer it is an error:
-``` {r error = TRUE}
+``` {r error = TRUE, purl = FALSE}
 buf$take(10)
 ```
 
@@ -452,7 +452,7 @@ b$tail()
 ```
 
 But other length strings cannot be added:
-``` {r error = TRUE}
+``` {r error = TRUE, purl = FALSE}
 b$push("hello!")
 ```
 
