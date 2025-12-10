@@ -4,7 +4,9 @@ SEXP logical_to_bytes(SEXP x) {
   int * data = INTEGER(x);
   size_t len = LENGTH(x) * sizeof(int);
   SEXP ret = PROTECT(Rf_allocVector(RAWSXP, len));
-  memcpy(RAW(ret), data, len);
+  if (len > 0) {
+    memcpy(RAW(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
@@ -25,7 +27,9 @@ SEXP int_to_bytes(SEXP x) {
   int * data = INTEGER(x);
   size_t len = LENGTH(x) * sizeof(int);
   SEXP ret = PROTECT(Rf_allocVector(RAWSXP, len));
-  memcpy(RAW(ret), data, len);
+  if (len > 0) {
+    memcpy(RAW(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
@@ -46,7 +50,9 @@ SEXP double_to_bytes(SEXP x) {
   double * data = REAL(x);
   size_t len = LENGTH(x) * sizeof(double);
   SEXP ret = PROTECT(Rf_allocVector(RAWSXP, len));
-  memcpy(RAW(ret), data, len);
+  if (len > 0) {
+    memcpy(RAW(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
@@ -67,7 +73,9 @@ SEXP complex_to_bytes(SEXP x) {
   Rcomplex * data = COMPLEX(x);
   size_t len = LENGTH(x) * sizeof(Rcomplex);
   SEXP ret = PROTECT(Rf_allocVector(RAWSXP, len));
-  memcpy(RAW(ret), data, len);
+  if (len > 0) {
+    memcpy(RAW(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
