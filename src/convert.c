@@ -14,7 +14,9 @@ SEXP bytes_to_logical(SEXP x) {
   size_t len = LENGTH(x);
   size_t n = len / sizeof(int);
   SEXP ret = PROTECT(Rf_allocVector(LGLSXP, n));
-  memcpy(INTEGER(ret), data, len);
+  if (n > 0) {
+    memcpy(INTEGER(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
@@ -33,7 +35,9 @@ SEXP bytes_to_int(SEXP x) {
   size_t len = LENGTH(x);
   size_t n = len / sizeof(int);
   SEXP ret = PROTECT(Rf_allocVector(INTSXP, n));
-  memcpy(INTEGER(ret), data, len);
+  if (n > 0) {
+    memcpy(INTEGER(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
@@ -52,7 +56,9 @@ SEXP bytes_to_double(SEXP x) {
   size_t len = LENGTH(x);
   size_t n = len / sizeof(double);
   SEXP ret = PROTECT(Rf_allocVector(REALSXP, n));
-  memcpy(REAL(ret), data, len);
+  if (n > 0) {
+    memcpy(REAL(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
@@ -71,7 +77,9 @@ SEXP bytes_to_complex(SEXP x) {
   size_t len = LENGTH(x);
   size_t n = len / sizeof(Rcomplex);
   SEXP ret = PROTECT(Rf_allocVector(CPLXSXP, n));
-  memcpy(COMPLEX(ret), data, len);
+  if (n > 0) {
+    memcpy(COMPLEX(ret), data, len);
+  }
   UNPROTECT(1);
   return ret;
 }
