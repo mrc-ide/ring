@@ -21,3 +21,6 @@ src/*.gcno
 src/*.gcda
 src/*.gcov
 docs/
+*.o
+*.so
+*.dll
