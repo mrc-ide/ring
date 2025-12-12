@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   ring_applications: ring_applications.html
   ring: ring.html
-last_built: 2025-12-10T20:29Z
+last_built: 2025-12-12T16:59Z
 urls:
   reference: https://mrc-ide.github.io/ring/reference
   article: https://mrc-ide.github.io/ring/articles
